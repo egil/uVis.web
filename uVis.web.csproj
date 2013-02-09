@@ -1,0 +1,191 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <ProjectGuid>{4C1F4DE5-1359-480C-A359-CA55A323E043}</ProjectGuid>
+    <ProjectTypeGuids>{349c5851-65df-11da-9384-00065b846f21};{fae04ec0-301f-11d3-bf4b-00c04f79efbc}</ProjectTypeGuids>
+    <OutputType>Library</OutputType>
+    <OutputPath>bin</OutputPath>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <DebugType>full</DebugType>
+    <DebugSymbols>true</DebugSymbols>
+    <FileUpgradeFlags>
+    </FileUpgradeFlags>
+    <OldToolsVersion>4.0</OldToolsVersion>
+    <UseIISExpress>true</UseIISExpress>
+    <IISExpressSSLPort />
+    <IISExpressAnonymousAuthentication />
+    <IISExpressWindowsAuthentication />
+    <IISExpressUseClassicPipelineMode />
+    <UpgradeBackupLocation />
+  </PropertyGroup>
+  <ItemGroup>
+    <None Include="app-definitions\demo1.json" />
+    <Content Include="app.css" />
+    <Content Include="index.html" />
+    <Content Include="scripts\.typings\underscore-typed.d.ts" />
+    <Content Include="scripts\init.js.map">
+      <DependentUpon>main.ts</DependentUpon>
+    </Content>
+    <Content Include="scripts\libs\underscore-min.js" />
+    <Content Include="scripts\libs\underscore.js" />
+    <Content Include="scripts\main.js">
+      <DependentUpon>main.ts</DependentUpon>
+    </Content>
+    <Content Include="scripts\main.min.js">
+      <DependentUpon>main.ts</DependentUpon>
+    </Content>
+    <Content Include="scripts\uvis\app.min.js">
+      <DependentUpon>app.ts</DependentUpon>
+    </Content>
+    <Content Include="scripts\uvis\data.js.map">
+      <DependentUpon>data.ts</DependentUpon>
+    </Content>
+    <Content Include="scripts\uvis\data\odata.js.map">
+      <DependentUpon>odata.ts</DependentUpon>
+    </Content>
+    <TypeScriptCompile Include="scripts\uvis\data.ts" />
+    <Content Include="scripts\uvis\data.js">
+      <DependentUpon>data.ts</DependentUpon>
+    </Content>
+    <Content Include="scripts\uvis\data.min.js">
+      <DependentUpon>data.ts</DependentUpon>
+    </Content>
+    <TypeScriptCompile Include="scripts\uvis\data\odata.ts" />
+    <Content Include="scripts\uvis\data\odata.js">
+      <DependentUpon>odata.ts</DependentUpon>
+    </Content>
+    <Content Include="scripts\uvis\data\odata.min.js">
+      <DependentUpon>odata.ts</DependentUpon>
+    </Content>
+    <Content Include="scripts\uvis\initializer.js.map">
+      <DependentUpon>initializer.ts</DependentUpon>
+    </Content>
+    <Content Include="scripts\uvis\utils.js.map">
+      <DependentUpon>utils.ts</DependentUpon>
+    </Content>
+    <TypeScriptCompile Include="scripts\uvis\initializer.ts" />
+    <Content Include="scripts\uvis\initializer.js">
+      <DependentUpon>initializer.ts</DependentUpon>
+    </Content>
+    <Content Include="scripts\uvis\initializer.min.js">
+      <DependentUpon>initializer.ts</DependentUpon>
+    </Content>
+    <Content Include="scripts\uvis\screen.js.map">
+      <DependentUpon>screen.ts</DependentUpon>
+    </Content>
+    <Content Include="scripts\uvis\app.js.map">
+      <DependentUpon>app.ts</DependentUpon>
+    </Content>
+    <Content Include="scripts\main.js.map">
+      <DependentUpon>main.ts</DependentUpon>
+    </Content>
+    <TypeScriptCompile Include="scripts\uvis\app.ts" />
+    <Content Include="scripts\uvis\app.js">
+      <DependentUpon>app.ts</DependentUpon>
+    </Content>
+    <Content Include="scripts\uvis\component.js.map">
+      <DependentUpon>component.ts</DependentUpon>
+    </Content>
+    <Content Include="scripts\uvis\property.js.map">
+      <DependentUpon>property.ts</DependentUpon>
+    </Content>
+    <TypeScriptCompile Include="scripts\uvis\component.ts" />
+    <Content Include="scripts\uvis\component.js">
+      <DependentUpon>component.ts</DependentUpon>
+    </Content>
+    <Content Include="scripts\uvis\component.min.js">
+      <DependentUpon>component.ts</DependentUpon>
+    </Content>
+    <TypeScriptCompile Include="scripts\uvis\property.ts" />
+    <Content Include="scripts\uvis\property.js">
+      <DependentUpon>property.ts</DependentUpon>
+    </Content>
+    <Content Include="scripts\uvis\property.min.js">
+      <DependentUpon>property.ts</DependentUpon>
+    </Content>
+    <TypeScriptCompile Include="scripts\uvis\screen.ts" />
+    <Content Include="scripts\uvis\screen.js">
+      <DependentUpon>screen.ts</DependentUpon>
+    </Content>
+    <Content Include="scripts\uvis\screen.min.js">
+      <DependentUpon>screen.ts</DependentUpon>
+    </Content>
+    <TypeScriptCompile Include="scripts\uvis\utils.ts" />
+    <Content Include="scripts\uvis\utils.js">
+      <DependentUpon>utils.ts</DependentUpon>
+    </Content>
+    <Content Include="scripts\uvis\utils.min.js">
+      <DependentUpon>utils.ts</DependentUpon>
+    </Content>
+    <Content Include="scripts\uvis\uvis.js">
+      <DependentUpon>uvis.ts</DependentUpon>
+    </Content>
+    <Content Include="scripts\uvis\uvis.js.map">
+      <DependentUpon>uvis.ts</DependentUpon>
+    </Content>
+    <Content Include="scripts\uvis\uvis.min.js">
+      <DependentUpon>uvis.ts</DependentUpon>
+    </Content>
+    <TypeScriptCompile Include="scripts\uvis\uvis.ts" />
+    <None Include="scripts\libs\jquery-1.9.0.intellisense.js" />
+    <Content Include="scripts\.typings\jquery.d.ts" />
+    <Content Include="scripts\.typings\require.d.ts" />
+    <TypeScriptCompile Include="scripts\main.ts" />
+    <Content Include="scripts\init.js">
+      <DependentUpon>main.ts</DependentUpon>
+    </Content>
+    <Content Include="scripts\init.min.js">
+      <DependentUpon>main.ts</DependentUpon>
+    </Content>
+    <Content Include="scripts\libs\jquery-1.9.0.js" />
+    <Content Include="scripts\libs\jquery-1.9.0.min.js" />
+    <Content Include="scripts\libs\r.js" />
+    <Content Include="scripts\libs\require.js" />
+    <Content Include="scripts\libs\jquery-1.9.0.min.map" />
+  </ItemGroup>
+  <ItemGroup />
+  <ItemGroup>
+    <Content Include="packages.config" />
+  </ItemGroup>
+  <PropertyGroup>
+    <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
+    <VSToolsPath Condition="'$(VSToolsPath)' == ''">$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)</VSToolsPath>
+  </PropertyGroup>
+  <PropertyGroup>
+    <RootNamespace>uVis.web</RootNamespace>
+  </PropertyGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <Import Project="$(VSToolsPath)\WebApplications\Microsoft.WebApplication.targets" Condition="'$(VSToolsPath)' != ''" />
+  <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v10.0\WebApplications\Microsoft.WebApplication.targets" Condition="false" />
+  <ProjectExtensions>
+    <VisualStudio>
+      <FlavorProperties GUID="{349c5851-65df-11da-9384-00065b846f21}">
+        <WebProjectProperties>
+          <UseIIS>True</UseIIS>
+          <AutoAssignPort>True</AutoAssignPort>
+          <DevelopmentServerPort>1333</DevelopmentServerPort>
+          <DevelopmentServerVPath>/</DevelopmentServerVPath>
+          <IISUrl>http://localhost:52151/</IISUrl>
+          <NTLMAuthentication>False</NTLMAuthentication>
+          <UseCustomServer>False</UseCustomServer>
+          <CustomServerUrl>
+          </CustomServerUrl>
+          <SaveServerSettingsInUserFile>False</SaveServerSettingsInUserFile>
+        </WebProjectProperties>
+      </FlavorProperties>
+    </VisualStudio>
+  </ProjectExtensions>
+  <PropertyGroup Condition="'$(Configuration)' == 'Debug'">
+    <TypeScriptTarget>ES5</TypeScriptTarget>
+    <TypeScriptIncludeComments>true</TypeScriptIncludeComments>
+    <TypeScriptSourceMap>true</TypeScriptSourceMap>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)' == 'Release'">
+    <TypeScriptTarget>ES3</TypeScriptTarget>
+    <TypeScriptIncludeComments>false</TypeScriptIncludeComments>
+    <TypeScriptSourceMap>false</TypeScriptSourceMap>
+  </PropertyGroup>
+  <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\TypeScript\Microsoft.TypeScript.targets" />
+</Project>
