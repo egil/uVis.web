@@ -4,8 +4,8 @@ var __extends = this.__extends || function (d, b) {
     d.prototype = new __();
 };
 define(["require", "exports"], function(require, exports) {
-    /// <reference path="../.typings/underscore-typed.d.ts" />
     (function (uvis) {
+        /// <reference path="../.typings/underscore-typed.d.ts" />
         (function (property) {
             /**
             * Create a new property.

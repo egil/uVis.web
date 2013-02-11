@@ -5,7 +5,7 @@ import pm = propertyModule.uvis.property;
 
 export module uvis.spec {    
 
-    describe('Property should', () => {
+    describe('Property', () => {
         it('have the correct key after construction', () => {
             var property = new pm.Property('key', 'value');
             expect(property.key).toBe('key');

@@ -1,5 +1,4 @@
-/// <reference path="../.typings/underscore-typed.d.ts" />
-export module uvis.utils {
+export module uvis.util {
     export class Dictionary {
         get (key: string): any {
             return this[key];
@@ -19,7 +18,7 @@ export module uvis.utils {
           * Add a item to the dictionary.
           * @remark method throws an exception if a value with the specified key already exists.
           * @key The key of the element to add.
-          * @value The value of the element to add.
+          * @value The value of the element to add. 
           */
         add(key: string, value: any) {
             if (this.contains(key)) {

@@ -2,8 +2,8 @@
 /// <reference path="../.typings/underscore-typed.d.ts" />
 
 import propertyModule = module('uvis/property');
-import utilsModule = module('uvis/utils');
-import utils = utilsModule.uvis.utils;
+import dictModule = module('uvis/util/dictionary');
+import util = dictModule.uvis.util;
 
 export module uvis.component {
 
@@ -26,12 +26,12 @@ export module uvis.component {
 
     export class AbstractComponent {
         private _parent: AbstractComponent;
-        private _children: utils.Dictionary;
-        private _properties: utils.Dictionary;
+        private _children: util.Dictionary;
+        private _properties: util.Dictionary;
 
         constructor(id: string) {
-            this._properties = new utils.Dictionary();
-            this._children = new utils.Dictionary();
+            this._properties = new util.Dictionary();
+            this._children = new util.Dictionary();
             this._properties.add('id', id);
         }
 

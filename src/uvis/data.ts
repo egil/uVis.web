@@ -1,7 +1,7 @@
 /// <reference path="../.typings/require.d.ts" />
-import utilsModule = module('uvis/utils');
+import dictModule = module('uvis/util/dictionary');
 //import odataModule = module('uvis/data/odata');
-import utils = utilsModule.uvis.utils;
+import util = dictModule.uvis.util;
 
 export module uvis.data {
     
@@ -27,10 +27,10 @@ export module uvis.data {
     }
 
     export class DataSource {
-        private _properties: utils.Dictionary;
+        private _properties: util.Dictionary;
 
         constructor(id: string) {
-            this._properties = new utils.Dictionary();            
+            this._properties = new util.Dictionary();            
             this._properties.add('id', id);
         }
 
