@@ -2,11 +2,12 @@ define(["require", "exports", 'uvis/property'], function(require, exports, __pro
     /// <reference path="../.typings/jasmine.d.ts" />
     var propertyModule = __propertyModule__;
 
+    var pm = propertyModule.uvis.property;
     (function (uvis) {
         (function (spec) {
             describe('Property should', function () {
                 it('have the correct key after construction', function () {
-                    var property = new propertyModule.uvis.property.Property('key', 'value');
+                    var property = new pm.Property('key', 'value');
                     expect(property.key).toBe('key');
                 });
             });
