@@ -13,7 +13,7 @@ export module uvis.spec {
             it('should return a Promise object with state fulfilled if created with value', () => {
                 var p = new util.Promise(1);
                 expect(p.state).toBe('fulfilled');
-            });
+            });            
         });
 
         describe('Subscribing to a Promise', () => {

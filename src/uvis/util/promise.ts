@@ -1,7 +1,11 @@
 export module uvis.util {
+    export interface IPromise {
+        state: string;
+        done(...functions: Function[]): IPromise;
+    }
 
     // Inspiration - http://api.jquery.com/category/deferred-object/
-    export class Promise {
+    export class Promise implements IPromise {
         private _isFulfilled = false;
         private _isFailed = false;
         private _doneFunctions: Function[];
@@ -29,7 +33,7 @@ export module uvis.util {
         /**
           * Get notified when this promise is fulfilled.
           */
-        public done(...functions: Function[]): Promise {
+        public done(...functions: Function[]): IPromise {
             // If the promise have been fulfilled, 
             // execute the functions passed to done,
             // otherwise add them to the local array
@@ -49,6 +53,8 @@ export module uvis.util {
 
         private notifyDone(functions?: Function[]) {
             functions = functions === undefined ? this._doneFunctions : functions;
+            // Executes the function one time, removing each function
+            // as it is exected.
             if (functions) {
                 while (functions.length > 0) {
                     functions.shift()(this._promisedValue);

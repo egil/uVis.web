@@ -54,6 +54,8 @@ define(["require", "exports"], function(require, exports) {
                 };
                 Promise.prototype.notifyDone = function (functions) {
                     functions = functions === undefined ? this._doneFunctions : functions;
+                    // Executes the function one time, removing each function
+                    // as it is exected.
                     if(functions) {
                         while(functions.length > 0) {
                             functions.shift()(this._promisedValue);
