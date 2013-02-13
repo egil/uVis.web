@@ -10,11 +10,11 @@ define(["require", "exports", 'uvis/util/promise'], function(require, exports, _
                 describe('Creating a new Promise', function () {
                     it('should return a Promise object with state unfulfilled', function () {
                         var p = new util.Promise();
-                        expect(p.state).toBe('unfulfilled');
+                        expect(p.state).toBe(util.PromiseState.UNFULFILLED);
                     });
                     it('should return a Promise object with state fulfilled if created with value', function () {
                         var p = new util.Promise(1);
-                        expect(p.state).toBe('fulfilled');
+                        expect(p.state).toBe(util.PromiseState.FULFILLED);
                     });
                 });
                 describe('Subscribing to a Promise', function () {
@@ -32,7 +32,7 @@ define(["require", "exports", 'uvis/util/promise'], function(require, exports, _
                             }, 20);
                         });
                         waitsFor(function () {
-                            return p.state === 'fulfilled';
+                            return p.state === util.PromiseState.FULFILLED;
                         }, 'Promise should be fulfilled', 100);
                         runs(function () {
                             expect(actual).toBe(expected);
@@ -45,6 +45,41 @@ define(["require", "exports", 'uvis/util/promise'], function(require, exports, _
                         });
                         expect(actual).toBe(expected);
                     });
+                    it('should trigger the fail functions when a promise cannot be fulfilled', function () {
+                        runs(function () {
+                            p = new util.Promise();
+                            actual = null;
+                            p.fail(function (v) {
+                                actual = v;
+                            });
+                            _.delay(function () {
+                                p.signalFail('error-message');
+                            }, 10);
+                        });
+                        waitsFor(function () {
+                            return p.state === util.PromiseState.FAILED;
+                        }, 'Promise should have failed', 100);
+                        runs(function () {
+                            expect(actual).toBe('error-message');
+                        });
+                    });
+                    it('should only be allowed to call "fulfill" once', function () {
+                        p = new util.Promise();
+                        actual = 0;
+                        p.fulfill(1);
+                        var shouldFail = function () {
+                            p.fulfill(1);
+                        };
+                        expect(shouldFail).toThrow();
+                    });
+                    it('should only be allowed to "signalFail" once', function () {
+                        p = new util.Promise();
+                        p.signalFail('error');
+                        var shouldFail = function () {
+                            p.signalFail('error');
+                        };
+                        expect(shouldFail).toThrow();
+                    });
                 });
             });
         })(uvis.spec || (uvis.spec = {}));
@@ -52,4 +87,4 @@ define(["require", "exports", 'uvis/util/promise'], function(require, exports, _
     })(exports.uvis || (exports.uvis = {}));
     var uvis = exports.uvis;
 })
-//@ sourceMappingURL=util.promise.js.map
+//@ sourceMappingURL=util.promise.spec.js.map

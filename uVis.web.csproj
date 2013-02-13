@@ -33,19 +33,38 @@
     <Content Include="src\specrunner.js.map">
       <DependentUpon>specrunner.ts</DependentUpon>
     </Content>
-    <Content Include="src\spec\util.promise.js.map">
-      <DependentUpon>util.promise.ts</DependentUpon>
+    <Content Include="src\spec\property.spec.js">
+      <DependentUpon>property.spec.ts</DependentUpon>
+    </Content>
+    <Content Include="src\spec\property.spec.min.js">
+      <DependentUpon>property.spec.ts</DependentUpon>
+    </Content>
+    <Content Include="src\spec\util.dictionary.spec.js.map">
+      <DependentUpon>util.dictionary.spec.ts</DependentUpon>
+    </Content>
+    <Content Include="src\spec\util.promise.spec.js.map">
+      <DependentUpon>util.promise.spec.ts</DependentUpon>
+    </Content>
+    <TypeScriptCompile Include="src\spec\util.dictionary.spec.ts" />
+    <Content Include="src\spec\util.dictionary.spec.js">
+      <DependentUpon>util.dictionary.spec.ts</DependentUpon>
+    </Content>
+    <Content Include="src\spec\util.dictionary.spec.min.js">
+      <DependentUpon>util.dictionary.spec.ts</DependentUpon>
+    </Content>
+    <Content Include="src\spec\util.promise.spec.js">
+      <DependentUpon>util.promise.spec.ts</DependentUpon>
+    </Content>
+    <Content Include="src\spec\util.promise.spec.min.js">
+      <DependentUpon>util.promise.spec.ts</DependentUpon>
     </Content>
     <Content Include="src\uvis\util\dictionary.js.map">
       <DependentUpon>dictionary.ts</DependentUpon>
     </Content>
-    <TypeScriptCompile Include="src\spec\util.promise.ts" />
-    <Content Include="src\spec\util.promise.js">
-      <DependentUpon>util.promise.ts</DependentUpon>
+    <Content Include="src\spec\property.spec.js.map">
+      <DependentUpon>property.spec.ts</DependentUpon>
     </Content>
-    <Content Include="src\spec\util.promise.min.js">
-      <DependentUpon>util.promise.ts</DependentUpon>
-    </Content>
+    <TypeScriptCompile Include="src\spec\util.promise.spec.ts" />
     <Content Include="src\uvis\util\dictionary.js">
       <DependentUpon>dictionary.ts</DependentUpon>
     </Content>
@@ -63,16 +82,7 @@
     <Content Include="src\spec\init.min.js">
       <DependentUpon>init.ts</DependentUpon>
     </Content>
-    <Content Include="src\spec\property.js.map">
-      <DependentUpon>property.ts</DependentUpon>
-    </Content>
-    <TypeScriptCompile Include="src\spec\property.ts" />
-    <Content Include="src\spec\property.js">
-      <DependentUpon>property.ts</DependentUpon>
-    </Content>
-    <Content Include="src\spec\property.min.js">
-      <DependentUpon>property.ts</DependentUpon>
-    </Content>
+    <TypeScriptCompile Include="src\spec\property.spec.ts" />
     <None Include="app-definitions\demo1.json" />
     <Content Include="app.css" />
     <Content Include="index.html" />

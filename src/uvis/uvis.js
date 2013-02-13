@@ -1,25 +1,24 @@
-define(["require", "exports", 'uvis/initializer'], function(require, exports, __initializerModule__) {
-    
-    var initializerModule = __initializerModule__;
-
-    var initializer = initializerModule.uvis.initializer;
-    (function (uvis) {
-        function run(appDefUri) {
-            var appInstance;
-            // get app-definition file
-            $.getJSON(appDefUri).then(// initialize the app
-            function (appDef) {
-                appInstance = initializer.init(appDef);
-            }).then(// start the app
-            function () {
-                appInstance.start();
-            });
-            // parse app, return app-instance
-            // initialize app-instance
-            return appInstance;
-        }
-        uvis.run = run;
-    })(exports.uvis || (exports.uvis = {}));
-    var uvis = exports.uvis;
-})
+/// <reference path="../.typings/underscore-typed.d.ts" />
+/// <reference path="../.typings/jquery.d.ts" />
+//import appModule = module('uvis/app');
+//import initializerModule = module('uvis/initializer');
+//import initializer = initializerModule.uvis.initializer;
+//export module uvis {
+//    export function run(appDefUri: string) {
+//        var appInstance: appModule.uvis.app.App;
+//        // get app-definition file
+//        $.getJSON(appDefUri)
+//        // initialize the app
+//        .then((appDef) => {
+//            appInstance = initializer.init(appDef);
+//        })
+//        // start the app
+//        .then(() => {
+//            appInstance.start();
+//        });
+//        // parse app, return app-instance
+//        // initialize app-instance
+//        return appInstance;
+//    }
+//}
 //@ sourceMappingURL=uvis.js.map

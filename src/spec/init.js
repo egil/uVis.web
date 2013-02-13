@@ -1,8 +1,14 @@
-define(["require", "exports", 'spec/util.promise'], function(require, exports, __upSpec__) {
-    //import propSpec = module('spec/property');
-    var upSpec = __upSpec__;
+define(["require", "exports", 'spec/util.promise.spec', 'spec/property.spec', 'spec/util.dictionary.spec'], function(require, exports, __ups__, __ps__, __uds__) {
+    var ups = __ups__;
 
-    var s1 = upSpec;
+    var ps = __ps__;
+
+    var uds = __uds__;
+
+    // actually load the specs
+    var s1 = ups;
+    var s2 = ps;
+    var s3 = uds;
     (function (uvis) {
         (function (spec) {
             function init(jasmineEnv) {

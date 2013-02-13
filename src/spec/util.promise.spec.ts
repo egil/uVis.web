@@ -8,12 +8,12 @@ export module uvis.spec {
         describe('Creating a new Promise', () => {
             it('should return a Promise object with state unfulfilled', () => {
                 var p = new util.Promise();
-                expect(p.state).toBe('unfulfilled');
+                expect(p.state).toBe(util.PromiseState.UNFULFILLED);
             });
             it('should return a Promise object with state fulfilled if created with value', () => {
                 var p = new util.Promise(1);
-                expect(p.state).toBe('fulfilled');
-            });            
+                expect(p.state).toBe(util.PromiseState.FULFILLED);
+            });
         });
 
         describe('Subscribing to a Promise', () => {
@@ -35,7 +35,7 @@ export module uvis.spec {
                 });
 
                 waitsFor(() => {
-                    return p.state === 'fulfilled';
+                    return p.state === util.PromiseState.FULFILLED;
                 }, 'Promise should be fulfilled', 100);
 
                 runs(() => {
@@ -51,6 +51,54 @@ export module uvis.spec {
                 });
 
                 expect(actual).toBe(expected);
+            });
+
+            it('should trigger the fail functions when a promise cannot be fulfilled', () => {
+                runs(() => {
+                    p = new util.Promise();
+                    actual = null;
+
+                    p.fail((v) => {
+                        actual = v;
+                    });
+
+                    _.delay(() => {
+                        p.signalFail('error-message');
+                    }, 10);
+                });
+
+                waitsFor(() => {
+                    return p.state === util.PromiseState.FAILED;
+                }, 'Promise should have failed', 100);
+
+                runs(() => {
+                    expect(actual).toBe('error-message');
+                });
+            });
+
+            it('should only be allowed to call "fulfill" once', () => {
+                p = new util.Promise();
+                actual = 0;
+                
+                p.fulfill(1);
+
+                var shouldFail = () => {
+                    p.fulfill(1);
+                }
+
+                expect(shouldFail).toThrow();
+            });
+
+            it('should only be allowed to "signalFail" once', () => {
+                p = new util.Promise();
+
+                p.signalFail('error');
+
+                var shouldFail = () => {
+                    p.signalFail('error');
+                }
+
+                expect(shouldFail).toThrow();
             });
         });
     });
