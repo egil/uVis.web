@@ -6,6 +6,7 @@ export module uvis {
     export var PropertyState = {
         CURRENT: 'current',
         STALE: 'stale',
+        STATIC: 'static',
         UPDATING: 'updating'
     }
 
@@ -44,9 +45,10 @@ export module uvis {
           * PropertyState.CURRENT  = the property is up to date
           * PropertyState.UPDATING = the property is currently being calculated
           * PropertyState.STALE    = the property is needs updating
+          * PropertyState.STATIC   = the property is static and will always return the same result
           */
         get state(): string {
-            return PropertyState.CURRENT;
+            return PropertyState.STATIC;
         }
 
         /** Sets this propertys' value */

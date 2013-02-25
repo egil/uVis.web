@@ -26,9 +26,9 @@ define(["require", "exports", 'uvis/property', 'uvis/util/promise'], function(re
                         expect(p.key).toBe(key);
                         expect(actual).toBeUndefined();
                     });
-                    it('should always have a state of "current"', function () {
+                    it('should always have a state of "static"', function () {
                         var p = new um.Property(key);
-                        expect(p.state).toBe(um.PropertyState.CURRENT);
+                        expect(p.state).toBe(um.PropertyState.STATIC);
                     });
                 });
                 describe('Subscribing to a Property', function () {
@@ -40,6 +40,7 @@ define(["require", "exports", 'uvis/property', 'uvis/util/promise'], function(re
                             notified = true;
                             actual = prop.value;
                         });
+                        z;
                         // trigger onChange
                         p.value = staticValue;
                         expect(notified).toBeTruthy();
@@ -131,7 +132,25 @@ define(["require", "exports", 'uvis/property', 'uvis/util/promise'], function(re
                         });
                     });
                     it('should set its state to "updating" when calculating its value', function () {
-                        throw new Error('pending');
+                        var p1, cp;
+                        runs(function () {
+                            // set up base property with a calculator that does not fulfill
+                            // right away, thus making its "updating" stick around for testing
+                            p1 = new um.CalculatedProperty('p1', function () {
+                                cp = new util.Promise();
+                                return cp;
+                            });
+                            // start calculation
+                            p1.calculate();
+                        });
+                        waitsFor(function () {
+                            return p1.state === um.PropertyState.UPDATING;
+                        }, 'Property should be updating', 10);
+                        runs(function () {
+                            expect(p1.state).toBe(um.PropertyState.UPDATING);
+                            // once we see that the state is updating, we fulfill and continue
+                            cp.fulfill();
+                        });
                     });
                 });
             });

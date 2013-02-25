@@ -32,9 +32,9 @@ export module uvis.spec {
                 expect(actual).toBeUndefined();
             });
 
-            it('should always have a state of "current"', () => {
+            it('should always have a state of "static"', () => {
                 var p = new um.Property(key);
-                expect(p.state).toBe(um.PropertyState.CURRENT);
+                expect(p.state).toBe(um.PropertyState.STATIC);
             });
         });
 
@@ -48,7 +48,7 @@ export module uvis.spec {
                     notified = true;
                     actual = prop.value;
                 });
-
+z
                 // trigger onChange
                 p.value = staticValue;
 
@@ -149,7 +149,6 @@ export module uvis.spec {
                     p1.value = "NEW VALUE";
                 });
 
-
                 waitsFor(() => {
                     return p2.state === um.PropertyState.CURRENT;
                 }, 'Property should be current', 100);
@@ -160,9 +159,32 @@ export module uvis.spec {
             });
 
             it('should set its state to "updating" when calculating its value', () => {
-                throw new Error('pending');
+                var p1: um.CalculatedProperty,
+                    cp: util.Promise;
+
+                runs(() => {
+                    // set up base property with a calculator that does not fulfill
+                    // right away, thus making its "updating" stick around for testing
+                    p1 = new um.CalculatedProperty('p1', () => {
+                        cp = new util.Promise();                        
+                        return cp;
+                    });
+                                        
+                    // start calculation
+                    p1.calculate();
+                });
+
+                waitsFor(() => {
+                    return p1.state === um.PropertyState.UPDATING;
+                }, 'Property should be updating', 10);
+
+                runs(() => {
+                    expect(p1.state).toBe(um.PropertyState.UPDATING);
+
+                    // once we see that the state is updating, we fulfill and continue
+                    cp.fulfill();
+                });
             });
         });
     });
-
 }

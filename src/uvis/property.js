@@ -12,6 +12,7 @@ define(["require", "exports", 'uvis/util/promise'], function(require, exports, _
         uvis.PropertyState = {
             CURRENT: 'current',
             STALE: 'stale',
+            STATIC: 'static',
             UPDATING: 'updating'
         };
         var Property = (function () {
@@ -58,9 +59,10 @@ define(["require", "exports", 'uvis/util/promise'], function(require, exports, _
                 * PropertyState.CURRENT  = the property is up to date
                 * PropertyState.UPDATING = the property is currently being calculated
                 * PropertyState.STALE    = the property is needs updating
+                * PropertyState.STATIC   = the property is static and will always return the same result
                 */
                 function () {
-                    return uvis.PropertyState.CURRENT;
+                    return uvis.PropertyState.STATIC;
                 },
                 enumerable: true,
                 configurable: true
