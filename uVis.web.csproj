@@ -21,6 +21,9 @@
     <UpgradeBackupLocation />
   </PropertyGroup>
   <ItemGroup>
+    <TypeScriptCompile Include="src\.typings\when.d.ts" />
+    <Content Include="src\libs\nextTick.js" />
+    <Content Include="src\libs\when-1.8.1.js" />
     <Content Include="src\specrunner.js">
       <DependentUpon>specrunner.ts</DependentUpon>
     </Content>

@@ -8,7 +8,7 @@ define(["require", "exports", 'uvis/property', 'uvis/util/promise'], function(re
     var util = utilModule.uvis.util;
     (function (uvis) {
         (function (spec) {
-            describe('Property', function () {
+            describe('Property:', function () {
                 var key = 'key';
                 var staticValue = 'value';
                 describe('A normal (none-calculated) Property', function () {
@@ -36,29 +36,20 @@ define(["require", "exports", 'uvis/property', 'uvis/util/promise'], function(re
                         var p = new um.Property(key);
                         var notified = false;
                         var actual;
-                        p.subscribe(function (prop) {
-                            notified = true;
-                            actual = prop.value;
+                        runs(function () {
+                            p.subscribe(function (prop) {
+                                notified = true;
+                                actual = prop.value;
+                            });
+                            // trigger onChange
+                            p.value = staticValue;
                         });
-                        z;
-                        // trigger onChange
-                        p.value = staticValue;
-                        expect(notified).toBeTruthy();
-                        expect(actual).toBe(staticValue);
-                    });
-                });
-                describe('Unsubscribing from a Property', function () {
-                    it('should not notify unsubscribed about changes to its value', function () {
-                        var p = new um.Property(key);
-                        var notified = false;
-                        var subFn = function (prop) {
-                            notified = true;
-                        };
-                        p.subscribe(subFn);
-                        p.unsubscribe(subFn);
-                        // trigger onChange
-                        p.value = staticValue;
-                        expect(notified).toBeFalsy();
+                        waitsFor(function () {
+                            return notified;
+                        }, 'Should have been notified by now', 100);
+                        runs(function () {
+                            expect(actual).toBe(staticValue);
+                        });
                     });
                 });
                 describe('Unsubscribing from a Property', function () {
@@ -67,24 +58,38 @@ define(["require", "exports", 'uvis/property', 'uvis/util/promise'], function(re
                         var subscribed = false;
                         var subFn = function () {
                         };
-                        p.subscribe(subFn);
-                        p.subscribe(function () {
-                            subscribed = true;
+                        runs(function () {
+                            p.subscribe(subFn);
+                            p.subscribe(function () {
+                                subscribed = true;
+                            });
+                            p.unsubscribe(subFn);
+                            // trigger subscription functions
+                            p.value = staticValue;
                         });
-                        p.unsubscribe(subFn);
-                        // trigger subscription functions
-                        p.value = staticValue;
-                        expect(subscribed).toBeTruthy();
+                        waitsFor(function () {
+                            return subscribed;
+                        }, 'Should have been notified by now', 10);
+                        runs(function () {
+                            expect(subscribed).toBeTruthy();
+                        });
                     });
                 });
                 describe('Getting a calculated value', function () {
                     it('should return as an Promise object which results in a Property object once fulfilled', function () {
                         var p = new um.Property(key);
                         var actual;
-                        p.calculate().done(function (prop) {
-                            actual = prop;
+                        runs(function () {
+                            p.calculate().then(function (prop) {
+                                actual = prop;
+                            });
                         });
-                        expect(actual.key).toBe(key);
+                        waitsFor(function () {
+                            return actual !== undefined;
+                        }, 'Should have been notified by now', 10);
+                        runs(function () {
+                            expect(actual.key).toBe(key);
+                        });
                     });
                 });
                 describe('A property with a calculated value', function () {
@@ -92,9 +97,16 @@ define(["require", "exports", 'uvis/property', 'uvis/util/promise'], function(re
                         var p1 = new um.Property('k1', 'v1');
                         var p2 = new um.CalculatedProperty('k2', function () {
                         });
-                        p1.subscribe(p2.dependencyChanged.bind(p2));
-                        p1.value = 'updated value';
-                        expect(p2.state).toBe(um.PropertyState.STALE);
+                        runs(function () {
+                            p1.subscribe(p2.dependencyChanged.bind(p2));
+                            p1.value = 'updated value';
+                        });
+                        waitsFor(function () {
+                            return p2.state === um.PropertyState.STALE;
+                        }, 'Should have been notified by now', 10);
+                        runs(function () {
+                            expect(p2.state).toBe(um.PropertyState.STALE);
+                        });
                     });
                     it('should not auto recalculate its value if it has no subscribers', function () {
                         var p1 = new um.Property('k1', 'v1');

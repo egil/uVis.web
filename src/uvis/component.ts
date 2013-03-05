@@ -1,69 +1,96 @@
-///// <reference path="../.typings/jquery.d.ts" />
-///// <reference path="../.typings/underscore-typed.d.ts" />
+import dictModule = module('uvis/util/dictionary');
+import promiseModule = module('uvis/util/promise');
 
-//import propertyModule = module('uvis/property');
-//import dictModule = module('uvis/util/dictionary');
-//import util = dictModule.uvis.util;
+export module uvis {    
+    import dict = dictModule.uvis.util;
+    import util = promiseModule.uvis.util;
 
-//export module uvis.component {
+    export class AbstractComponent {
+        private _children: AbstractComponent[];
+        private _properties: dict.Dictionary;
+        private _id: string;
 
-//    /**
-//      * Used to create a new component based on a type.
-//      * @type a string name identifying the type of component to create.
-//     */
-//    export function create(id: string, type: string): AbstractComponent {
-//        var c: AbstractComponent;
-//        switch (type) {
-//            case 'text':
-//                c = new HtmlComponent(id);
-//                break;
-//            default:
-//                throw new Error('Unknown Component type: ' + type);
-//                break;
-//        }
-//        return c;
-//    }
+        constructor(id: string) {
+            this._id = id;
+            this._children = [];
+            this._properties = new dict.Dictionary();
+        }
 
-//    export class AbstractComponent {
-//        private _parent: AbstractComponent;
-//        private _children: util.Dictionary;
-//        private _properties: util.Dictionary;
+        get id(): string {
+            return this._id;
+        }
 
-//        constructor(id: string) {
-//            this._properties = new util.Dictionary();
-//            this._children = new util.Dictionary();
-//            this._properties.add('id', id);
-//        }
+        get children(): AbstractComponent[] {
+            return this._children;
+        }
 
-//        get id(): string {
-//            return this.properties['id'];
-//        }
+        get properties(): dict.Dictionary {
+            return this._properties;
+        }
 
-//        get parent() {
-//            return this._parent;
-//        }
+        createContent(): util.Promise {
+            throw new Error('AbstractComponent.createContent() should never be called directly. Must be overridden. (Component id = ' + this.id + ')');
+        }
+    }
+    
+    export class HtmlComponent extends AbstractComponent {
+        constructor(id) {
+            super(id);
+        }
 
-//        set parent(value: AbstractComponent) {
-//            this._parent = value;
-//        }
+        createElement(): Node {
+            throw new Error('HtmlComponent.createElement() should never be called directly. Must be overridden. (Component id = ' + this.id + ')');
+        }
 
-//        get children() {
-//            return this._children;
-//        }
+        createContent(): util.Promise {
+            var res = new util.Promise();
+            var elm: Node;
+            var propPromise: util.IPromise;
+            var propPromises: util.IPromise[];
+            var childrenPromise: util.IPromise;
+            var childrenPromises: util.IPromise[];
 
-//        get properties() {
-//            return this._properties;
-//        }
+            // retrive all properties on this component first.
+            // child components will likely use the same data
+            // as the parent component, so triggering a data collection
+            // now for this component may save some web services calls.
+            propPromises = this.properties.map((key, prop) => { return prop.calculate(); });
 
-//        render(): DocumentFragment {
-//            throw new Error("NOT IMPLEMENTED");
-//        }
-//    }
+            // create a promise that waits till all property promises have been fulfilled
+            propPromise = util.Promise.when(propPromises);
+            
+            // retrive the content of all children, if any.
+            propPromise.then((props) => {
+                // retrive content from each child
+                childrenPromises = this.children.map((child) => { return child.createContent(); });
 
-//    export class HtmlComponent extends AbstractComponent {
-//        constructor(id) {
-//            super(id);
-//        }
+                // create a promise that waits till all child primses have been fulfilled
+                childrenPromise = util.Promise.when(childrenPromises);
+                
+                // wait for content from all children
+                childrenPromise.then((childrenContent) => {
+                    // get this components element
+                    elm = this.createElement();
+
+                    // TODO assign properties to elm
+
+                    // TODO assign content to elm
+
+                    res.fulfill(elm);
+
+                }, (err) => {
+                    res.reject(err);
+                });
+
+            }, (err) => {
+                res.reject(err);
+            });
+            
+
+            // add children and properties to elm            
+            return res;
+        }
+    }
 
 //        render(): DocumentFragment {
 //            var fragment = document.createDocumentFragment();
@@ -88,4 +115,4 @@
 //            return fragment;
 //        }
 //    }
-//}
+}

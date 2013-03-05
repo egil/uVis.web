@@ -7,7 +7,7 @@ import util = utilModule.uvis.util;
 
 export module uvis.spec {
 
-    describe('Property', () => {
+    describe('Property:', () => {
         var key = 'key';
         var staticValue = 'value';
 
@@ -44,55 +44,52 @@ export module uvis.spec {
                 var notified = false;
                 var actual;
 
-                p.subscribe((prop: um.Property) => {
-                    notified = true;
-                    actual = prop.value;
+                runs(() => {
+                    p.subscribe((prop: um.Property) => {
+                        notified = true;
+                        actual = prop.value;
+                    });
+
+                    // trigger onChange
+                    p.value = staticValue;
                 });
-z
-                // trigger onChange
-                p.value = staticValue;
 
-                expect(notified).toBeTruthy();
-                expect(actual).toBe(staticValue);
+                waitsFor(() => {
+                    return notified;
+                }, 'Should have been notified by now', 100);
+
+                runs(() => {
+                    expect(actual).toBe(staticValue);
+                });                
             });
         });
-
-        describe('Unsubscribing from a Property', () => {
-            it('should not notify unsubscribed about changes to its value', () => {
-                var p = new um.Property(key);
-                var notified = false;
-                var subFn = (prop: um.Property) => {
-                    notified = true;
-                };
-
-                p.subscribe(subFn);
-                p.unsubscribe(subFn);
-
-                // trigger onChange
-                p.value = staticValue;
-
-                expect(notified).toBeFalsy();
-            });
-        });
-
+        
         describe('Unsubscribing from a Property', () => {
             it('should only unsubscribe the targeted function', () => {
                 var p = new um.Property(key);
                 var subscribed = false;
                 var subFn = () => { };
 
-                p.subscribe(subFn);
+                runs(() => {
+                    p.subscribe(subFn);
 
-                p.subscribe(() => {
-                    subscribed = true;
+                    p.subscribe(() => {
+                        subscribed = true;
+                    });
+
+                    p.unsubscribe(subFn);
+
+                    // trigger subscription functions
+                    p.value = staticValue;
                 });
 
-                p.unsubscribe(subFn);
+                waitsFor(() => {
+                    return subscribed;
+                }, 'Should have been notified by now', 10);
 
-                // trigger subscription functions
-                p.value = staticValue;
-
-                expect(subscribed).toBeTruthy();
+                runs(() => {
+                    expect(subscribed).toBeTruthy();
+                });
             });
         });
 
@@ -100,10 +97,20 @@ z
             it('should return as an Promise object which results in a Property object once fulfilled', () => {
                 var p = new um.Property(key);
                 var actual: um.Property;
-                p.calculate().done((prop: um.Property) => {
-                    actual = prop;
+                runs(() => {
+                    p.calculate()
+                        .then((prop: um.Property) => {
+                            actual = prop;
+                        });
                 });
-                expect(actual.key).toBe(key);
+
+                waitsFor(() => {
+                    return actual !== undefined;
+                }, 'Should have been notified by now', 10);
+
+                runs(() => {
+                    expect(actual.key).toBe(key);
+                });
             });
         });
 
@@ -111,9 +118,18 @@ z
             it('should set its state to "stale" if one of its dependencies are updated', () => {
                 var p1 = new um.Property('k1', 'v1');
                 var p2 = new um.CalculatedProperty('k2', () => { });
-                p1.subscribe(p2.dependencyChanged.bind(p2));
-                p1.value = 'updated value';
-                expect(p2.state).toBe(um.PropertyState.STALE);
+                runs(() => {
+                    p1.subscribe(p2.dependencyChanged.bind(p2));
+                    p1.value = 'updated value';
+                });
+
+                waitsFor(() => {
+                    return p2.state === um.PropertyState.STALE;
+                }, 'Should have been notified by now', 10);
+
+                runs(() => {
+                    expect(p2.state).toBe(um.PropertyState.STALE);
+                });
             });
 
             it('should not auto recalculate its value if it has no subscribers', () => {

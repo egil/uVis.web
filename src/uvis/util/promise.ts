@@ -1,24 +1,24 @@
+declare function nextTick(fn: Function): void;
 export module uvis.util {
-    export var PromiseState = {
-        FAILED: 'failed',
-        FULFILLED: 'fulfilled',
-        UNFULFILLED: 'unfulfilled'
-    }
+    //export var PromiseState = {
+    //    FAILED: 'failed',
+    //    FULFILLED: 'fulfilled',
+    //    UNFULFILLED: 'unfulfilled'
+    //}
 
     export interface IPromise {
-        state: string;
-        done(...funcs: Function[]): IPromise;
-        fail(...funcs: Function[]): IPromise;
+        //state: string;
+        then(onFulfilled: Function, onError?: Function): IPromise;
+        fail(onError: Function): IPromise;
     }
 
     // Inspiration - http://api.jquery.com/category/deferred-object/
+    // https://github.com/unscriptable/promises/blob/master/src/Async.js
     export class Promise implements IPromise {
-        private _isFulfilled = false;
-        private _isFailed = false;
-        private _failError: string;
-        private _doneFunctions: Function[] = [];
-        private _failFunctions: Function[] = [];
-        private _promisedValue: any;
+        //private _state = PromiseState.UNFULFILLED;
+        private _isUnfulfilled: bool = true;
+        private _funcs: Object[] = [];
+        private _value: any;
 
         constructor(promisedValue?: any) {
             if (promisedValue !== undefined) {
@@ -26,85 +26,88 @@ export module uvis.util {
             }
         }
 
-        get state(): string {
-            return this._isFailed ? PromiseState.FAILED :
-                   this._isFulfilled ? PromiseState.FULFILLED :
-                    PromiseState.UNFULFILLED;
+        static when(promises: IPromise[]): IPromise {
+            var joinedPromises = new Promise();
+            var promisedValues = [];
+            var pending = promises.length;
+
+            // if no promises was given as an argument, fulfill right away.
+            if (pending === 0) {
+                joinedPromises.fulfill(promisedValues);
+            }
+
+            // subscribe to the promises.
+            // important: add the promised value to the same location
+            // in results array as the original promise was positioned 
+            // in the input promise array.
+            promises.forEach((p, i) => {
+                p.then((v) => {                    
+                    promisedValues[i] = v;
+                    pending--;
+                    if (pending === 0) {
+                        joinedPromises.fulfill(promisedValues);
+                    }
+                }, (e) => {
+                    joinedPromises.reject(e)
+                });
+            });
+
+            return joinedPromises;
         }
 
-        public fulfill(promisedValue?: any) {
-            if (this._isFulfilled) throw new Error("Promise already fulfilled.");
-            if (this._isFailed) throw new Error("Promise already failed.");
-            this._promisedValue = promisedValue;
-            this._isFulfilled = true;
-            this.notify(this._doneFunctions, this._promisedValue);
+        //get state(): string {
+        //    return this._state;
+        //}
 
-            // remove all fail functions from array, as they should
-            // not be called anyway now. This should make it possible
-            // for the garbage collector can collect them.
-            this._failFunctions.length = 0;
+        public fulfill(value?: any) {
+            if (!this._isUnfulfilled) {
+                throw new Error("Promise is not in an unfulfilled state.");
+            }
+            this._value = value;
+            this._isUnfulfilled = false;
+            this.notify('fulfilled');
         }
 
-        public signalFail(error: string) {
-            if (this._isFulfilled) throw new Error("Promise already fulfilled.");
-            if (this._isFailed) throw new Error("Promise already failed.");
-            this._failError = error;
-            this._isFailed = true;
-            this.notify(this._failFunctions, this._failError);
-
-            // remove all fail functions from array, as they should
-            // not be called anyway now. This should make it possible
-            // for the garbage collector can collect them.
-            this._doneFunctions.length = 0;
+        public reject(error?: any) {
+            if (!this._isUnfulfilled) {
+                throw new Error("Promise is not in an unfulfilled state.");
+            }
+            this._value = error;
+            this._isUnfulfilled = false;
+            this.notify('failed');
         }
 
         /**
-          * Get notified when this promise is fulfilled.
+          * Get notified when this promise is fulfilled or if it is rejected.
+          * @onFulfilled the function to execute if the promise is fulfulled
+          * @onError the function to execute if the promise is rejected
           */
-        public done(...functions: Function[]): IPromise {
-            // If the promise have been fulfilled, 
-            // execute the functions passed to done,
-            // otherwise add them to the local array
-            // for later notificaiton.
-            if (this._isFulfilled) {
-                this.notify(functions, this._promisedValue);
-            } else {
-                // create the doneFunctions array
-                if (this._doneFunctions === undefined) {
-                    this._doneFunctions = [];
-                }
-                // push done functions onto the done array
-                functions.forEach((fn) => (this._doneFunctions.push(fn)));
+        public then(onFulfilled: Function, onError?: Function): IPromise {
+            this._funcs.push({ 'fulfilled': onFulfilled, 'failed': onError });
+            // if the promise has already been fulfilled or rejected, notify right away.
+            if (!this._isUnfulfilled) {
+                this.notify('fulfilled');
             }
             return this;
         }
 
-        public fail(...functions: Function[]): IPromise {
-            // If the promise have already failed, 
-            // execute the functions passed to fail,
-            // otherwise add them to the local array
-            // for later notificaiton.
-            if (this._isFailed) {
-                this.notify(functions, this._failError);
-            } else {
-                // create the _failFunctions array
-                if (this._failFunctions === undefined) {
-                    this._failFunctions = [];
-                }
-                // push done functions onto the done array
-                functions.forEach((fn) => (this._failFunctions.push(fn)));
-            }
-            return this;
+        public fail(onError: Function): IPromise {
+            return this.then(undefined, onError);
         }
 
-        private notify(functions: Function[], fnInput) {
+        private notify(state) {
             // Executes the function one time, removing each function
             // as it is exected.
-            if (functions) {
-                while (functions.length > 0) {
-                    functions.shift()(fnInput);
+            var i = 0, cb;
+            while (cb = this._funcs[i++]) {
+                // check if there is a callback for the state and if so, execute.
+                if (cb[state]) {
+                    nextTick(cb[state].bind(null, this._value));
                 }
             }
+
+            // remove all elements from the array
+            this._funcs.length = 0;
         }
     }
 }

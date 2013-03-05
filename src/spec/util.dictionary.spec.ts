@@ -11,7 +11,7 @@ export module uvis.spec {
             var key = 'k1';
             var expected = 'v1';
             d.add(key, expected);
-            actual = d.getItem(key);
+            actual = d.get(key);
             expect(actual).toBe(expected);
         });
 
@@ -39,9 +39,33 @@ export module uvis.spec {
             var key = 'add';
             var expected = 'v1';
             d.add(key, expected);
-            actual = d.getItem(key);
+            actual = d.get(key);
             expect(actual).toBe(expected);
             expect(d.add).toBe(orgAdd);
-        });        
+        });
+
+        it('set should override existing values', () => {
+            var d = new util.Dictionary();
+            var actual;
+            var key = 'add';
+            var expected = 'exp';
+            d.set(key, 'asdf');
+            d.set(key, expected);
+            actual = d.get(key);
+            expect(actual).toBe(expected);
+        });
+
+        it('add should throw an error if key already exists in dictionary', () => {
+            var d = new util.Dictionary();
+            var actual;
+            var key = 'add';
+            d.add(key, 'one valu');
+
+            var mustThrow = function () {
+                d.add(key, 'another value');
+            }
+
+            expect(mustThrow).toThrow();
+        });
     });
 }

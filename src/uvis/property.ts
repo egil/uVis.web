@@ -1,8 +1,9 @@
-/// <reference path="../.typings/underscore-typed.d.ts" />
 import utilModule = module('uvis/util/promise');
 import util = utilModule.uvis.util;
 
 export module uvis {
+    declare function nextTick(fn: Function): void;
+
     export var PropertyState = {
         CURRENT: 'current',
         STALE: 'stale',
@@ -13,7 +14,7 @@ export module uvis {
     export class Property {
         private _key: string;
         private _value: any;
-        private _subscribers: any[];        
+        private _subscribers: any[];
 
         /** 
           * Creates a new instance of a property.
@@ -82,7 +83,10 @@ export module uvis {
         }
 
         private notify(): void {
-            this._subscribers.forEach((fn) => fn(this));
+            // Following rule #67: Never call asynchronous callbacks synchronously
+            this._subscribers.forEach((fn) => {
+                nextTick(fn.bind(null, this));
+            });
         }
     }
 
@@ -92,9 +96,9 @@ export module uvis {
         private _calculatedPromise: util.Promise;
         private _calculatorFunc: () => util.IPromise;
 
-        constructor(key: string, func: () => util.IPromise) {
+        constructor(key: string, calculatorFunc: () => util.IPromise) {
             super(key);
-            this._calculatorFunc = func;
+            this._calculatorFunc = calculatorFunc;
         }
 
         get state(): string {
@@ -103,14 +107,14 @@ export module uvis {
         }
 
         calculate(): util.IPromise {
-            // if another callee have requested recalculation,
-            // we reuse the same Promise object from that.
-            if (this._calculatedPromise === undefined || this._calculatedPromise.state !== util.PromiseState.UNFULFILLED) {
-                this._calculatedPromise = new util.Promise();
+            // if already updating, subscrib to the current update
+            if (this._updating && this._calculatedPromise !== undefined) {
+                return this._calculatedPromise;
             }
-
+            // else create new promise and trigger calculation
+            this._calculatedPromise = new util.Promise();
             this._updating = true;
-            this._calculatorFunc().done((calculatedValue) => {
+            this._calculatorFunc().then((calculatedValue) => {
                 // set updating and stale values
                 this._updating = false;
                 this._isStale = false;
@@ -123,9 +127,9 @@ export module uvis {
 
                 // release this promise object so it can be collected
                 this._calculatedPromise = undefined;
-            }).fail((errorMsg) => {
+            }, (errorMsg) => {
                 this._updating = false;
-                this._calculatedPromise.signalFail(errorMsg);
+                this._calculatedPromise.reject(errorMsg);
                 this._calculatedPromise = undefined;
             });
 
@@ -136,19 +140,16 @@ export module uvis {
           * @source the dependency that changed
           */
         public dependencyChanged(source: Property) {
-            // if we are already updating, there is likely an
-            // cyclic dependency and we should abort.
-            if (this._updating && this._calculatedPromise) {
-                this._calculatedPromise.signalFail('Dependency has been changed while updating,' +
-                                                   'possible cyclic dependency.Property: ' + this.key + '.Dependent: ' + source.key);
-            }
-
             this._isStale = true;
 
-            // only update if there are any subscribers,
-            // otherwise we wait for somebody to request a recalculation
-            // to save on resources.
-            if (this.hasSubscribers) {
+            // if there is already an update/recalculation
+            // active, we do not react to the change in dependency
+            // as the recalculation will pull the updated data
+            // when it needs it.
+            //
+            // otherwise we trigger a recalculation if this property
+            // has subscribers
+            if (!this._updating && this.hasSubscribers) {
                 this.calculate();
             }
         }
