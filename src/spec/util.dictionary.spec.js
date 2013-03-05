@@ -1,70 +1,67 @@
-define(["require", "exports", 'uvis/util/dictionary'], function(require, exports, __dictionaryModule__) {
-    /// <reference path="../.typings/underscore-typed.d.ts" />
-    /// <reference path="../.typings/jasmine.d.ts" />
-    var dictionaryModule = __dictionaryModule__;
-
-    var util = dictionaryModule.uvis.util;
-    (function (uvis) {
-        (function (spec) {
-            describe('Dictionary', function () {
-                it('should return a value added to it', function () {
-                    var d = new util.Dictionary();
-                    var actual;
-                    var key = 'k1';
-                    var expected = 'v1';
-                    d.add(key, expected);
-                    actual = d.get(key);
-                    expect(actual).toBe(expected);
-                });
-                it('should only return key-value pairs added to it', function () {
-                    var d = new util.Dictionary();
-                    var c = 0;
-                    d.add('k1', 'v1');
-                    d.add('k2', 'v2');
-                    d.add('k3', 'v3');
-                    d.forEach(function (k, v) {
-                        c++;
-                    });
-                    expect(c).toBe(3);
-                    expect(d.contains('k1')).toBeTruthy();
-                    expect(d.contains('k2')).toBeTruthy();
-                    expect(d.contains('k3')).toBeTruthy();
-                });
-                it('should not be possible to replace built in functions', function () {
-                    var d = new util.Dictionary();
-                    var orgAdd = d.add;
-                    var actual;
-                    var key = 'add';
-                    var expected = 'v1';
-                    d.add(key, expected);
-                    actual = d.get(key);
-                    expect(actual).toBe(expected);
-                    expect(d.add).toBe(orgAdd);
-                });
-                it('set should override existing values', function () {
-                    var d = new util.Dictionary();
-                    var actual;
-                    var key = 'add';
-                    var expected = 'exp';
-                    d.set(key, 'asdf');
-                    d.set(key, expected);
-                    actual = d.get(key);
-                    expect(actual).toBe(expected);
-                });
-                it('add should throw an error if key already exists in dictionary', function () {
-                    var d = new util.Dictionary();
-                    var actual;
-                    var key = 'add';
-                    d.add(key, 'one valu');
-                    var mustThrow = function () {
-                        d.add(key, 'another value');
-                    };
-                    expect(mustThrow).toThrow();
-                });
+/// <reference path="../.typings/underscore-typed.d.ts" />
+/// <reference path="../.typings/jasmine.d.ts" />
+var dictionaryModule = require("./uvis/util/dictionary")
+var util = dictionaryModule.uvis.util;
+(function (uvis) {
+    (function (spec) {
+        describe('Dictionary', function () {
+            it('should return a value added to it', function () {
+                var d = new util.Dictionary();
+                var actual;
+                var key = 'k1';
+                var expected = 'v1';
+                d.add(key, expected);
+                actual = d.get(key);
+                expect(actual).toBe(expected);
             });
-        })(uvis.spec || (uvis.spec = {}));
-        var spec = uvis.spec;
-    })(exports.uvis || (exports.uvis = {}));
-    var uvis = exports.uvis;
-})
+            it('should only return key-value pairs added to it', function () {
+                var d = new util.Dictionary();
+                var c = 0;
+                d.add('k1', 'v1');
+                d.add('k2', 'v2');
+                d.add('k3', 'v3');
+                d.forEach(function (k, v) {
+                    c++;
+                });
+                expect(c).toBe(3);
+                expect(d.contains('k1')).toBeTruthy();
+                expect(d.contains('k2')).toBeTruthy();
+                expect(d.contains('k3')).toBeTruthy();
+            });
+            it('should not be possible to replace built in functions', function () {
+                var d = new util.Dictionary();
+                var orgAdd = d.add;
+                var actual;
+                var key = 'add';
+                var expected = 'v1';
+                d.add(key, expected);
+                actual = d.get(key);
+                expect(actual).toBe(expected);
+                expect(d.add).toBe(orgAdd);
+            });
+            it('set should override existing values', function () {
+                var d = new util.Dictionary();
+                var actual;
+                var key = 'add';
+                var expected = 'exp';
+                d.set(key, 'asdf');
+                d.set(key, expected);
+                actual = d.get(key);
+                expect(actual).toBe(expected);
+            });
+            it('add should throw an error if key already exists in dictionary', function () {
+                var d = new util.Dictionary();
+                var actual;
+                var key = 'add';
+                d.add(key, 'one valu');
+                var mustThrow = function () {
+                    d.add(key, 'another value');
+                };
+                expect(mustThrow).toThrow();
+            });
+        });
+    })(uvis.spec || (uvis.spec = {}));
+    var spec = uvis.spec;
+})(exports.uvis || (exports.uvis = {}));
+var uvis = exports.uvis;
 //@ sourceMappingURL=util.dictionary.spec.js.map
