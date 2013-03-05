@@ -34,12 +34,16 @@ export module uvis {
     }
     
     export class HtmlComponent extends AbstractComponent {
-        constructor(id) {
+        private static LIST_OF_ATTRIBUTES = ['abbr', 'accept', 'accept-charset', 'accesskey', 'action', 'allowfullscreen', 'alt', 'async', 'autocomplete', 'autofocus', 'autoplay', 'border', 'challenge', 'charset', 'checked', 'cite', 'class', 'cols', 'colspan', 'command', 'content', 'contenteditable', 'contextmenu', 'controls', 'coords', 'crossorigin', 'data', 'datetime', 'default', 'defer', 'dir', 'dirname', 'disabled', 'draggable', 'dropzone', 'enctype', 'for', 'form', 'formaction', 'formenctype', 'formmethod', 'formnovalidate', 'formtarget', 'headers', 'height', 'hidden', 'high', 'href', 'hreflang', 'http-equiv', 'icon', 'id', 'inert', 'inputmode', 'ismap', 'keytype', 'kind', 'label', 'lang', 'list', 'loop', 'low', 'manifest', 'max', 'maxlength', 'media', 'mediagroup', 'method', 'min', 'multiple', 'muted', 'name', 'novalidate', 'open', 'optimum', 'pattern', 'placeholder', 'poster', 'preload', 'radiogroup', 'readonly', 'rel', 'required', 'reversed', 'rows', 'rowspan', 'sandbox', 'spellcheck', 'scope', 'scoped', 'seamless', 'selected', 'shape', 'size', 'sizes', 'span', 'src', 'srcdoc', 'srclang', 'start', 'step', 'style', 'tabindex', 'target', 'title', 'translate', 'type', 'typemustmatch', 'usemap', 'value', 'width', 'wrap'];
+        private static LIST_OF_CSS_PROPERTIES = ['@keframes', 'animation', 'animation-delay', 'animation-direction', 'animation-duration', 'animation-fill-mode', 'animation-iteration-count', 'animation-name', 'animation-play-state', 'animation-timing-function', 'azimuth', 'backface-visibility', 'background', 'background-attachment', 'background-clip', 'background-color', 'background-image', 'background-origin', 'background-position', 'background-repeat', 'background-size', 'border', 'border-bottom', 'border-bottom-color', 'border-bottom-left-radius', 'border-bottom-right-radius', 'border-bottom-style', 'border-bottom-width', 'border-collapse', 'border-color', 'border-image', 'border-image-outset', 'border-image-repeat', 'border-image-slice', 'border-image-source', 'border-image-width', 'border-left', 'border-left-color', 'border-left-style', 'border-left-width', 'border-radius', 'border-right', 'border-right-color', 'border-right-style', 'border-right-width', 'border-spacing', 'border-style', 'border-top', 'border-top-color', 'border-top-left-radius', 'border-top-right-radius', 'border-top-style', 'border-top-width', 'border-width', 'bottom', 'box-decoration-break', 'box-shadow', 'break-after', 'break-before', 'break-inside', 'caption-side', 'clear', 'clip', 'color', 'column-count', 'column-fill', 'column-gap', 'column-rule', 'column-rule-color', 'column-rule-style', 'column-rule-width', 'column-span', 'column-width', 'content', 'counter-increment', 'counter-reset', 'cue', 'cue-after', 'cue-before', 'cursor', 'direction', 'display', 'elevation', 'empty-cells', 'float', 'font', 'font-family', 'font-size', 'font-size-adjust', 'font-stretch', 'font-style', 'font-variant', 'font-weight', 'height', 'left', 'letter-spacing', 'line-height', 'list-style', 'list-style-image', 'list-style-position', 'list-style-type', 'margin', 'margin-bottom', 'margin-left', 'margin-right', 'margin-top', 'marker-offset', 'marks', 'marquee-direction', 'marquee-play-count', 'marquee-speed', 'marquee-style', 'max-height', 'max-width', 'min-height', 'min-width', 'opacity', 'orphans', 'outline', 'outline-color', 'outline-style', 'outline-width', 'overflow', 'overflow-style', 'overflow-x', 'overflow-y', 'padding', 'padding-bottom', 'padding-left', 'padding-right', 'padding-top', 'page', 'page-break-after', 'page-break-before', 'page-break-inside', 'pause', 'pause-after', 'pause-before', 'perspective', 'perspective-origin', 'pitch', 'pitch-range', 'play-during', 'position', 'quotes', 'richness', 'right', 'size', 'speak', 'speak-header', 'speak-numeral', 'speak-punctuation', 'speech-rate', 'stress', 'table-layout', 'text-align', 'text-decoration', 'text-indent', 'text-shadow', 'text-transform', 'top', 'transform', 'transform-origin', 'transform-style', 'transition', 'transition-delay', 'transition-duration', 'transition-property', 'transition-timing-function', 'unicode-bidi', 'vertical-align', 'visibility', 'voice-family', 'volume', 'white-space', 'widows', 'width', 'word-spacing', 'z-index'];
+        private _tag;
+        constructor(id, tag) {
             super(id);
+            this._tag = tag;
         }
 
         createElement(): Node {
-            throw new Error('HtmlComponent.createElement() should never be called directly. Must be overridden. (Component id = ' + this.id + ')');
+            return document.createElement(this._tag);
         }
 
         createContent(): util.Promise {
@@ -72,9 +76,16 @@ export module uvis {
                     // get this components element
                     elm = this.createElement();
 
-                    // TODO assign properties to elm
+                    // assign properties to elm
+                    this.setProperties(elm);
 
-                    // TODO assign content to elm
+                    // add content 
+                    this.appendContent(elm);
+
+                    // add children to elm
+                    childrenContent.forEach((child) => {
+                        elm.appendChild(child);
+                    });
 
                     res.fulfill(elm);
 
@@ -86,33 +97,17 @@ export module uvis {
                 res.reject(err);
             });
             
-
             // add children and properties to elm            
             return res;
         }
+
+        setProperties(element: Node) {
+            // set style properties
+
+        }
+
+        appendContent(element: Node) {
+
+        }
     }
-
-//        render(): DocumentFragment {
-//            var fragment = document.createDocumentFragment();
-//            var elm = document.createElement('div');            
-//            elm.setAttribute('id', this.id);
-//            elm.innerText = this.properties['text'].value;
-            
-//            var styles = '';
-//            _.each(_.omit(this.properties, 'id', 'text', 'type'),
-//                (obj: any, key?: string) => {
-//                    if (obj instanceof propertyModule.uvis.property.Property) {
-//                        styles += obj.key + ':' + obj.value + ';';
-//                    }
-//                });
-//            elm.setAttribute('style', styles);
-            
-//            _.each(this.children, (comp: any, id?: string) => {                
-//                elm.appendChild(comp.render());
-//            });
-
-//            fragment.appendChild(elm);
-//            return fragment;
-//        }
-//    }
 }
