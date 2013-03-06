@@ -1,5 +1,11 @@
 ### UVIS.WEB ###
-*.js
+src/*.js
+src/*/*.js
+src/*/*/*.js
+src/*/*/*/*.js
+*.map
+
+!src/libs/*.js
 
 #################
 ## Eclipse
