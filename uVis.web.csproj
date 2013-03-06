@@ -22,6 +22,7 @@
   </PropertyGroup>
   <ItemGroup>
     <TypeScriptCompile Include="src\.typings\when.d.ts" />
+    <Content Include="src\binary-search.js" />
     <Content Include="src\libs\nextTick.js" />
     <Content Include="src\libs\when-1.8.1.js" />
     <Content Include="src\specrunner.js">
@@ -29,6 +30,10 @@
     </Content>
     <Content Include="src\specrunner.min.js">
       <DependentUpon>specrunner.ts</DependentUpon>
+    </Content>
+    <TypeScriptCompile Include="src\spec\component.spec.ts" />
+    <Content Include="src\spec\component.spec.js">
+      <DependentUpon>component.spec.ts</DependentUpon>
     </Content>
     <Content Include="src\spec\init.js.map">
       <DependentUpon>init.ts</DependentUpon>
@@ -49,6 +54,9 @@
       <DependentUpon>util.promise.spec.ts</DependentUpon>
     </Content>
     <Content Include="Web.config" />
+    <Content Include="src\spec\component.spec.js.map">
+      <DependentUpon>component.spec.ts</DependentUpon>
+    </Content>
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

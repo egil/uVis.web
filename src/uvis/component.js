@@ -3,14 +3,33 @@ var __extends = this.__extends || function (d, b) {
     __.prototype = b.prototype;
     d.prototype = new __();
 };
-define(["require", "exports", 'uvis/util/dictionary', 'uvis/util/promise'], function(require, exports, __dictModule__, __promiseModule__) {
+define(["require", "exports", 'uvis/util/dictionary', 'uvis/util/promise', 'uvis/property'], function(require, exports, __dictModule__, __promiseModule__, __propertyModule__) {
     var dictModule = __dictModule__;
 
     var promiseModule = __promiseModule__;
 
+    var propertyModule = __propertyModule__;
+
     (function (uvis) {
         var dict = dictModule.uvis.util;
         var util = promiseModule.uvis.util;
+        var prop = propertyModule.uvis;
+        function binarySearch(arr, ele) {
+            var beginning = 0, end = arr.length, target;
+            while(true) {
+                target = ((beginning + end) >> 1);
+                if((target === end || target === beginning) && arr[target] !== ele) {
+                    return -1;
+                }
+                if(arr[target] > ele) {
+                    end = target;
+                } else if(arr[target] < ele) {
+                    beginning = target;
+                } else {
+                    return target;
+                }
+            }
+        }
         var AbstractComponent = (function () {
             function AbstractComponent(id) {
                 this._id = id;
@@ -34,6 +53,16 @@ define(["require", "exports", 'uvis/util/dictionary', 'uvis/util/promise'], func
             Object.defineProperty(AbstractComponent.prototype, "properties", {
                 get: function () {
                     return this._properties;
+                },
+                enumerable: true,
+                configurable: true
+            });
+            Object.defineProperty(AbstractComponent.prototype, "data", {
+                get: function () {
+                    return this._data;
+                },
+                set: function (value) {
+                    this._data = value;
                 },
                 enumerable: true,
                 configurable: true
@@ -396,9 +425,26 @@ define(["require", "exports", 'uvis/util/dictionary', 'uvis/util/promise'], func
                 return res;
             };
             HtmlComponent.prototype.setProperties = function (element) {
-                // set style properties
-                            };
+                var styleAttr;
+                this.properties.forEach(function (key, prop) {
+                    // if property is a CSS property, add it to styleAttr
+                    if(binarySearch(HtmlComponent.LIST_OF_CSS_PROPERTIES, key) !== -1) {
+                        styleAttr += key + ':' + prop.value + ';';
+                    } else {
+                        // else add a the attribute directly.
+                        element.setAttribute(key, prop.value);
+                    }
+                });
+                // if style attributes have been found, add it.
+                if(styleAttr) {
+                    element.setAttribute('style', styleAttr);
+                }
+            };
             HtmlComponent.prototype.appendContent = function (element) {
+                // set content of node
+                if(this.properties.contains('text')) {
+                    element.appendChild(this.properties.get('text'));
+                }
             };
             return HtmlComponent;
         })(AbstractComponent);
