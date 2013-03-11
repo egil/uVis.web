@@ -3,23 +3,41 @@ declare function nextTick(fn: Function): void;
 export module uvis.util {
     export interface IPromise {
         then(onFulfilled: Function, onError?: Function): IPromise;
-        fail(onError: Function): IPromise;
     }
 
-    // Inspiration - http://api.jquery.com/category/deferred-object/
-    // https://github.com/unscriptable/promises/blob/master/src/Async.js
-    export class Promise implements IPromise {
-        private _isUnfulfilled: bool = true;
-        private _funcs: Object[] = [];
-        private _value: any;
+    export var PromiseState = {
+        FULFILLED: 'fulfilled',
+        PENDING: 'pending',
+        REJECTED: 'rejected'
+    }
 
-        constructor(promisedValue?: any) {
-            if (promisedValue !== undefined) {
-                this.fulfill(promisedValue);
-            }
+    /**
+      * Promise A+ - an implementation of http://promises-aplus.github.com/promises-spec/
+      */
+    export class Promise implements IPromise {
+        private _state = PromiseState.PENDING;
+        private _funcs: Object[] = [];
+        private _valueOrReason: any;
+
+        get state() {
+            return this._state;
         }
 
-        static when(promises: IPromise[]): IPromise {
+        static resolve(promiseOrValue: any) {
+            var p;
+
+            if (promiseOrValue instanceof Promise) {
+                p = promiseOrValue;
+            }
+            else {
+                p = new Promise();
+                p.fulfill(promiseOrValue);
+            }
+
+            return p;
+        }
+
+        static when(promises: Promise[]): IPromise {
             var joinedPromises = new Promise();
             var promisedValues = [];
             var pending = promises.length;
@@ -34,7 +52,7 @@ export module uvis.util {
             // in results array as the original promise was positioned 
             // in the input promise array.
             promises.forEach((p, i) => {
-                p.then((v) => {
+                p.internalThen((v) => {
                     promisedValues[i] = v;
                     pending--;
                     if (pending === 0) {
@@ -49,54 +67,83 @@ export module uvis.util {
         }
 
         public fulfill(value?: any) {
-            if (!this._isUnfulfilled) {
-                throw new Error("Promise is not in an unfulfilled state.");
+            if (this.state !== PromiseState.PENDING) {
+                throw new Error("Promise is not in an pending state.");
             }
-            this._value = value;
-            this._isUnfulfilled = false;
-            this.notify('fulfilled');
+            this._state = PromiseState.FULFILLED;
+            this._valueOrReason = value;
+            this.notify();
         }
 
-        public reject(error?: any) {
-            if (!this._isUnfulfilled) {
-                throw new Error("Promise is not in an unfulfilled state.");
+        public reject(reason?: any) {
+            if (this.state !== PromiseState.PENDING) {
+                throw new Error("Promise is not in an pending state.");
             }
-            this._value = error;
-            this._isUnfulfilled = false;
-            this.notify('failed');
+            this._state = PromiseState.REJECTED;
+            this._valueOrReason = reason;
+            this.notify();
         }
 
         /**
           * Get notified when this promise is fulfilled or if it is rejected.
           * @onFulfilled the function to execute if the promise is fulfulled
-          * @onError the function to execute if the promise is rejected
+          * @onRejected the function to execute if the promise is rejected
           */
-        public then(onFulfilled: Function, onError?: Function): IPromise {
-            this._funcs.push({ 'fulfilled': onFulfilled, 'failed': onError });
-            // if the promise has already been fulfilled or rejected, notify right away.
-            if (!this._isUnfulfilled) {
-                this.notify('fulfilled');
-            }
-            return this;
+        public then(onFulfilled?: Function, onRejected?: Function): IPromise {
+            return this.internalThen(onFulfilled, onRejected, new Promise());
         }
 
-        public fail(onError: Function): IPromise {
-            return this.then(undefined, onError);
+        private internalThen(onFulfilled: Function, onRejected: Function, promise2?: Promise): IPromise {
+            this._funcs.push({ 'fulfilled': onFulfilled, 'rejected': onRejected, 'promise2': promise2 });
+
+            // start async notification of the state is !== pending
+            if (this.state !== PromiseState.PENDING) { this.notify(); }
+
+            return promise2;
         }
 
-        private notify(state) {
+        private notify() {
             // Executes the function one time, removing each function
             // as it is exected.
-            var i = 0, cb;
-            while (cb = this._funcs[i++]) {
+            var cb, state = this.state, funcs = this._funcs;
+            while (cb = funcs.shift()) {
                 // check if there is a callback for the state and if so, execute.
-                if (cb[state]) {
-                    nextTick(cb[state].bind(null, this._value));
+                if (cb[state] && cb[state] instanceof Function) {
+                    nextTick(this.execute.bind(this, cb[state], cb.promise2));
+                }
+                else if (state === PromiseState.FULFILLED) {
+                    cb.promise2.fulfill(this._valueOrReason);
+                } else {
+                    cb.promise2.reject(this._valueOrReason);
                 }
             }
 
             // remove all elements from the array
             this._funcs.length = 0;
+        }
+
+        private execute(fn: (any) => any, promise2: Promise) {
+            var promiseOrValue;
+
+            if (promise2 !== undefined) {
+                // catch errors, reject promise2
+                try {
+                    promiseOrValue = fn(this._valueOrReason);
+                } catch (e) {
+                    promise2.reject(e);
+                    return;
+                }
+
+                // if no error was found, fulfill promise2
+                if (promiseOrValue instanceof Promise) {
+                    promiseOrValue.internalThen(promise2.fulfill.bind(promise2), promise2.reject.bind(promise2));
+                }
+                else {
+                    promise2.fulfill(promiseOrValue);
+                }
+            } else {
+                fn(this._valueOrReason);
+            }
         }
     }
 }
