@@ -1,6 +1,6 @@
 /// <reference path="../.typings/underscore-typed.d.ts" />
 /// <reference path="../.typings/jasmine.d.ts" />
-import dictionaryModule = module('uvis/util/dictionary');
+import dictionaryModule = module('uvis/util/Dictionary');
 import util = dictionaryModule.uvis.util;
 
 export module uvis.spec {

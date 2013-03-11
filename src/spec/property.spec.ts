@@ -1,7 +1,7 @@
 /// <reference path="../.typings/jasmine.d.ts" />
 
-import propertyModule = module('uvis/property');
-import utilModule = module('uvis/util/promise');
+import propertyModule = module('uvis/Property');
+import utilModule = module('uvis/util/Promise');
 import um = propertyModule.uvis;
 import util = utilModule.uvis.util;
 

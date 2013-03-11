@@ -99,25 +99,6 @@ declare module when {
     }
 
     /**
-	 * Create an already-resolved promise for the supplied value
-	 * @private
-	 *
-	 * @param {*} value
-	 * @return {Promise} fulfilled promise
-	 */
-    declare function fulfilled(value): Promise;
-
-    /**
-	 * Create an already-rejected {@link Promise} with the supplied
-	 * rejection reason.
-	 * @private
-	 *
-	 * @param {*} reason
-	 * @return {Promise} rejected promise
-	 */
-    declare function rejected(reason): Promise;
-
-    /**
 	 * Creates a new, Deferred with fully isolated resolver and promise parts,
 	 * either or both of which may be given out safely to consumers.
 	 * The Deferred itself has the full API: resolve, reject, progress, and
@@ -248,12 +229,5 @@ declare module when {
 	 * @returns {Promise}
 	 */
     declare function chain(promiseOrValue, resolver, resolveValue): Promise;
-
-    /**
-	 * Apply all functions in queue to value
-	 * @param {Array} queue array of functions to execute
-	 * @param {*} value argument passed to each function
-	 */
-    declare function processQueue(queue, value): void;
     
 }

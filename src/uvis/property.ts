@@ -1,5 +1,5 @@
-import utilModule = module('uvis/util/promise');
-import util = utilModule.uvis.util;
+import utilModule = module('uvis/util/Promise');
+import util = utilModule.uvis.util; 
 
 export module uvis {
     declare function nextTick(fn: Function): void;

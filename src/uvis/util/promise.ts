@@ -1,13 +1,7 @@
 declare function nextTick(fn: Function): void;
-export module uvis.util {
-    //export var PromiseState = {
-    //    FAILED: 'failed',
-    //    FULFILLED: 'fulfilled',
-    //    UNFULFILLED: 'unfulfilled'
-    //}
 
+export module uvis.util {
     export interface IPromise {
-        //state: string;
         then(onFulfilled: Function, onError?: Function): IPromise;
         fail(onError: Function): IPromise;
     }
@@ -15,7 +9,6 @@ export module uvis.util {
     // Inspiration - http://api.jquery.com/category/deferred-object/
     // https://github.com/unscriptable/promises/blob/master/src/Async.js
     export class Promise implements IPromise {
-        //private _state = PromiseState.UNFULFILLED;
         private _isUnfulfilled: bool = true;
         private _funcs: Object[] = [];
         private _value: any;
@@ -41,7 +34,7 @@ export module uvis.util {
             // in results array as the original promise was positioned 
             // in the input promise array.
             promises.forEach((p, i) => {
-                p.then((v) => {                    
+                p.then((v) => {
                     promisedValues[i] = v;
                     pending--;
                     if (pending === 0) {
@@ -54,10 +47,6 @@ export module uvis.util {
 
             return joinedPromises;
         }
-
-        //get state(): string {
-        //    return this._state;
-        //}
 
         public fulfill(value?: any) {
             if (!this._isUnfulfilled) {

@@ -22,7 +22,6 @@
   </PropertyGroup>
   <ItemGroup>
     <TypeScriptCompile Include="src\.typings\when.d.ts" />
-    <Content Include="src\binary-search.js" />
     <Content Include="src\libs\nextTick.js" />
     <Content Include="src\libs\when-1.8.1.js" />
     <Content Include="src\specrunner.js">
@@ -31,31 +30,79 @@
     <Content Include="src\specrunner.min.js">
       <DependentUpon>specrunner.ts</DependentUpon>
     </Content>
-    <TypeScriptCompile Include="src\spec\component.spec.ts" />
-    <Content Include="src\spec\component.spec.js">
-      <DependentUpon>component.spec.ts</DependentUpon>
-    </Content>
-    <Content Include="src\spec\init.js.map">
-      <DependentUpon>init.ts</DependentUpon>
-    </Content>
+    <TypeScriptCompile Include="src\spec\template.AbstractTemplate.spec.ts" />
     <Content Include="src\specrunner.js.map">
       <DependentUpon>specrunner.ts</DependentUpon>
     </Content>
-    <Content Include="src\spec\property.spec.js">
-      <DependentUpon>property.spec.ts</DependentUpon>
+    <TypeScriptCompile Include="src\uvis\util\Extensions.ts" />
+    <TypeScriptCompile Include="src\uvis\template\HtmlTemplate.ts" />
+    <Content Include="src\spec\Property.spec.js">
+      <DependentUpon>Property.spec.ts</DependentUpon>
     </Content>
-    <Content Include="src\spec\property.spec.min.js">
-      <DependentUpon>property.spec.ts</DependentUpon>
+    <Content Include="src\spec\template.AbstractTemplate.spec.js">
+      <DependentUpon>template.AbstractTemplate.spec.ts</DependentUpon>
     </Content>
-    <Content Include="src\spec\util.dictionary.spec.js.map">
-      <DependentUpon>util.dictionary.spec.ts</DependentUpon>
+    <TypeScriptCompile Include="src\spec\template.HtmlTemplate.spec.ts" />
+    <Content Include="src\spec\template.HtmlTemplate.spec.js">
+      <DependentUpon>template.HtmlTemplate.spec.ts</DependentUpon>
     </Content>
-    <Content Include="src\spec\util.promise.spec.js.map">
-      <DependentUpon>util.promise.spec.ts</DependentUpon>
+    <Content Include="src\spec\util.Dictionary.spec.js">
+      <DependentUpon>util.Dictionary.spec.ts</DependentUpon>
+    </Content>
+    <Content Include="src\spec\util.Promise.spec.js">
+      <DependentUpon>util.Promise.spec.ts</DependentUpon>
+    </Content>
+    <Content Include="src\uvis\Property.js">
+      <DependentUpon>Property.ts</DependentUpon>
+    </Content>
+    <Content Include="src\uvis\template\AbstractTemplate.js">
+      <DependentUpon>AbstractTemplate.ts</DependentUpon>
+    </Content>
+    <Content Include="src\uvis\template\HtmlTemplate.js">
+      <DependentUpon>HtmlTemplate.ts</DependentUpon>
+    </Content>
+    <Content Include="src\uvis\util\Dictionary.js">
+      <DependentUpon>Dictionary.ts</DependentUpon>
+    </Content>
+    <Content Include="src\uvis\util\Extensions.js">
+      <DependentUpon>Extensions.ts</DependentUpon>
+    </Content>
+    <Content Include="src\uvis\util\Promise.js">
+      <DependentUpon>Promise.ts</DependentUpon>
     </Content>
     <Content Include="Web.config" />
-    <Content Include="src\spec\component.spec.js.map">
-      <DependentUpon>component.spec.ts</DependentUpon>
+    <Content Include="src\uvis\template\AbstractTemplate.js.map">
+      <DependentUpon>AbstractTemplate.ts</DependentUpon>
+    </Content>
+    <Content Include="src\uvis\template\HtmlTemplate.js.map">
+      <DependentUpon>HtmlTemplate.ts</DependentUpon>
+    </Content>
+    <Content Include="src\uvis\util\Extensions.js.map">
+      <DependentUpon>Extensions.ts</DependentUpon>
+    </Content>
+    <Content Include="src\uvis\util\Dictionary.js.map">
+      <DependentUpon>Dictionary.ts</DependentUpon>
+    </Content>
+    <Content Include="src\uvis\util\Promise.js.map">
+      <DependentUpon>Promise.ts</DependentUpon>
+    </Content>
+    <Content Include="src\spec\template.AbstractTemplate.spec.js.map">
+      <DependentUpon>template.AbstractTemplate.spec.ts</DependentUpon>
+    </Content>
+    <Content Include="src\spec\Property.spec.js.map">
+      <DependentUpon>Property.spec.ts</DependentUpon>
+    </Content>
+    <Content Include="src\spec\util.Promise.spec.js.map">
+      <DependentUpon>util.Promise.spec.ts</DependentUpon>
+    </Content>
+    <Content Include="src\spec\util.Dictionary.spec.js.map">
+      <DependentUpon>util.Dictionary.spec.ts</DependentUpon>
+    </Content>
+    <Content Include="src\spec\template.HtmlTemplate.spec.js.map">
+      <DependentUpon>template.HtmlTemplate.spec.ts</DependentUpon>
+    </Content>
+    <Content Include="src\uvis\Property.js.map">
+      <DependentUpon>Property.ts</DependentUpon>
     </Content>
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
@@ -63,44 +110,10 @@
     <None Include="Web.Release.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
-    <TypeScriptCompile Include="src\spec\util.dictionary.spec.ts" />
-    <Content Include="src\spec\util.dictionary.spec.js">
-      <DependentUpon>util.dictionary.spec.ts</DependentUpon>
-    </Content>
-    <Content Include="src\spec\util.dictionary.spec.min.js">
-      <DependentUpon>util.dictionary.spec.ts</DependentUpon>
-    </Content>
-    <Content Include="src\spec\util.promise.spec.js">
-      <DependentUpon>util.promise.spec.ts</DependentUpon>
-    </Content>
-    <Content Include="src\spec\util.promise.spec.min.js">
-      <DependentUpon>util.promise.spec.ts</DependentUpon>
-    </Content>
-    <Content Include="src\uvis\util\dictionary.js.map">
-      <DependentUpon>dictionary.ts</DependentUpon>
-    </Content>
-    <Content Include="src\spec\property.spec.js.map">
-      <DependentUpon>property.spec.ts</DependentUpon>
-    </Content>
-    <TypeScriptCompile Include="src\spec\util.promise.spec.ts" />
-    <Content Include="src\uvis\util\dictionary.js">
-      <DependentUpon>dictionary.ts</DependentUpon>
-    </Content>
-    <Content Include="src\uvis\util\dictionary.min.js">
-      <DependentUpon>dictionary.ts</DependentUpon>
-    </Content>
-    <Content Include="src\uvis\util\promise.js.map">
-      <DependentUpon>promise.ts</DependentUpon>
-    </Content>
+    <TypeScriptCompile Include="src\spec\util.Dictionary.spec.ts" />
+    <TypeScriptCompile Include="src\spec\util.Promise.spec.ts" />
     <TypeScriptCompile Include="src\specrunner.ts" />
-    <TypeScriptCompile Include="src\spec\init.ts" />
-    <Content Include="src\spec\init.js">
-      <DependentUpon>init.ts</DependentUpon>
-    </Content>
-    <Content Include="src\spec\init.min.js">
-      <DependentUpon>init.ts</DependentUpon>
-    </Content>
-    <TypeScriptCompile Include="src\spec\property.spec.ts" />
+    <TypeScriptCompile Include="src\spec\Property.spec.ts" />
     <None Include="app-definitions\demo1.json" />
     <Content Include="app.css" />
     <Content Include="index.html" />
@@ -119,97 +132,13 @@
     <Content Include="src\libs\jasmine-1.3.1\jasmine.js" />
     <Content Include="src\libs\jasmine-1.3.1\MIT.LICENSE" />
     <Content Include="specrunner.html" />
-    <TypeScriptCompile Include="src\uvis\util\promise.ts" />
-    <Content Include="src\uvis\util\promise.js">
-      <DependentUpon>promise.ts</DependentUpon>
-    </Content>
-    <Content Include="src\uvis\util\promise.min.js">
-      <DependentUpon>promise.ts</DependentUpon>
-    </Content>
-    <Content Include="src\uvis\app.min.js">
-      <DependentUpon>app.ts</DependentUpon>
-    </Content>
-    <Content Include="src\uvis\data.js.map">
-      <DependentUpon>data.ts</DependentUpon>
-    </Content>
-    <Content Include="src\uvis\data\odata.js.map">
-      <DependentUpon>odata.ts</DependentUpon>
-    </Content>
-    <TypeScriptCompile Include="src\uvis\data.ts" />
-    <Content Include="src\uvis\data.js">
-      <DependentUpon>data.ts</DependentUpon>
-    </Content>
-    <Content Include="src\uvis\data.min.js">
-      <DependentUpon>data.ts</DependentUpon>
-    </Content>
-    <TypeScriptCompile Include="src\uvis\data\odata.ts" />
-    <Content Include="src\uvis\data\odata.js">
-      <DependentUpon>odata.ts</DependentUpon>
-    </Content>
-    <Content Include="src\uvis\data\odata.min.js">
-      <DependentUpon>odata.ts</DependentUpon>
-    </Content>
-    <Content Include="src\uvis\initializer.js.map">
-      <DependentUpon>initializer.ts</DependentUpon>
-    </Content>
-    <TypeScriptCompile Include="src\uvis\initializer.ts" />
-    <Content Include="src\uvis\initializer.js">
-      <DependentUpon>initializer.ts</DependentUpon>
-    </Content>
-    <Content Include="src\uvis\initializer.min.js">
-      <DependentUpon>initializer.ts</DependentUpon>
-    </Content>
-    <Content Include="src\uvis\screen.js.map">
-      <DependentUpon>screen.ts</DependentUpon>
-    </Content>
-    <Content Include="src\uvis\app.js.map">
-      <DependentUpon>app.ts</DependentUpon>
-    </Content>
+    <TypeScriptCompile Include="src\uvis\util\Promise.ts" />
     <Content Include="src\main.js.map">
       <DependentUpon>main.ts</DependentUpon>
     </Content>
-    <TypeScriptCompile Include="src\uvis\app.ts" />
-    <Content Include="src\uvis\app.js">
-      <DependentUpon>app.ts</DependentUpon>
-    </Content>
-    <Content Include="src\uvis\component.js.map">
-      <DependentUpon>component.ts</DependentUpon>
-    </Content>
-    <Content Include="src\uvis\property.js.map">
-      <DependentUpon>property.ts</DependentUpon>
-    </Content>
-    <TypeScriptCompile Include="src\uvis\component.ts" />
-    <Content Include="src\uvis\component.js">
-      <DependentUpon>component.ts</DependentUpon>
-    </Content>
-    <Content Include="src\uvis\component.min.js">
-      <DependentUpon>component.ts</DependentUpon>
-    </Content>
-    <TypeScriptCompile Include="src\uvis\property.ts" />
-    <Content Include="src\uvis\property.js">
-      <DependentUpon>property.ts</DependentUpon>
-    </Content>
-    <Content Include="src\uvis\property.min.js">
-      <DependentUpon>property.ts</DependentUpon>
-    </Content>
-    <TypeScriptCompile Include="src\uvis\screen.ts" />
-    <Content Include="src\uvis\screen.js">
-      <DependentUpon>screen.ts</DependentUpon>
-    </Content>
-    <Content Include="src\uvis\screen.min.js">
-      <DependentUpon>screen.ts</DependentUpon>
-    </Content>
-    <TypeScriptCompile Include="src\uvis\util\dictionary.ts" />
-    <Content Include="src\uvis\uvis.js">
-      <DependentUpon>uvis.ts</DependentUpon>
-    </Content>
-    <Content Include="src\uvis\uvis.js.map">
-      <DependentUpon>uvis.ts</DependentUpon>
-    </Content>
-    <Content Include="src\uvis\uvis.min.js">
-      <DependentUpon>uvis.ts</DependentUpon>
-    </Content>
-    <TypeScriptCompile Include="src\uvis\uvis.ts" />
+    <TypeScriptCompile Include="src\uvis\template\AbstractTemplate.ts" />
+    <TypeScriptCompile Include="src\uvis\Property.ts" />
+    <TypeScriptCompile Include="src\uvis\util\Dictionary.ts" />
     <None Include="src\libs\jquery-1.9.0.intellisense.js" />
     <Content Include="src\.typings\jquery.d.ts" />
     <Content Include="src\.typings\require.d.ts" />
@@ -220,7 +149,9 @@
     <Content Include="src\libs\require.js" />
     <Content Include="src\libs\jquery-1.9.0.min.map" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Folder Include="src\uvis\data\" />
+  </ItemGroup>
   <ItemGroup>
     <Content Include="packages.config" />
   </ItemGroup>
