@@ -1,6 +1,7 @@
 import dictModule = module('uvis/util/Dictionary');
 import promiseModule = module('uvis/util/Promise');
 import helpersModule = module('uvis/util/Extensions');
+import dataModule = module('uvis/data/IData');
 import propertyModule = module('uvis/Property');
 
 export module uvis.template {
@@ -13,7 +14,7 @@ export module uvis.template {
         private _children: AbstractTemplate[] = [];
         private _properties =  new dict.Dictionary();
         private _id: string;
-        private _data: prop.Property;
+        private _data: dataModule.uvis.data.IData;
 
         constructor(id: string) {
             if (typeof (id) !== 'string' || id.length === 0) {
@@ -34,12 +35,16 @@ export module uvis.template {
             return this._properties;
         }
 
-        get data(): prop.Property {
+        get data(): dataModule.uvis.data.IData {
             return this._data;
         }
 
-        set data(value) {
+        set data(value: dataModule.uvis.data.IData) {
             this._data = value;
+        }
+
+        addProperty(property: prop.Property) {
+            this.properties.add(property.key, property);
         }
 
         createContent(): util.IPromise {

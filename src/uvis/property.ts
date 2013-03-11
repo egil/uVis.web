@@ -39,7 +39,7 @@ export module uvis {
 
         /** Triggers a re-calculation of the property's value */
         calculate(): util.IPromise {
-            return new util.Promise.resolve(this);
+            return util.Promise.resolve(this);
         }
 
         /** Gets this property's state.
@@ -93,7 +93,7 @@ export module uvis {
     export class CalculatedProperty extends Property {
         private _isStale = false;
         private _updating = false;
-        private _calculatedPromise: util.Promise;
+        private _calculatedPromise: util.IPromise;
         private _calculatorFunc: () => util.IPromise;
 
         constructor(key: string, calculatorFunc: () => util.IPromise) {
@@ -107,30 +107,33 @@ export module uvis {
         }
 
         calculate(): util.IPromise {
-            // if already updating, subscrib to the current update
+            // if already updating, return the existing promise
             if (this._updating && this._calculatedPromise !== undefined) {
                 return this._calculatedPromise;
             }
-            // else create new promise and trigger calculation
-            this._calculatedPromise = new util.Promise();
-            this._updating = true;
-            this._calculatorFunc().then((calculatedValue) => {
+            
+            // else start a new calculation
+            this._updating = true;            
+            this._calculatedPromise = this._calculatorFunc();
+
+            // subscribe to the result of the calculation
+            this._calculatedPromise.last((calculatedValue) => {
                 // set updating and stale values
                 this._updating = false;
                 this._isStale = false;
 
+                // set it to undefined so a new calculation and update can 
+                // start if requested
+                this._calculatedPromise = undefined;
+
                 // setting value triggers a notification of subscribers
                 this.value = calculatedValue;
 
-                // fulfill the promise
-                this._calculatedPromise.fulfill(this);
-
-                // release this promise object so it can be collected
-                this._calculatedPromise = undefined;
-            }, (errorMsg) => {
+            }, () => {
+                // if something did not go correctly, we
+                // just set updating to false and let somebody
+                // else handle the problem
                 this._updating = false;
-                this._calculatedPromise.reject(errorMsg);
-                this._calculatedPromise = undefined;
             });
 
             return this._calculatedPromise;

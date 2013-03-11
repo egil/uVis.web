@@ -1,4 +1,4 @@
-/// <reference path="../.typings/jasmine.d.ts" />
+/// <reference path="../../.typings/jasmine.d.ts" />
 
 import propertyModule = module('uvis/Property');
 import templateModule = module('uvis/template/AbstractTemplate');
@@ -10,7 +10,10 @@ export module uvis.spec {
         var c, actual, expected, fn;
 
         beforeEach(function () {
-            c = actual = expected = fn = undefined;
+            c = undefined;
+            actual = undefined;
+            expected = undefined;
+            fn = undefined;
         });
 
         afterEach(function () {
@@ -39,6 +42,14 @@ export module uvis.spec {
                 c = new ut.AbstractTemplate('c1');
                 fn = () => { c.createContent(); }
                 expect(fn).toThrow();
+            });
+        });
+
+        describe('adding properties to a template', () => {
+            it('should return them correctly', () => {
+                c = new ut.AbstractTemplate('div');
+                c.properties.add('class', new up.Property('class', 'should-be-here'));
+                expect(c.properties.get('class').value).toBe('should-be-here');
             });
         });
     });

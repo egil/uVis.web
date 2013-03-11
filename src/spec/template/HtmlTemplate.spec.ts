@@ -1,10 +1,24 @@
-/// <reference path="../.typings/jasmine.d.ts" />
+/// <reference path="../../.typings/jasmine.d.ts" />
+
 import templateModule = module('uvis/template/HtmlTemplate');
 import propertyModule = module('uvis/Property');
+import promiseModule = module('uvis/util/Promise');
+import dataModule = module('uvis/data/IData');
+import pp = promiseModule.uvis.util;
 import ut = templateModule.uvis.template;
 import up = propertyModule.uvis;
 
 export module uvis.spec {
+
+    class MockData implements dataModule.uvis.data.IData {
+        constructor(public data) { }
+
+        getData() {
+            var res = pp.Promise.resolve(this.data);
+            return res;
+        }
+    }
+
     describe('HtmlTemplate:', () => {
         var t1: ut.HtmlTemplate,
             t2: ut.HtmlTemplate,
@@ -65,7 +79,7 @@ export module uvis.spec {
                 t1 = new ut.HtmlTemplate(e1, 'div');
 
                 runs(() => {
-                    t1.createContent().then((elm) => {
+                    t1.createContent().last((elm) => {
                         a1 = elm;
                         completed = true;
                     });
@@ -80,20 +94,18 @@ export module uvis.spec {
                 });
             });
 
-            xit('should return an element with the supplied properties set on it', () => {
+            it('should return an element with the supplied properties set on it', () => {
                 t1 = new ut.HtmlTemplate('id', 'div');
-                pc1 = new up.CalculatedProperty('title', () => {
-
-                });
+                p1 = new up.Property('title', 'some title');
                 p2 = new up.Property('contenteditable', true);
                 p3 = new up.Property('dir', 'rtl');
-                t1.properties.add(p1.key, p1);
-                t1.properties.add(p2.key, p2);
-                t1.properties.add(p3.key, p3);
+                t1.addProperty(p1);
+                t1.addProperty(p2);
+                t1.addProperty(p3);
 
                 runs(() => {
-                    t1.createContent().then((elm) => {
-                        a1= elm;
+                    t1.createContent().last((elm) => {
+                        a1 = elm;
                         completed = true;
                     });
                 });
@@ -104,10 +116,29 @@ export module uvis.spec {
 
                 runs(function () {
                     expect(a1.getAttribute('title')).toBe('some title');
-                    expect(a1.getAttribute('contenteditable')).toBe(true);
+                    expect(a1.getAttribute('contenteditable')).toBe('true');
                     expect(a1.getAttribute('dir')).toBe('rtl');
                 });
 
+            });
+
+            it('should return an element with specified text set inside it (innerHTML)', () => {
+                runs(() => {
+                    e1 = 'some data that goes inside the div';
+                    t1 = new ut.HtmlTemplate('asdf', 'div');
+                    t1.addProperty(new up.Property('text', e1));
+                    t1.createContent().last((elm: HTMLElement) => {
+                        a1 = elm.innerHTML;
+                    });
+                });
+
+                waitsFor(() => {
+                    return a1;
+                }, '', 20);
+
+                runs(() => {
+                    expect(a1).toBe(e1);
+                });
             });
         });
     });

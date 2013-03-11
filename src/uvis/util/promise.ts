@@ -22,50 +22,7 @@ export module uvis.util {
 
         get state() {
             return this._state;
-        }
-
-        static resolve(promiseOrValue: any) {
-            var p;
-
-            if (promiseOrValue instanceof Promise) {
-                p = promiseOrValue;
-            }
-            else {
-                p = new Promise();
-                p.fulfill(promiseOrValue);
-            }
-
-            return p;
-        }
-
-        static when(promises: Promise[]): Promise {
-            var joinedPromises = new Promise();
-            var promisedValues = [];
-            var pending = promises.length;
-
-            // if no promises was given as an argument, fulfill right away.
-            if (pending === 0) {
-                joinedPromises.fulfill(promisedValues);
-            }
-
-            // subscribe to the promises.
-            // important: add the promised value to the same location
-            // in results array as the original promise was positioned 
-            // in the input promise array.
-            promises.forEach((p, i) => {
-                p.last((v) => {
-                    promisedValues[i] = v;
-                    pending--;
-                    if (pending === 0) {
-                        joinedPromises.fulfill(promisedValues);
-                    }
-                }, (e) => {
-                    joinedPromises.reject(e)
-                });
-            });
-
-            return joinedPromises;
-        }
+        }        
 
         public fulfill(value?: any) {
             if (this.state !== PromiseState.PENDING) {
@@ -157,6 +114,49 @@ export module uvis.util {
             } else {
                 callback(this._valueOrReason);
             }
+        }
+
+        static resolve(promiseOrValue: any): IPromise {
+            var p;
+
+            if (promiseOrValue instanceof Promise) {
+                p = promiseOrValue;
+            }
+            else {
+                p = new Promise();
+                p.fulfill(promiseOrValue);
+            }
+
+            return p;
+        }
+
+        static when(promises: Promise[]): IPromise {
+            var joinedPromises = new Promise();
+            var promisedValues = [];
+            var pending = promises.length;
+
+            // if no promises was given as an argument, fulfill right away.
+            if (pending === 0) {
+                joinedPromises.fulfill(promisedValues);
+            }
+
+            // subscribe to the promises.
+            // important: add the promised value to the same location
+            // in results array as the original promise was positioned 
+            // in the input promise array.
+            promises.forEach((p, i) => {
+                p.last((v) => {
+                    promisedValues[i] = v;
+                    pending--;
+                    if (pending === 0) {
+                        joinedPromises.fulfill(promisedValues);
+                    }
+                }, (e) => {
+                    joinedPromises.reject(e)
+                });
+            });
+
+            return joinedPromises;
         }
     }
 }

@@ -1,5 +1,5 @@
-/// <reference path="../.typings/underscore-typed.d.ts" />
-/// <reference path="../.typings/jasmine.d.ts" />
+/// <reference path="../../.typings/jasmine.d.ts" />
+
 import promiseModule = module('uvis/util/Promise');
 import p = promiseModule.uvis.util;
 declare function nextTick(fn: Function): void;

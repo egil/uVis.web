@@ -30,7 +30,7 @@
     <Content Include="src\specrunner.min.js">
       <DependentUpon>specrunner.ts</DependentUpon>
     </Content>
-    <TypeScriptCompile Include="src\spec\template.AbstractTemplate.spec.ts" />
+    <TypeScriptCompile Include="src\spec\template\AbstractTemplate.spec.ts" />
     <Content Include="src\specrunner.js.map">
       <DependentUpon>specrunner.ts</DependentUpon>
     </Content>
@@ -39,18 +39,18 @@
     <Content Include="src\spec\Property.spec.js">
       <DependentUpon>Property.spec.ts</DependentUpon>
     </Content>
-    <Content Include="src\spec\template.AbstractTemplate.spec.js">
-      <DependentUpon>template.AbstractTemplate.spec.ts</DependentUpon>
+    <TypeScriptCompile Include="src\spec\template\HtmlTemplate.spec.ts" />
+    <Content Include="src\spec\template\AbstractTemplate.spec.js">
+      <DependentUpon>AbstractTemplate.spec.ts</DependentUpon>
     </Content>
-    <TypeScriptCompile Include="src\spec\template.HtmlTemplate.spec.ts" />
-    <Content Include="src\spec\template.HtmlTemplate.spec.js">
-      <DependentUpon>template.HtmlTemplate.spec.ts</DependentUpon>
+    <Content Include="src\spec\template\HtmlTemplate.spec.js">
+      <DependentUpon>HtmlTemplate.spec.ts</DependentUpon>
     </Content>
-    <Content Include="src\spec\util.Dictionary.spec.js">
-      <DependentUpon>util.Dictionary.spec.ts</DependentUpon>
+    <Content Include="src\spec\util\Dictionary.spec.js">
+      <DependentUpon>Dictionary.spec.ts</DependentUpon>
     </Content>
-    <Content Include="src\spec\util.Promise.spec.js">
-      <DependentUpon>util.Promise.spec.ts</DependentUpon>
+    <Content Include="src\spec\util\Promise.spec.js">
+      <DependentUpon>Promise.spec.ts</DependentUpon>
     </Content>
     <Content Include="src\uvis\Property.js">
       <DependentUpon>Property.ts</DependentUpon>
@@ -86,23 +86,23 @@
     <Content Include="src\uvis\util\Promise.js.map">
       <DependentUpon>Promise.ts</DependentUpon>
     </Content>
-    <Content Include="src\spec\template.AbstractTemplate.spec.js.map">
-      <DependentUpon>template.AbstractTemplate.spec.ts</DependentUpon>
-    </Content>
     <Content Include="src\spec\Property.spec.js.map">
       <DependentUpon>Property.spec.ts</DependentUpon>
     </Content>
-    <Content Include="src\spec\util.Promise.spec.js.map">
-      <DependentUpon>util.Promise.spec.ts</DependentUpon>
-    </Content>
-    <Content Include="src\spec\util.Dictionary.spec.js.map">
-      <DependentUpon>util.Dictionary.spec.ts</DependentUpon>
-    </Content>
-    <Content Include="src\spec\template.HtmlTemplate.spec.js.map">
-      <DependentUpon>template.HtmlTemplate.spec.ts</DependentUpon>
-    </Content>
     <Content Include="src\uvis\Property.js.map">
       <DependentUpon>Property.ts</DependentUpon>
+    </Content>
+    <Content Include="src\spec\template\AbstractTemplate.spec.js.map">
+      <DependentUpon>AbstractTemplate.spec.ts</DependentUpon>
+    </Content>
+    <Content Include="src\spec\util\Dictionary.spec.js.map">
+      <DependentUpon>Dictionary.spec.ts</DependentUpon>
+    </Content>
+    <Content Include="src\spec\template\HtmlTemplate.spec.js.map">
+      <DependentUpon>HtmlTemplate.spec.ts</DependentUpon>
+    </Content>
+    <Content Include="src\spec\util\Promise.spec.js.map">
+      <DependentUpon>Promise.spec.ts</DependentUpon>
     </Content>
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
@@ -110,8 +110,8 @@
     <None Include="Web.Release.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
-    <TypeScriptCompile Include="src\spec\util.Dictionary.spec.ts" />
-    <TypeScriptCompile Include="src\spec\util.Promise.spec.ts" />
+    <TypeScriptCompile Include="src\spec\util\Dictionary.spec.ts" />
+    <TypeScriptCompile Include="src\spec\util\Promise.spec.ts" />
     <TypeScriptCompile Include="src\specrunner.ts" />
     <TypeScriptCompile Include="src\spec\Property.spec.ts" />
     <None Include="app-definitions\demo1.json" />
