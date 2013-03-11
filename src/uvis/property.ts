@@ -39,7 +39,7 @@ export module uvis {
 
         /** Triggers a re-calculation of the property's value */
         calculate(): util.IPromise {
-            return new util.Promise(this);
+            return new util.Promise.resolve(this);
         }
 
         /** Gets this property's state.
