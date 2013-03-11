@@ -16,7 +16,7 @@ export module uvis.spec {
         afterEach(function () {
         });
         
-        describe('instantiating a new template', () => {            
+        describe('constructor()', () => {            
             it('should return a new template with its id set to constructor supplied value', () => {
                 expected = 'component id';
                 c = new ut.AbstractTemplate(expected);
@@ -33,7 +33,7 @@ export module uvis.spec {
             });
         });
 
-        describe('creating content', () => {
+        describe('creatingContent()', () => {
 
             it('should throw error if component is a AbstractComponent', () => {
                 c = new ut.AbstractTemplate('c1');
