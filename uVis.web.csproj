@@ -62,6 +62,10 @@
     <Content Include="src\uvis\instance\AbstractTemplateInstance.js">
       <DependentUpon>AbstractTemplateInstance.ts</DependentUpon>
     </Content>
+    <TypeScriptCompile Include="src\uvis\instance\AppInstance.ts" />
+    <Content Include="src\uvis\instance\AppInstance.js">
+      <DependentUpon>AppInstance.ts</DependentUpon>
+    </Content>
     <Content Include="src\uvis\instance\HTMLTemplateInstance.js">
       <DependentUpon>HTMLTemplateInstance.ts</DependentUpon>
     </Content>
@@ -73,6 +77,10 @@
     </Content>
     <Content Include="src\uvis\template\AbstractTemplate.js">
       <DependentUpon>AbstractTemplate.ts</DependentUpon>
+    </Content>
+    <TypeScriptCompile Include="src\uvis\template\AppTemplate.ts" />
+    <Content Include="src\uvis\template\AppTemplate.js">
+      <DependentUpon>AppTemplate.ts</DependentUpon>
     </Content>
     <Content Include="src\uvis\template\HtmlTemplate.js">
       <DependentUpon>HtmlTemplate.ts</DependentUpon>
@@ -138,6 +146,12 @@
     </Content>
     <Content Include="src\uvis\instance\AbstractTemplateInstance.js.map">
       <DependentUpon>AbstractTemplateInstance.ts</DependentUpon>
+    </Content>
+    <Content Include="src\uvis\instance\AppInstance.js.map">
+      <DependentUpon>AppInstance.ts</DependentUpon>
+    </Content>
+    <Content Include="src\uvis\template\AppTemplate.js.map">
+      <DependentUpon>AppTemplate.ts</DependentUpon>
     </Content>
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>

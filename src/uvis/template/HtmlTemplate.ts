@@ -29,46 +29,92 @@ export module uvis.template {
             return this._tag;
         }
 
-        public createInstance(index = 1): uupM.uvis.util.IPromise {
-            // if there is a data source, we first get the data and then
-            // handle the different cases according to the type of data
-            if (this.dataSource) {
+        public createInstance(context: utpt.ComputeContext = { index: 1 }): uupM.uvis.util.IPromise {
+            // return already created instances if called before
+            if (this.instances.length > 0) {
+                return this.instances.length === 1 ?
+                    uup.Promise.resolve(this.instances[0]) :
+                    uup.Promise.resolve(this.instances);
+            }
+                // if there is a data source, we first get the data and then
+                // handle the different cases according to the type of data
+            else if (this.dataSource) {
                 return this.dataSource.getData()
                     .then((data) => {
                         if (Array.isArray(data)) {
                             // create an instance for each object in the array,
                             // or return undefined if array is empty
-                            return data.length > 0 ? uup.Promise.when(data.map((d, i) => {
-                                return this.createSingleInstance(i, d);
-                            })) : undefined;
+                            if (data.length > 1) {
+                                return uup.Promise.when(data.map((d, i) => {
+                                    return this.createSingleInstance({ index: i, data: d, parent: context.parent });
+                                }));
+                            }
+                            // if there is only one element in the data array, treat it as if there was 
+                            // only one object passed to it
+                            if (data.length === 1) {
+                                return this.createSingleInstance({ index: 1, data: data[0], parent: context.parent });
+                            }
+                            // if there are zero we return nothing
+                            return undefined;
                         }
                         else if (typeof data === 'number') {
                             // if data is a number N, create N instances
                             var counter = 0, temp = [];
                             while (counter < data) {
-                                temp.push(this.createSingleInstance(counter));
+                                temp.push(this.createSingleInstance({
+                                    index: counter,
+                                    data: context.data,
+                                    parent: context.parent
+                                }));
                                 counter++;
                             }
                             return uup.Promise.when(temp);
                         } else {
                             // if data is an object or anything else, 
                             // create a single instance
-                            return this.createSingleInstance(1, data);
+                            return this.createSingleInstance({
+                                index: 1,
+                                data: data === undefined ? context.data : data,
+                                parent: context.parent
+                            });
                         }
+                    })
+                    // before returning the result, we wrap it if it is in the form of an array
+                    .then((singleOrMany) => {
+                        var res = singleOrMany;
+                        if (Array.isArray(res)) {
+                            // Since all other calls to createInstance results in a Template Instance
+                            // we wrap the instances created in a "wrapper" instance                                     
+                            // Note: there is no properties set on the wrapper instance since
+                            // it does not have any properties itself. All children holds their own
+                            // properties.
+                            res = new uihtiM.uvis.instance.HTMLTemplateInstance();
+                            res.element = document.createDocumentFragment();
+                            res.children = singleOrMany;
+                            res.parent = context.parent;
+
+                            // add all children to the document fragment
+                            singleOrMany.forEach((instance) => {
+                                res.element.appendChild(instance.element);
+                            });
+                        }
+
+                        return res;
                     });
             } else {
                 // if there are no data source, we simple return a single instance
-                return this.createSingleInstance();
+                return this.createSingleInstance({ index: 1, data: context.data, parent: context.parent });
             }
         }
 
-        private createSingleInstance(index = 1, data = undefined): uupM.uvis.util.IPromise {
+        private createSingleInstance(context: utpt.ComputeContext): uupM.uvis.util.IPromise {
             // first we get the actual html element
-            var element = HtmlTemplate.createHTMLElement(this.tag, this.createUniqueId());
+            //var instanceId = this.createId(context.index);
+            var element = HtmlTemplate.createHTMLElement(this.tag);
 
             // then we schedule the computation of each property
             var propertyComputePromises = this.properties.map((name, prop: utpt.PropertyTemplate) => {
-                return prop.computeValue({ index: index, parent: this, data: data });
+                return prop.computeValue(context);
             });
 
             // then we wait for the computation to finish
@@ -84,9 +130,46 @@ export module uvis.template {
             })
 
             // then we assign the calculated properties to the html element we created
+            // and create an template instance to store the end result in
             .then((properties: uud.Dictionary) => {
+                var instance = new uihtiM.uvis.instance.HTMLTemplateInstance();
+
                 HtmlTemplate.setAttributes(element, properties);
-                return new uihtiM.uvis.instance.HTMLTemplateInstance(element, properties);
+
+                instance.element = element;
+                instance.properties = properties;
+                instance.parent = context.parent;
+
+                return instance;
+            })
+
+            // then create all children and add them to the instance
+            .then((instance) => {
+                var childCreateInstancePromises;
+
+                // if there are any children, first create them,
+                // then add them to the current created instance.
+                // otherwise we return the current created instance as is.
+                if (this.children.length > 0) {
+                    childCreateInstancePromises = this.children.map((t, i) => {
+                        // create each child with the instance this template just created as the parent
+                        // pass in the parents data, the child will decide to use it or override it
+                        // with its own.
+                        return t.createInstance({ index: i, parent: instance, data: context.data });
+                    });
+                    return uup.Promise.when(childCreateInstancePromises).then((childInstances) => {
+                        instance.children = childInstances;
+                        // add html elements to each other
+                        childInstances.forEach((c) => {
+                            if (c !== undefined) {
+                                instance.element.appendChild(c.element);
+                            }
+                        });
+                        return instance;
+                    });
+                } else {
+                    return instance;
+                }
             })
 
             // then save the new instance in the instance array
@@ -98,24 +181,23 @@ export module uvis.template {
             return promise;
         }
 
-        private static createHTMLElement(tag: string, id: string): HTMLElement {
+        private static createHTMLElement(tag: string): HTMLElement {
             var e = document.createElement(tag);
-            e.setAttribute('id', id);
+            //e.setAttribute('id', id);
             return e;
         }
 
         private static setAttributes(element: HTMLElement, properties: uud.Dictionary): HTMLElement {
-            // set text content
-            if (properties.contains('text')) {
-                element.innerHTML = properties.get('text');
-            }
-
             // add properties
             properties.forEach((name: string, value: any) => {
                 // fastest way to set attributes on html elements
                 // http://jsperf.com/jquery-data-vs-jqueryselection-data/49
                 if (value !== undefined && value !== null) {
-                    element.setAttribute(name, value);
+                    if (name === 'text') {
+                        element.innerHTML = properties.get('text');
+                    } else {
+                        element.setAttribute(name, value);
+                    }
                 }
             });
 

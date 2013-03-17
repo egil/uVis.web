@@ -7,11 +7,11 @@ import uddM = module('uvis/data/IData');
 
 export module uvis.template {
     export class AbstractTemplate {
+        private _parent: AbstractTemplate;
         private _children: AbstractTemplate[] = [];
         private _properties = new uudM.uvis.util.Dictionary();
         private _instances: uiatiM.uvis.instance.AbstractTemplateInstance[] = [];
         private _id: string;
-        private _idCounter: number = 0;
         private _dataSource: uddM.uvis.data.IData;
 
         constructor(id: string) {
@@ -24,6 +24,14 @@ export module uvis.template {
         get id(): string {
             return this._id;
         }      
+
+        get parent(): AbstractTemplate {
+            return this._parent;
+        }
+
+        set parent(parent) {
+            this._parent = parent;
+        }
 
         get children(): AbstractTemplate[] {
             return this._children;
@@ -45,16 +53,23 @@ export module uvis.template {
             this._dataSource = value;
         }
 
-        public createUniqueId(): string {
-            this._idCounter++;
-            return this.id + '-' + this._idCounter;
+        public createId(index): string {
+            return this.id + '-' + index;
+        }
+
+        public addChild(child: AbstractTemplate) {
+            this.children.push(child);
+        }
+
+        public addChildren(...children: AbstractTemplate[]) {
+            children.forEach(this.addChild, this);            
         }
 
         public addProperty(property: utptM.uvis.template.PropertyTemplate) {
             this.properties.add(property.name, property);
         }
 
-        public createInstance(index = 1): uupM.uvis.util.IPromise {
+        public createInstance(context: utptM.uvis.template.ComputeContext = { index: 1 }): uupM.uvis.util.IPromise {
             throw new Error('AbstractComponent.createInstance() should never be called directly. Must be overridden. (Template id = ' + this.id + ')');
         }
     }

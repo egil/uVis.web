@@ -1,12 +1,13 @@
 import uupM = module('uvis/util/Promise');
 import utatM = module('uvis/template/AbstractTemplate');
 import uipiM = module('uvis/instance/PropertyInstance');
+import uiatiM = module('uvis/instance/AbstractTemplateInstance');
 
 export module uvis.template {
     export interface ComputeContext {
         index: number;
-        parent: utatM.uvis.template.AbstractTemplate;
-        data: any;
+        parent?: uiatiM.uvis.instance.AbstractTemplateInstance;
+        data?: any;
     }
 
     export class PropertyTemplate {

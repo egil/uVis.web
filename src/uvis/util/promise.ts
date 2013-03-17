@@ -150,7 +150,7 @@ export module uvis.util {
                         promisedValues[i] = v;
                         pending--;
                         if (pending === 0) {
-                            joinedPromises.fulfill(promisedValues);
+                            joinedPromises.fulfill(promisedValues);                            
                         }
                     }, (e) => {
                         joinedPromises.reject(e)
