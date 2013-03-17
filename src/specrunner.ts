@@ -16,7 +16,7 @@ require.config({
 require(['nextTick',
          'spec/util/Promise.spec',
          'spec/util/Dictionary.spec',
-         'spec/Property.spec',
+         //'spec/Property.spec',
          'spec/template/AbstractTemplate.spec',
          'spec/template/HtmlTemplate.spec'], () => {
     // execute jasmine

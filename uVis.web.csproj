@@ -52,6 +52,22 @@
     <Content Include="src\spec\util\Promise.spec.js">
       <DependentUpon>Promise.spec.ts</DependentUpon>
     </Content>
+    <TypeScriptCompile Include="src\uvis\data\IData.ts" />
+    <Content Include="src\uvis\data\IData.js">
+      <DependentUpon>IData.ts</DependentUpon>
+    </Content>
+    <TypeScriptCompile Include="src\uvis\instance\PropertyInstance.ts" />
+    <TypeScriptCompile Include="src\uvis\instance\HTMLTemplateInstance.ts" />
+    <TypeScriptCompile Include="src\uvis\instance\AbstractTemplateInstance.ts" />
+    <Content Include="src\uvis\instance\AbstractTemplateInstance.js">
+      <DependentUpon>AbstractTemplateInstance.ts</DependentUpon>
+    </Content>
+    <Content Include="src\uvis\instance\HTMLTemplateInstance.js">
+      <DependentUpon>HTMLTemplateInstance.ts</DependentUpon>
+    </Content>
+    <Content Include="src\uvis\instance\PropertyInstance.js">
+      <DependentUpon>PropertyInstance.ts</DependentUpon>
+    </Content>
     <Content Include="src\uvis\Property.js">
       <DependentUpon>Property.ts</DependentUpon>
     </Content>
@@ -60,6 +76,10 @@
     </Content>
     <Content Include="src\uvis\template\HtmlTemplate.js">
       <DependentUpon>HtmlTemplate.ts</DependentUpon>
+    </Content>
+    <TypeScriptCompile Include="src\uvis\template\PropertyTemplate.ts" />
+    <Content Include="src\uvis\template\PropertyTemplate.js">
+      <DependentUpon>PropertyTemplate.ts</DependentUpon>
     </Content>
     <Content Include="src\uvis\util\Dictionary.js">
       <DependentUpon>Dictionary.ts</DependentUpon>
@@ -103,6 +123,21 @@
     </Content>
     <Content Include="src\spec\util\Promise.spec.js.map">
       <DependentUpon>Promise.spec.ts</DependentUpon>
+    </Content>
+    <Content Include="src\uvis\data\IData.js.map">
+      <DependentUpon>IData.ts</DependentUpon>
+    </Content>
+    <Content Include="src\uvis\template\PropertyTemplate.js.map">
+      <DependentUpon>PropertyTemplate.ts</DependentUpon>
+    </Content>
+    <Content Include="src\uvis\instance\PropertyInstance.js.map">
+      <DependentUpon>PropertyInstance.ts</DependentUpon>
+    </Content>
+    <Content Include="src\uvis\instance\HTMLTemplateInstance.js.map">
+      <DependentUpon>HTMLTemplateInstance.ts</DependentUpon>
+    </Content>
+    <Content Include="src\uvis\instance\AbstractTemplateInstance.js.map">
+      <DependentUpon>AbstractTemplateInstance.ts</DependentUpon>
     </Content>
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
@@ -149,9 +184,7 @@
     <Content Include="src\libs\require.js" />
     <Content Include="src\libs\jquery-1.9.0.min.map" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="src\uvis\data\" />
-  </ItemGroup>
+  <ItemGroup />
   <ItemGroup>
     <Content Include="packages.config" />
   </ItemGroup>

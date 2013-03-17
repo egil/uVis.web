@@ -1,16 +1,17 @@
-import dictModule = module('uvis/util/Dictionary');
-import promiseModule = module('uvis/util/Promise');
-import helpersModule = module('uvis/util/Extensions');
-import propertyModule = module('uvis/Property');
-import abstractTemplateModule = module('uvis/template/AbstractTemplate');
+import uudM = module('uvis/util/Dictionary');
+import uupM = module('uvis/util/Promise');
+import uueM = module('uvis/util/Extensions');
+import utatM = module('uvis/template/AbstractTemplate');
+import utptM = module('uvis/template/PropertyTemplate');
+import uihtiM = module('uvis/instance/HTMLTemplateInstance');
 
 export module uvis.template {
-    import dict = dictModule.uvis.util;
-    import util = promiseModule.uvis.util;
-    import prop = propertyModule.uvis;
-    import helpers = helpersModule.uvis.util;
+    import uud = uudM.uvis.util;
+    import uup = uupM.uvis.util;
+    import utpt = utptM.uvis.template;
+    import uue = uueM.uvis.util;
 
-    export class HtmlTemplate extends abstractTemplateModule.uvis.template.AbstractTemplate {
+    export class HtmlTemplate extends utatM.uvis.template.AbstractTemplate {
         private _tag: string;
         constructor(id, tag) {
             super(id);
@@ -28,39 +29,101 @@ export module uvis.template {
             return this._tag;
         }
 
-        createContent(): util.IPromise {
-            var promise = new util.Promise(),
-                data;
+        public createInstance(index = 1): uupM.uvis.util.IPromise {
+            // if there is a data source, we first get the data and then
+            // handle the different cases according to the type of data
+            if (this.dataSource) {
+                return this.dataSource.getData()
+                    .then((data) => {
+                        if (Array.isArray(data)) {
+                            // create an instance for each object in the array,
+                            // or return undefined if array is empty
+                            return data.length > 0 ? uup.Promise.when(data.map((d, i) => {
+                                return this.createSingleInstance(i, d);
+                            })) : undefined;
+                        }
+                        else if (typeof data === 'number') {
+                            // if data is a number N, create N instances
+                            var counter = 0, temp = [];
+                            while (counter < data) {
+                                temp.push(this.createSingleInstance(counter));
+                                counter++;
+                            }
+                            return uup.Promise.when(temp);
+                        } else {
+                            // if data is an object or anything else, 
+                            // create a single instance
+                            return this.createSingleInstance(1, data);
+                        }
+                    });
+            } else {
+                // if there are no data source, we simple return a single instance
+                return this.createSingleInstance();
+            }
+        }
 
-            // create the element
-            var elm = this.createElement();
+        private createSingleInstance(index = 1, data = undefined): uupM.uvis.util.IPromise {
+            // first we get the actual html element
+            var element = HtmlTemplate.createHTMLElement(this.tag, this.createUniqueId());
 
-            // assign attributes
-            this.setAttributes(elm);
+            // then we schedule the computation of each property
+            var propertyComputePromises = this.properties.map((name, prop: utpt.PropertyTemplate) => {
+                return prop.computeValue({ index: index, parent: this, data: data });
+            });
 
-            // fulfill promise
-            promise.fulfill(elm);
+            // then we wait for the computation to finish
+            var promise = uup.Promise.when(propertyComputePromises)
+
+            // then we move all calculated results into a dictionary for easier lookup later
+            .then((properties: any[]) => {
+                var d = new uud.Dictionary();
+                properties.forEach((pair) => {
+                    d.add(pair.name, pair.value);
+                });
+                return d;
+            })
+
+            // then we assign the calculated properties to the html element we created
+            .then((properties: uud.Dictionary) => {
+                HtmlTemplate.setAttributes(element, properties);
+                return new uihtiM.uvis.instance.HTMLTemplateInstance(element, properties);
+            })
+
+            // then save the new instance in the instance array
+            .then((instance) => {
+                this.instances.push(instance);
+                return instance;
+            });
 
             return promise;
         }
 
-        private createElement(): HTMLElement {
-            return document.createElement(this._tag);
+        private static createHTMLElement(tag: string, id: string): HTMLElement {
+            var e = document.createElement(tag);
+            e.setAttribute('id', id);
+            return e;
         }
 
-        private setAttributes(element: HTMLElement) {
-            // add id attribute
-            element.setAttribute('id', this.id);
-
+        private static setAttributes(element: HTMLElement, properties: uud.Dictionary): HTMLElement {
             // set text content
-            if (this.properties.contains('text')) {
-                element.innerHTML = this.properties.get('text').value;
+            if (properties.contains('text')) {
+                element.innerHTML = properties.get('text');
             }
 
             // add properties
-            this.properties.forEach((key: string, prop: prop.Property) => {                
-                element.setAttribute(key, prop.value);
+            properties.forEach((name: string, value: any) => {
+                // fastest way to set attributes on html elements
+                // http://jsperf.com/jquery-data-vs-jqueryselection-data/49
+                if (value !== undefined && value !== null) {
+                    element.setAttribute(name, value);
+                }
             });
+
+            return element;
+        }
+
+        private static bindEvents(element: HTMLElement, events: any[]) {
+
         }
 
         // private static LIST_OF_ATTRIBUTES = ['abbr', 'accept', 'accept-charset', 'accesskey', 'action', 'allowfullscreen', 'alt', 'async', 'autocomplete', 'autofocus', 'autoplay', 'border', 'challenge', 'charset', 'checked', 'cite', 'class', 'cols', 'colspan', 'command', 'content', 'contenteditable', 'contextmenu', 'controls', 'coords', 'crossorigin', 'data', 'datetime', 'default', 'defer', 'dir', 'dirname', 'disabled', 'draggable', 'dropzone', 'enctype', 'for', 'form', 'formaction', 'formenctype', 'formmethod', 'formnovalidate', 'formtarget', 'headers', 'height', 'hidden', 'high', 'href', 'hreflang', 'http-equiv', 'icon', 'id', 'inert', 'inputmode', 'ismap', 'keytype', 'kind', 'label', 'lang', 'list', 'loop', 'low', 'manifest', 'max', 'maxlength', 'media', 'mediagroup', 'method', 'min', 'multiple', 'muted', 'name', 'novalidate', 'open', 'optimum', 'pattern', 'placeholder', 'poster', 'preload', 'radiogroup', 'readonly', 'rel', 'required', 'reversed', 'rows', 'rowspan', 'sandbox', 'spellcheck', 'scope', 'scoped', 'seamless', 'selected', 'shape', 'size', 'sizes', 'span', 'src', 'srcdoc', 'srclang', 'start', 'step', 'style', 'tabindex', 'target', 'title', 'translate', 'type', 'typemustmatch', 'usemap', 'value', 'width', 'wrap'];

@@ -101,6 +101,7 @@ export module uvis.util {
                     promiseOrValue = callback(this._valueOrReason);
                 } catch (e) {
                     promise2.reject(e);
+                    if (Promise.debug) console.error(e);
                     return;
                 }
 
@@ -133,30 +134,33 @@ export module uvis.util {
         static when(promises: Promise[]): IPromise {
             var joinedPromises = new Promise();
             var promisedValues = [];
-            var pending = promises.length;
+            var pending = Array.isArray(promises) ? promises.length : 0;
 
             // if no promises was given as an argument, fulfill right away.
             if (pending === 0) {
                 joinedPromises.fulfill(promisedValues);
             }
-
-            // subscribe to the promises.
-            // important: add the promised value to the same location
-            // in results array as the original promise was positioned 
-            // in the input promise array.
-            promises.forEach((p, i) => {
-                p.last((v) => {
-                    promisedValues[i] = v;
-                    pending--;
-                    if (pending === 0) {
-                        joinedPromises.fulfill(promisedValues);
-                    }
-                }, (e) => {
-                    joinedPromises.reject(e)
+            else {
+                // subscribe to the promises.
+                // important: add the promised value to the same location
+                // in results array as the original promise was positioned 
+                // in the input promise array.
+                promises.forEach((p, i) => {
+                    p.last((v) => {
+                        promisedValues[i] = v;
+                        pending--;
+                        if (pending === 0) {
+                            joinedPromises.fulfill(promisedValues);
+                        }
+                    }, (e) => {
+                        joinedPromises.reject(e)
+                    });
                 });
-            });
+            }
 
             return joinedPromises;
         }
+
+        static debug = false;
     }
 }

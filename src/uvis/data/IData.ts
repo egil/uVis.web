@@ -1,6 +1,6 @@
-import promiseModule = module('uvis/util/Promise');
+import uupM = module('uvis/util/Promise');
 export module uvis.data {
     export interface IData {
-        getData(): promiseModule.uvis.util.IPromise;
+        getData(): uupM.uvis.util.IPromise;
     }
 }

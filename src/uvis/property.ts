@@ -38,7 +38,7 @@ export module uvis {
         }
 
         /** Triggers a re-calculation of the property's value */
-        calculate(): util.IPromise {
+        public calculate(index = 1): util.IPromise {
             return util.Promise.resolve(this);
         }
 
@@ -94,9 +94,9 @@ export module uvis {
         private _isStale = false;
         private _updating = false;
         private _calculatedPromise: util.IPromise;
-        private _calculatorFunc: () => util.IPromise;
+        private _calculatorFunc: (number) => util.IPromise;
 
-        constructor(key: string, calculatorFunc: () => util.IPromise) {
+        constructor(key: string, calculatorFunc: (number) => util.IPromise) {
             super(key);
             this._calculatorFunc = calculatorFunc;
         }
@@ -106,7 +106,7 @@ export module uvis {
                    this._isStale ? PropertyState.STALE : PropertyState.CURRENT;
         }
 
-        calculate(): util.IPromise {
+        public calculate(index = 1): util.IPromise {
             // if already updating, return the existing promise
             if (this._updating && this._calculatedPromise !== undefined) {
                 return this._calculatedPromise;
@@ -114,7 +114,7 @@ export module uvis {
             
             // else start a new calculation
             this._updating = true;            
-            this._calculatedPromise = this._calculatorFunc();
+            this._calculatedPromise = this._calculatorFunc(index);
 
             // subscribe to the result of the calculation
             this._calculatedPromise.last((calculatedValue) => {
