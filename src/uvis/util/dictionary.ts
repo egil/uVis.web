@@ -65,7 +65,7 @@ export module uvis.util {
             }
             return item;
         }
-
+        
         forEach(func: (key: string, value: any) => void) {
             for (var prop in this._d) {
                 if (this.contains(prop)) {

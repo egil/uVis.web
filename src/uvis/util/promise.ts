@@ -101,7 +101,17 @@ export module uvis.util {
                     promiseOrValue = callback(this._valueOrReason);
                 } catch (e) {
                     promise2.reject(e);
-                    if (Promise.debug) console.error(e);
+                    if (Promise.debug) {
+                        var stack = e.stack === undefined ? [] :
+                            e.stack.replace(/^[^\(]+?[\n$]/gm, '')
+                                   .replace(/^\s+at\s+/gm, '')
+                                   .replace(/^Object.<anonymous>\s*\(/gm, '{anonymous}()@')
+                                   .split('\n');
+                        console.error(e.message || e);
+                        stack.forEach((line) => {
+                            console.error('\t' + line);
+                        });                       
+                    }
                     return;
                 }
 
@@ -131,7 +141,17 @@ export module uvis.util {
             return p;
         }
 
-        static when(promises: Promise[]): IPromise {
+        static fail(reason: any): IPromise {
+            var p = new Promise();
+            p.reject(reason);
+            return p;
+        }
+
+        static join(...promises: IPromise[]): IPromise {
+            return Promise.when(promises);
+        }
+
+        static when(promises: IPromise[]): IPromise {
             var joinedPromises = new Promise();
             var promisedValues = [];
             var pending = Array.isArray(promises) ? promises.length : 0;

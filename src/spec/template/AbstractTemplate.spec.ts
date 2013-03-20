@@ -9,6 +9,8 @@ export module uvis.spec {
     describe('Abstract Template:', () => {
         var c, actual, expected, fn;
 
+        uupM.uvis.util.Promise.debug = true;
+
         beforeEach(function () {
             c = undefined;
             actual = undefined;

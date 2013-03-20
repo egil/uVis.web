@@ -1,15 +1,8 @@
 import uupM = module('uvis/util/Promise');
-import utatM = module('uvis/template/AbstractTemplate');
 import uipiM = module('uvis/instance/PropertyInstance');
-import uiatiM = module('uvis/instance/AbstractTemplateInstance');
+import utccM = module('uvis/template/ComputeContext');
 
 export module uvis.template {
-    export interface ComputeContext {
-        index: number;
-        parent?: uiatiM.uvis.instance.AbstractTemplateInstance;
-        data?: any;
-    }
-
     export class PropertyTemplate {
         private _name;
         private _computeFunctionOrValue;
@@ -25,7 +18,7 @@ export module uvis.template {
             return this._name;
         }
 
-        public computeValue(context: ComputeContext): uupM.uvis.util.IPromise {
+        public computeValue(context: utccM.uvis.template.ComputeContext): uupM.uvis.util.IPromise {
             // a PropertyInstance
             var res = new uipiM.uvis.instance.PropertyInstance(this._name, this._defaultValue);
 

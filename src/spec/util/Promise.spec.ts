@@ -5,6 +5,7 @@ import p = promiseModule.uvis.util;
 declare function nextTick(fn: Function): void;
 
 export module uvis.spec {
+    p.Promise.debug = true;
     describe('Promise:', () => {
         var p1, p2, p3: p.Promise;
         var e1, e2, e3: any;

@@ -1,12 +1,14 @@
 import uudM = module('uvis/util/Dictionary');
 import uupM = module('uvis/util/Promise');
-import uueM = module('uvis/util/Extensions');
-import utptM = module('uvis/template/PropertyTemplate');
 import uiatiM = module('uvis/instance/AbstractTemplateInstance');
 import uddM = module('uvis/data/IData');
+import utccM = module('uvis/template/ComputeContext');
+import utptM = module('uvis/template/PropertyTemplate');
 
 export module uvis.template {
+
     export class AbstractTemplate {
+        private static _definitions = new uudM.uvis.util.Dictionary();
         private _parent: AbstractTemplate;
         private _children: AbstractTemplate[] = [];
         private _properties = new uudM.uvis.util.Dictionary();
@@ -23,7 +25,7 @@ export module uvis.template {
 
         get id(): string {
             return this._id;
-        }      
+        }
 
         get parent(): AbstractTemplate {
             return this._parent;
@@ -62,15 +64,33 @@ export module uvis.template {
         }
 
         public addChildren(...children: AbstractTemplate[]) {
-            children.forEach(this.addChild, this);            
+            children.forEach(this.addChild, this);
         }
 
         public addProperty(property: utptM.uvis.template.PropertyTemplate) {
             this.properties.add(property.name, property);
         }
 
-        public createInstance(context: utptM.uvis.template.ComputeContext = { index: 1 }): uupM.uvis.util.IPromise {
+        public createInstance(context: utccM.uvis.template.ComputeContext): uupM.uvis.util.IPromise {
             throw new Error('AbstractComponent.createInstance() should never be called directly. Must be overridden. (Template id = ' + this.id + ')');
+        }
+
+        public static create(id: string, templateTypeId: string): AbstractTemplate {
+            var fn = AbstractTemplate._definitions.get('*');
+            if (!AbstractTemplate._definitions.contains(templateTypeId)) {
+                if (fn instanceof Function) {
+                    return fn(id, templateTypeId);
+                } else {
+                    throw new Error('Unable to find Template type with id: ' + templateTypeId);
+                }
+            } else {
+                fn = AbstractTemplate._definitions.get(templateTypeId);
+                return fn(id, templateTypeId);
+            }
+        }
+
+        public static registerTemplateType(templateTypeId: string, createFunction: (id: string, templateTypeId?: string) => AbstractTemplate) {
+            AbstractTemplate._definitions.add(templateTypeId, createFunction);
         }
     }
 }

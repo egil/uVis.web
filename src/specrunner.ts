@@ -18,7 +18,8 @@ require(['nextTick',
          'spec/util/Dictionary.spec',
          //'spec/Property.spec',
          'spec/template/AbstractTemplate.spec',
-         'spec/template/HtmlTemplate.spec'], () => {
+         'spec/template/HTMLTemplate.spec',
+         'spec/template/AppTemplate.spec'], () => {
     // execute jasmine
     var jasmineEnv = jasmine.getEnv();
     jasmineEnv.execute();
