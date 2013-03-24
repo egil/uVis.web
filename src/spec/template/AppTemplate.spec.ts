@@ -13,10 +13,14 @@ export module uvis.spec {
     var dcc = utccM.uvis.template.DefaultComputeContext;
     var cc = utccM.uvis.template;
 
+    function endsWith(input, match) {
+        return input.length >= match.length && input.substr(input.length - match.length) === match;
+    }
+
     describe('App Template:', () => {
         var actual, expected, fn, input, acc;
-        var defaultPreample = '"use strict";var index=___c___.index;var data=___c___.data;var parent=___c___.parent;var map=___c___.map;var resolve=___c___.resolve;';
-
+        var defaultPreample = "\"use strict\";\nvar ___res___;\nvar index=___c___.index;\nvar data=___c___.data;\nvar parent=___c___.parent;\nvar map=___c___.map;\nvar resolve=___c___.resolve;\n";
+        
         beforeEach(function () {
             actual = undefined;
             input = undefined;
@@ -69,14 +73,14 @@ export module uvis.spec {
                                 id: 'peoplename',
                                 type: 'li',
                                 dataQuery: {
-                                    expression: 'map.People'
+                                    expression: 'map.get("peopledb").data.then(function(d) { return d.People; })'
                                 },
                                 properties: [{
                                     name: 'color',
                                     expression: 'index % 2 === 0 ? "red" : "green"'
                                 }, {
                                     name: 'text',
-                                    expression: 'data[index].Name + ": " + data[index].Role'
+                                    expression: 'data.Name + ": " + data.Role'
                                 }]
                             }]
                         }]
@@ -85,7 +89,8 @@ export module uvis.spec {
             };
 
             it('should return an app instance with templates created', () => {
-                var at = new utatM.uvis.template.AppTemplate(JSON.stringify(appDef));
+                utat.AppTemplate.debug = true;
+                var at = new utatM.uvis.template.AppTemplate(appDef);
                 var ai = at.createInstance();
 
                 // verify basic app instance properties
@@ -97,9 +102,10 @@ export module uvis.spec {
                 expect(ai.screens.contains(appDef.screens[0].url)).toBe(true);
 
                 var s = ai.screens.get('/');                
-                acc = cc.extend(dcc, { map: ai.dataSources.get('peopledb') });
+                acc = cc.extend(dcc, { map: ai.dataSources });
                 s.createInstance(acc).last((inst) => {
                     console.log(inst);
+                    console.log(inst.getContent());
                 });
             });
         });
@@ -121,9 +127,9 @@ export module uvis.spec {
 
             it('should wrap the result of running the JavaScript code into a Promise', () => {
                 input = '42 + 42';
-                expected = defaultPreample + 'return ___c___.resolve(42 + 42);'
+                expected = '___res___=42 + 42;\nreturn ___c___.resolve(___res___);';
                 actual = utat.AppTemplate.translate(input);
-                expect(actual).toBe(expected);
+                expect(endsWith(actual, expected)).toBeTruthy();
             });
         });
 

@@ -3,7 +3,8 @@
 require.config({
     baseUrl: 'src',
     paths: {
-        'nextTick': 'libs/nextTick'
+        'nextTick': 'libs/nextTick',
+        'shims': 'libs/shims'
     },
 
     shim: {
@@ -13,10 +14,11 @@ require.config({
     }
 });
 
-require(['nextTick',
+require(['nextTick','shims',
          'spec/util/Promise.spec',
          'spec/util/Dictionary.spec',
          //'spec/Property.spec',
+         'spec/data/JSONDataSource.spec',
          'spec/template/AbstractTemplate.spec',
          'spec/template/HTMLTemplate.spec',
          'spec/template/AppTemplate.spec'], () => {

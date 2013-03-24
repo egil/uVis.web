@@ -297,8 +297,10 @@ export module uvis.spec {
                     return a1;
                 }, '', 20);
 
-                runs(() => {
-                    expect(a1.element.getAttribute('style')).toBe('border-color:red;width:200px;height:200px;');
+                runs(() => {                    
+                    expect(a1.element.getAttribute('style').match(/border-color:\s?red;/)).toBeTruthy();
+                    expect(a1.element.getAttribute('style').match(/width:\s?200px;/)).toBeTruthy();
+                    expect(a1.element.getAttribute('style').match(/height:\s?200px;/)).toBeTruthy();
                 });
             });
 
@@ -317,8 +319,10 @@ export module uvis.spec {
                     return a1;
                 }, '', 20);
 
-                runs(() => {
-                    expect(a1.element.getAttribute('style')).toBe('border-color:red;width:200px;height:200px;');
+                runs(() => {                    
+                    expect(a1.element.getAttribute('style').match(/border-color:\s?red;/)).toBeTruthy();
+                    expect(a1.element.getAttribute('style').match(/width:\s?200px;/)).toBeTruthy();
+                    expect(a1.element.getAttribute('style').match(/height:\s?200px;/)).toBeTruthy();
                 });
             });
 

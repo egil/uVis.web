@@ -4,7 +4,8 @@ import utccM = module('uvis/template/ComputeContext');
 
 export module uvis.instance {
     export class ScreenTemplateInstance extends uiatiM.uvis.instance.AbstractTemplateInstance {
-        public getContent(context: utccM.uvis.template.ComputeContext): DocumentFragment {  
+
+        public getContent(): DocumentFragment {  
             // append each node to a document fragment.
             // this will insert very node in one call later, 
             // making the insertion go faster.

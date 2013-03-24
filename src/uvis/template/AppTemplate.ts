@@ -73,8 +73,8 @@ export module uvis.template {
     export class AppTemplate {
         private _appdef: AppDefinition;
 
-        constructor(appDefinitionAsJson: string) {
-            this._appdef = JSON.parse(appDefinitionAsJson);
+        constructor(appDefinition: AppDefinition) {
+            this._appdef = appDefinition;
 
             // register template types, default is HTMLTemplate
             utatM.uvis.template.AbstractTemplate.registerTemplateType('*',
@@ -84,17 +84,21 @@ export module uvis.template {
         }
 
         public createInstance(): uiaiM.uvis.instance.AppInstance {
+            var dataSources, propertySets, screens, appInstance;
+            
             // create data source instances
-            var dataSources = this.createDataSourceTemplates(this._appdef.dataSources);
+            dataSources = this.createDataSourceTemplates(this._appdef.dataSources);
 
             // create property set bag and property set instances
-            var propertySets = this.createPropertySetTemplates(this._appdef.propertySets);
+            if (this._appdef.propertySets) {
+                propertySets = this.createPropertySetTemplates(this._appdef.propertySets);
+            }
 
             // create screens
-            var screens = this.createScreenTemplates(this._appdef.screens);
+            screens = this.createScreenTemplates(this._appdef.screens);
 
             // create app instance and return it once filled
-            var appInstance = new uiaiM.uvis.instance.AppInstance();
+            appInstance = new uiaiM.uvis.instance.AppInstance();
             appInstance.name = this._appdef.name;
             appInstance.description = this._appdef.description;
             appInstance.dataSources = dataSources;
@@ -223,11 +227,11 @@ export module uvis.template {
           * valid JavaScript code that can be executed
           */
         static translate(expression: string): string {
-            var defaultPreample = '"use strict";var index=___c___.index;var data=___c___.data;var parent=___c___.parent;var map=___c___.map;var resolve=___c___.resolve;';
+            var defaultPreample = "\"use strict\";\nvar ___res___;\nvar index=___c___.index;\nvar data=___c___.data;\nvar parent=___c___.parent;\nvar map=___c___.map;\nvar resolve=___c___.resolve;\n";
             var code = defaultPreample;
-            code += AppTemplate.debug ? 'console.log("executing: ' + expression + '"); console.log(___c___);' : '';
-            code += 'return ___c___.resolve(' + expression + ');';
-
+            code += AppTemplate.debug ? "console.debug(\"Executing expression: " + expression.replace(/(")/g, "\\$1") + "\");\nconsole.debug(___c___);\n" : "";
+            code += "___res___=" + expression + ";\n";
+            code += "return ___c___.resolve(___res___);";
             return code;
         }
 

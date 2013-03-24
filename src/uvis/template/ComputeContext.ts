@@ -25,9 +25,9 @@ export module uvis.template {
                     map?;
                     screen?: utatM.uvis.template.AbstractTemplate; }): ComputeContext => {
         var cc = {
-            index: extensions.index || context.index,
+            index: extensions.index === undefined ? context.index : extensions.index,
             parent: extensions.parent || context.parent,
-            data: extensions.data || context.data,
+            data: extensions.data === undefined ? context.data : extensions.data,
             map: extensions.map || context.map,
             screen: extensions.screen || context.screen,
             resolve: uupM.uvis.util.Promise.resolve

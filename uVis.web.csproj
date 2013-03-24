@@ -22,6 +22,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Content Include="src\libs\nextTick.js" />
+    <Content Include="src\libs\shims.js" />
     <Content Include="src\libs\when-1.8.1.js" />
     <Content Include="src\specrunner.js">
       <DependentUpon>specrunner.ts</DependentUpon>
@@ -35,6 +36,10 @@
     </Content>
     <TypeScriptCompile Include="src\uvis\util\Extensions.ts" />
     <TypeScriptCompile Include="src\uvis\template\HTMLTemplate.ts" />
+    <Content Include="src\spec\data\JSONDataSource.spec.js">
+      <DependentUpon>JSONDataSource.spec.ts</DependentUpon>
+    </Content>
+    <Content Include="src\spec\data\JSONDataSource.spec.ts" />
     <Content Include="src\spec\Property.spec.js">
       <DependentUpon>Property.spec.ts</DependentUpon>
     </Content>
@@ -117,10 +122,6 @@
     <TypeScriptCompile Include="src\uvis\template\PropertySetTemplate.ts" />
     <Content Include="src\uvis\template\HTMLTemplate.js">
       <DependentUpon>HTMLTemplate.ts</DependentUpon>
-    </Content>
-    <TypeScriptCompile Include="src\uvis\template\HTMLTextTemplate.ts" />
-    <Content Include="src\uvis\template\HTMLTextTemplate.js">
-      <DependentUpon>HTMLTextTemplate.ts</DependentUpon>
     </Content>
     <Content Include="src\uvis\template\PropertySetTemplate.js">
       <DependentUpon>PropertySetTemplate.ts</DependentUpon>
@@ -220,15 +221,17 @@
     <Content Include="src\spec\template\HtmlTemplate.spec.js.map">
       <DependentUpon>HTMLTemplate.spec.ts</DependentUpon>
     </Content>
-    <Content Include="src\uvis\template\HTMLTextTemplate.js.map">
-      <DependentUpon>HTMLTextTemplate.ts</DependentUpon>
-    </Content>
     <Content Include="src\uvis\instance\ScreenTemplateInstance.js.map">
       <DependentUpon>ScreenTemplateInstance.ts</DependentUpon>
     </Content>
     <Content Include="src\uvis\template\ComputeContext.js.map">
       <DependentUpon>ComputeContext.ts</DependentUpon>
     </Content>
+    <Content Include="src\spec\data\JSONDataSource.spec.js.map">
+      <DependentUpon>JSONDataSource.spec.ts</DependentUpon>
+    </Content>
+    <Content Include="apps\patient-demo\patient-data.json" />
+    <None Include="apps\patient-demo\patient-definition.json" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
@@ -239,7 +242,7 @@
     <TypeScriptCompile Include="src\spec\util\Promise.spec.ts" />
     <TypeScriptCompile Include="src\specrunner.ts" />
     <TypeScriptCompile Include="src\spec\Property.spec.ts" />
-    <None Include="app-definitions\demo1.json" />
+    <None Include="apps\demo1.json" />
     <Content Include="app.css" />
     <Content Include="index.html" />
     <Content Include="src\.typings\jasmine.d.ts" />

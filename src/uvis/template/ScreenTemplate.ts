@@ -33,7 +33,7 @@ export module uvis.template {
             })).then((instances) => {
                 var sti = new uistiM.uvis.instance.ScreenTemplateInstance();
                 sti.template = this;
-                sti.children.push(instances);
+                sti.children = instances;
                 return sti;
             });
         }

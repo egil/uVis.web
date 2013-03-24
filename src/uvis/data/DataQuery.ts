@@ -6,6 +6,7 @@ export module uvis.data {
     export class DataQuery implements udidM.uvis.data.IData {
         private _queryFunctionOrValue;
         private _defaultValue;
+
         constructor(queryFunctionOrValue, defaultValue?: any) {
             this._queryFunctionOrValue = queryFunctionOrValue;
             this._defaultValue = defaultValue;
