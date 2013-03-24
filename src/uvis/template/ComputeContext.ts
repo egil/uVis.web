@@ -14,7 +14,7 @@ export module uvis.template {
     }
 
     export var DefaultComputeContext: ComputeContext = {
-        index: 1,
+        index: 0,
         resolve: uupM.uvis.util.Promise.resolve
     }
 

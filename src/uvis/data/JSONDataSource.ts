@@ -1,3 +1,4 @@
+/// <reference path="../../.typings/jquery.d.ts" />
 import uupM = module('uvis/util/Promise');
 
 export module uvis.data {
@@ -16,23 +17,10 @@ export module uvis.data {
         get data(): uupM.uvis.util.IPromise {
             var promise = new uupM.uvis.util.Promise();
             if (this._data === undefined) {
-                // todo download the data
-                var httpRequest;
-                if (XMLHttpRequest) { // Mozilla, Safari, ...
-                    httpRequest = new XMLHttpRequest();
-                } else if (ActiveXObject) { // IE 8 and older
-                    httpRequest = new ActiveXObject("Microsoft.XMLHTTP");
-                }
-                httpRequest.onreadystatechange = () => {
-                    if (httpRequest.status === 200) {
-                        this._data = JSON.parse(httpRequest.responceText);
-                        promise.fulfill(this._data);
-                    } else {
-                        promise.reject(httpRequest.responseText);
-                    }
-                };
-                httpRequest.open('GET', this._source);
-                httpRequest.send();
+                $.getJSON(this._source, undefined, (result) => {
+                    this._data = result;
+                    promise.fulfill(this._data);
+                });
             } else {
                 promise.fulfill(this._data);
             }

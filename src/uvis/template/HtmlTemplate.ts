@@ -52,7 +52,7 @@ export module uvis.template {
                             // if there is only one element in the data array, treat it as if there was 
                             // only one object passed to it
                             if (data.length === 1) {
-                                return this.createSingleInstance(cc.extend(context, { index: 1, data: data[0] }));
+                                return this.createSingleInstance(cc.extend(context, { index: 0, data: data[0] }));
                             }
                             // if there are zero we return nothing
                             return undefined;
@@ -68,7 +68,7 @@ export module uvis.template {
                         } else {
                             // if data is an object or anything else, 
                             // create a single instance
-                            return this.createSingleInstance(cc.extend(context, { index: 1, data: data === undefined ? context.data : data }));
+                            return this.createSingleInstance(cc.extend(context, { index: 0, data: data === undefined ? context.data : data }));
                         }
                     })
                     // before returning the result, we wrap it if it is in the form of an array
@@ -95,7 +95,7 @@ export module uvis.template {
                     });
             } else {
                 // if there are no data source, we simple return a single instance
-                return this.createSingleInstance(cc.extend(context, { index: 1 }));
+                return this.createSingleInstance(cc.extend(context, { index: 0 }));
             }
         }
 

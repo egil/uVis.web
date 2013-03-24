@@ -20,9 +20,9 @@ require(['nextTick', 'shims', 'uvis/template/AppTemplate'], (nt, s, utatM) => {
         console.log('test');
         $.getJSON('/apps/patient-demo/patient-definition.json', null, (definition) => {
             console.log('test');
-            var appTemplate = new utatM.uvis.template.AppTemplate(definition);
-            var instance = appTemplate.createInstance();
-            instance.initialize();
+            var appTemplate = new utatM.uvis.template.AppTemplate(definition, true);
+            var appInstance = appTemplate.createInstance();
+            appInstance.initialize();
         });
     });
 });

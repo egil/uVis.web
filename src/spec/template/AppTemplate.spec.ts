@@ -101,7 +101,7 @@ export module uvis.spec {
                 expect(ai.dataSources.contains(appDef.dataSources[0].id)).toBe(true);
                 expect(ai.screens.contains(appDef.screens[0].url)).toBe(true);
 
-                var s = ai.screens.get('/');                
+                var s = ai.screens.get('/');            
                 acc = cc.extend(dcc, { map: ai.dataSources });
                 s.createInstance(acc).last((inst) => {
                     console.log(inst);

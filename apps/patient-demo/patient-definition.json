@@ -1,1 +1,108 @@
-﻿{"name":"Patient Demo 1","description":"A demo app, inspired from the example on page 21 in VisTool Requirements","dataSources":[],"screens":[]}
+﻿{
+    "name": "Patient Demo 1",
+    "description": "A demo app, inspired from the example on page 21 in VisTool Requirements",
+    "dataSources": [
+        {
+            "id": "pd",
+            "type": "JSON",
+            "source": "/apps/patient-demo/patient-data.json"
+        }
+    ],
+    "propertySets": [],
+    "screens": [
+        {
+            "id": "s1",
+            "name": "Patient Medicin Intake",
+            "url": "/",
+            "forms": [
+                {
+                    "id": "frmPatient",
+                    "name": "Patient Form",
+                    "visible": true,
+                    "dataQuery": {
+                        "expression": "map.get(\"pd\").data"
+                    },
+                    "children": [
+                        {
+                            "id": "lblMedicine",
+                            "type": "div",
+                            "dataQuery": {
+                                "expression": "parent.data.MedOrder"
+                            },
+                            "children": [
+                                {
+                                    "id": "txtMedOrder",
+                                    "type": "div",
+                                    "properties": [
+                                        {
+                                            "name": "text",
+                                            "expression": "parent.data.MedName"
+                                        }
+                                    ],
+                                    "children": [
+                                        {
+                                            "id": "bxIntake",
+                                            "type": "span",
+                                            "dataQuery": {
+                                                "expression": "parent.data.Intake"
+                                            },
+                                            "properties": [
+                                                {
+                                                    "name": "style",
+                                                    "properties": [
+                                                        {
+                                                            "name": "width",
+                                                            "default": "2px"
+                                                        },
+                                                        {
+                                                            "name": "height",
+                                                            "default": "1em"
+                                                        },
+                                                        {
+                                                            "name": "background-color",
+                                                            "default": "red"
+                                                        },
+                                                        {
+                                                            "name": "display",
+                                                            "default": "inline-block"
+                                                        }
+                                                    ]
+                                                }
+                                            ]
+                                        }
+                                    ]
+                                }
+                            ],
+                            "properties": [
+                                {
+                                    "name": "text",
+                                    "default": "Medicine"
+                                }
+                            ]
+                        },
+                        {
+                            "id": "lblPatient",
+                            "type": "span",
+                            "properties": [
+                                {
+                                    "name": "text",
+                                    "default": "Patient"
+                                }
+                            ]
+                        },
+                        {
+                            "id": "lblPatientName",
+                            "type": "span",
+                            "properties": [
+                                {
+                                    "name": "text",
+                                    "expression": "parent.data.Name"
+                                }
+                            ]
+                        }
+                    ]
+                }
+            ]
+        }
+    ]
+}
