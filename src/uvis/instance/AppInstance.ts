@@ -68,8 +68,13 @@ export module uvis.instance {
             var screenTemplate = this.screens.get('/');
             var cc = utcc.extend(utcc.DefaultComputeContext, { map: this.dataSources });
             
+            // set the page title
+            document.title = this.name + ' | ' + document.title;
+
+            // add classes to the head
             AppInstance.createCssClasses(this.propertySets, cc);
 
+            // add visible forms
             if (screenTemplate) {
                 screenTemplate.createInstance(cc).last((screenInstance: uistiM.uvis.instance.ScreenTemplateInstance) => {
 
