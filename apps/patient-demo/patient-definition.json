@@ -1,4 +1,5 @@
 ﻿{
+    "id": "demo1",
     "name": "Patient Demo 1",
     "description": "A demo app, inspired from the example on page 21 in VisTool Requirements",
     "dataSources": [
@@ -8,7 +9,33 @@
             "source": "/apps/patient-demo/patient-data.json"
         }
     ],
-    "propertySets": [],
+    "propertySets": [
+        {
+            "id": "intake-bar",
+            "properties": [
+                {
+                    "id": "width",
+                    "default": "4px"
+                },
+                {
+                    "id": "height",
+                    "default": "26px"
+                },
+                {
+                    "id": "display",
+                    "default": "inline-block"
+                },
+                {
+                    "id": "position",
+                    "default": "absolute"
+                },
+                {
+                    "id": "opacity",
+                    "default": 0.7
+                }
+            ]
+        }
+    ],
     "screens": [
         {
             "id": "s1",
@@ -18,11 +45,67 @@
                 {
                     "id": "frmPatient",
                     "name": "Patient Form",
+                    "properties": [
+                        {
+                            "id": "style",
+                            "properties": [
+                                {
+                                    "id": "border",
+                                    "default": "1px solid black"
+                                },
+                                {
+                                    "id": "width",
+                                    "default": "400px"
+                                },
+                                {
+                                    "id": "margin",
+                                    "default": "20px"
+                                },
+                                {
+                                    "id": "padding",
+                                    "default": "10px"
+                                },
+                                {
+                                    "id": "position",
+                                    "default": "relative"
+                                }
+                            ]
+                        }
+                    ],
                     "visible": true,
                     "dataQuery": {
                         "expression": "map.get(\"pd\").data"
                     },
                     "children": [
+                        {
+                            "id": "lblPatient",
+                            "type": "span",
+                            "properties": [
+                                {
+                                    "id": "text",
+                                    "default": "Patient: "
+                                }
+                            ]
+                        },
+                        {
+                            "id": "lblPatientName",
+                            "type": "span",
+                            "properties": [
+                                {
+                                    "id": "style",
+                                    "properties": [
+                                        {
+                                            "id": "font-weight",
+                                            "default": "bold"
+                                        }
+                                    ]
+                                },
+                                {
+                                    "id": "text",
+                                    "expression": "parent.data.Name"
+                                }
+                            ]
+                        },
                         {
                             "id": "lblMedicine",
                             "type": "div",
@@ -35,7 +118,52 @@
                                     "type": "div",
                                     "properties": [
                                         {
-                                            "name": "text",
+                                            "id": "style",
+                                            "properties": [
+                                                {
+                                                    "id": "display",
+                                                    "default": "inline-block"
+                                                },
+                                                {
+                                                    "id": "width",
+                                                    "default": "300px"
+                                                },
+                                                {
+                                                    "id": "border",
+                                                    "default": "1px solid grey"
+                                                },
+                                                {
+                                                    "id": "padding",
+                                                    "default": "0 5px"
+                                                },
+                                                {
+                                                    "id": "position",
+                                                    "default": "relative"
+                                                },
+                                                {
+                                                    "id": "font-style",
+                                                    "default": "italic"
+                                                },
+                                                {
+                                                    "id": "color",
+                                                    "default": "grey"
+                                                },
+                                                {
+                                                    "id": "font-size",
+                                                    "default": "20px"
+                                                },
+                                                {
+                                                    "id": "line-height",
+                                                    "default": "26px"
+                                                }
+                                            ]
+                                        },
+                                        {
+                                            "id": "title",
+                                            "expression": "parent.data.MedName"
+                                        },
+                                        {
+                                            "id": "text",
                                             "expression": "parent.data.MedName"
                                         }
                                     ],
@@ -48,25 +176,29 @@
                                             },
                                             "properties": [
                                                 {
-                                                    "name": "style",
+                                                    "id": "style",
                                                     "properties": [
                                                         {
-                                                            "name": "width",
-                                                            "default": "2px"
+                                                            "id": "left",
+                                                            "expression": "(3 + (data.Time - 1) * (300 - 1) / (99 - 3)) + \"px\""
                                                         },
                                                         {
-                                                            "name": "height",
-                                                            "default": "1em"
+                                                            "id": "background-color",
+                                                            "expression": "index % 2 === 0 ? \"red\" : \"blue\""
                                                         },
                                                         {
-                                                            "name": "background-color",
-                                                            "default": "red"
-                                                        },
-                                                        {
-                                                            "name": "display",
-                                                            "default": "inline-block"
+                                                            "id": "height",
+                                                            "expression": "(1 + (data.Amount - 1) * (26 - 1) / (10 - 1)) + \"px\""
                                                         }
                                                     ]
+                                                },
+                                                {
+                                                    "id": "class",
+                                                    "default": "intake-bar"
+                                                },
+                                                {
+                                                    "id": "title",
+                                                    "expression": "\"Amount: \" + data.Amount + \". Time: \" + data.Time"
                                                 }
                                             ]
                                         }
@@ -75,28 +207,17 @@
                             ],
                             "properties": [
                                 {
-                                    "name": "text",
-                                    "default": "Medicine"
-                                }
-                            ]
-                        },
-                        {
-                            "id": "lblPatient",
-                            "type": "span",
-                            "properties": [
+                                    "id": "style",
+                                    "properties": [
+                                        {
+                                            "id": "margin-top",
+                                            "default": "16px"
+                                        }
+                                    ]
+                                },
                                 {
-                                    "name": "text",
-                                    "default": "Patient"
-                                }
-                            ]
-                        },
-                        {
-                            "id": "lblPatientName",
-                            "type": "span",
-                            "properties": [
-                                {
-                                    "name": "text",
-                                    "expression": "parent.data.Name"
+                                    "id": "text",
+                                    "default": "Medicine: "
                                 }
                             ]
                         }

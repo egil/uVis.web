@@ -4,21 +4,63 @@
         {
             "MedName": "Ibumetine",
             "Intake": [
-                5,
-                10,
-                15,
-                20
+                {
+                    "Time": 0,
+                    "Amount": 3
+                },
+                {
+                    "Time": 11,
+                    "Amount": 7
+                },
+                {
+                    "Time": 14,
+                    "Amount": 4
+                },
+                {
+                    "Time": 15,
+                    "Amount": 6
+                },
+                {
+                    "Time": 18,
+                    "Amount": 7
+                },
+                {
+                    "Time": 22,
+                    "Amount": 4
+                },
+                {
+                    "Time": 26,
+                    "Amount": 6
+                },
+                {
+                    "Time": 32,
+                    "Amount": 8
+                }
             ]
         },
         {
             "MedName": "Pinex",
             "Intake": [
-                40,
-                50,
-                60,
-                80,
-                90,
-                100
+                {
+                    "Time": 40,
+                    "Amount": 3
+                },
+                {
+                    "Time": 50,
+                    "Amount": 7
+                },
+                {
+                    "Time": 60,
+                    "Amount": 10
+                },
+                {
+                    "Time": 70,
+                    "Amount": 9
+                },
+                {
+                    "Time": 80,
+                    "Amount": 2
+                }
             ]
         }
     ]

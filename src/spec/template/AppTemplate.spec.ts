@@ -6,6 +6,7 @@ import uupM = module('uvis/util/Promise');
 import utccM = module('uvis/template/ComputeContext');
 import uthtM = module('uvis/template/HTMLTemplate');
 import uihtiM = module('uvis/instance/HTMLTemplateInstance');
+import utdM = module('uvis/template/Definitions');
 
 export module uvis.spec {
     import utat = utatM.uvis.template;
@@ -33,16 +34,17 @@ export module uvis.spec {
         });
 
         describe('createInstance():', () => {
-            var appDef: utatM.uvis.template.AppDefinition = {
+            var appDef: utdM.uvis.template.AppDefinition = {
+                id: 'test',
                 name: 'My test application',
                 description: 'Based on an app definition used for testing',
                 propertySets: [{
-                    name: 'disclaimer',
+                    id: 'disclaimer',
                     properties: [{
-                        name: 'font-size',
+                        id: 'font-size',
                         default: '9px'
                     }, {
-                        name: 'color',
+                        id: 'color',
                         default: '#ccc'
                     }]
                 }],
@@ -76,10 +78,10 @@ export module uvis.spec {
                                     expression: 'map.get("peopledb").data.then(function(d) { return d.People; })'
                                 },
                                 properties: [{
-                                    name: 'color',
+                                    id: 'color',
                                     expression: 'index % 2 === 0 ? "red" : "green"'
                                 }, {
-                                    name: 'text',
+                                    id: 'text',
                                     expression: 'data.Name + ": " + data.Role'
                                 }]
                             }]
@@ -97,7 +99,7 @@ export module uvis.spec {
                 expect(ai.name).toBe(appDef.name);
                 expect(ai.description).toBe(appDef.description);
 
-                expect(ai.propertySets.contains(appDef.propertySets[0].name)).toBe(true);
+                expect(ai.propertySets.contains(appDef.propertySets[0].id)).toBe(true);
                 expect(ai.dataSources.contains(appDef.dataSources[0].id)).toBe(true);
                 expect(ai.screens.contains(appDef.screens[0].url)).toBe(true);
 
@@ -119,7 +121,7 @@ export module uvis.spec {
             it('should have "use strict"; at the begning of the JavaScript code', () => {
                 input = 'some random input ... does not matter';
                 expected = defaultPreample;
-                actual = utat.AppTemplate.translate(input);
+                actual = utat.AppTemplate.translate(input, 'property');
 
                 // test if actual starts with expected
                 expect(actual.lastIndexOf(expected, 0)).toBe(0);
@@ -128,7 +130,7 @@ export module uvis.spec {
             it('should wrap the result of running the JavaScript code into a Promise', () => {
                 input = '42 + 42';
                 expected = '___res___=42 + 42;\nreturn ___c___.resolve(___res___);';
-                actual = utat.AppTemplate.translate(input);
+                actual = utat.AppTemplate.translate(input, 'property');
                 expect(endsWith(actual, expected)).toBeTruthy();
             });
         });
@@ -140,7 +142,7 @@ export module uvis.spec {
 
                 runs(() => {
                     // first translate, then compile
-                    var sourceCode = utat.AppTemplate.translate(input);
+                    var sourceCode = utat.AppTemplate.translate(input, 'property');
                     var fn = utat.AppTemplate.compile(sourceCode);
 
                     // fn is a function that returns a promise for a value
@@ -165,7 +167,7 @@ export module uvis.spec {
 
                     runs(() => {
                         // first translate, then compile
-                        var sourceCode = utat.AppTemplate.translate(input);
+                        var sourceCode = utat.AppTemplate.translate(input, 'property');
                         var fn = utat.AppTemplate.compile(sourceCode);
 
                         acc = cc.extend(dcc, { data: 42 });
@@ -191,7 +193,7 @@ export module uvis.spec {
 
                     runs(() => {
                         // first translate, then compile
-                        var sourceCode = utat.AppTemplate.translate(input);
+                        var sourceCode = utat.AppTemplate.translate(input, 'property');
                         var fn = utat.AppTemplate.compile(sourceCode);
 
                         acc = cc.extend(dcc, { parent: new uihtiM.uvis.instance.HTMLTemplateInstance() });
@@ -217,7 +219,7 @@ export module uvis.spec {
 
                     runs(() => {
                         // first translate, then compile
-                        var sourceCode = utat.AppTemplate.translate(input);
+                        var sourceCode = utat.AppTemplate.translate(input, 'property');
                         var fn = utat.AppTemplate.compile(sourceCode);
 
                         acc = cc.extend(dcc, { map: 42 });
@@ -243,7 +245,7 @@ export module uvis.spec {
 
                     runs(() => {
                         // first translate, then compile
-                        var sourceCode = utat.AppTemplate.translate(input);
+                        var sourceCode = utat.AppTemplate.translate(input, 'property');
                         var fn = utat.AppTemplate.compile(sourceCode);
 
                         acc = cc.extend(dcc, { templates: 42 });
@@ -269,7 +271,7 @@ export module uvis.spec {
 
                     runs(() => {
                         // first translate, then compile
-                        var sourceCode = utat.AppTemplate.translate(input);
+                        var sourceCode = utat.AppTemplate.translate(input, 'property');
                         var fn = utat.AppTemplate.compile(sourceCode);
 
                         acc = cc.extend(dcc, { screen: new uthtM.uvis.template.HTMLTemplate('asdf','asdf') });
@@ -295,7 +297,7 @@ export module uvis.spec {
 
                     runs(() => {
                         // first translate, then compile
-                        var sourceCode = utat.AppTemplate.translate(input);
+                        var sourceCode = utat.AppTemplate.translate(input, 'property');
                         var fn = utat.AppTemplate.compile(sourceCode);
 
                         acc = cc.extend(dcc, { screens: 42 });
@@ -321,7 +323,7 @@ export module uvis.spec {
 
                     runs(() => {
                         // first translate, then compile
-                        var sourceCode = utat.AppTemplate.translate(input);
+                        var sourceCode = utat.AppTemplate.translate(input, 'property');
                         var fn = utat.AppTemplate.compile(sourceCode);
                         
                         // fn is a function that returns a promise for a value

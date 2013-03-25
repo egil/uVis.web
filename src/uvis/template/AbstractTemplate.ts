@@ -71,6 +71,12 @@ export module uvis.template {
             this.properties.add(property.name, property);
         }
 
+        public addProperties(properties: utptM.uvis.template.PropertyTemplate[]) {
+            properties.forEach((prop) => {
+                this.addProperty(prop);
+            });
+        }
+
         public createInstance(context: utccM.uvis.template.ComputeContext): uupM.uvis.util.IPromise {
             throw new Error('AbstractComponent.createInstance() should never be called directly. Must be overridden. (Template id = ' + this.id + ')');
         }

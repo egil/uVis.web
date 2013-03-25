@@ -8,8 +8,8 @@ export module uvis.template {
     export class PropertySetTemplate extends utptM.uvis.template.PropertyTemplate {
         private _properties: uudM.uvis.util.Dictionary;
 
-        constructor(name: string) {
-            super(name, undefined, undefined);
+        constructor(name: string, defaultValue?: any) {
+            super(name, undefined, defaultValue);
             this._properties = new uudM.uvis.util.Dictionary;
         }
 
@@ -19,6 +19,12 @@ export module uvis.template {
 
         public addProperty(property: utptM.uvis.template.PropertyTemplate) {
             this._properties.add(property.name, property);
+        }
+
+        public addProperties(properties: utptM.uvis.template.PropertyTemplate[]) {
+            properties.forEach((prop) => {
+                this.addProperty(prop);
+            });
         }
 
         public computeValue(context: utccM.uvis.template.ComputeContext): uupM.uvis.util.IPromise {
@@ -36,7 +42,6 @@ export module uvis.template {
                 properties.forEach((pair) => {
                     d.add(pair.name, pair);
                 });
-
 
                 return res;
             });

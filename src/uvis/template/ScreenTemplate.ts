@@ -1,5 +1,6 @@
 import uupM = module('uvis/util/Promise');
 import utatM = module('uvis/template/AbstractTemplate');
+import utftM = module('uvis/template/FormTemplate');
 import uistiM = module('uvis/instance/ScreenTemplateInstance');
 import utccM = module('uvis/template/ComputeContext');
 
@@ -28,7 +29,11 @@ export module uvis.template {
         public createInstance(context: utccM.uvis.template.ComputeContext): uupM.uvis.util.IPromise {
             context = cc.extend(context, { screen: this });
 
-            return uupM.uvis.util.Promise.when(this.children.map((t) => {
+            return uupM.uvis.util.Promise.when(
+                // First filter away any forms that are not visible by default
+                this.children.filter((t: utftM.uvis.template.FormTemplate) => {
+                return t.visible;
+            }).map((t) => {
                 return t.createInstance(context)
             })).then((instances) => {
                 var sti = new uistiM.uvis.instance.ScreenTemplateInstance();

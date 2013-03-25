@@ -3,7 +3,9 @@ import uupM = module('uvis/util/Promise');
 import uiatiM = module('uvis/instance/AbstractTemplateInstance');
 import uistiM = module('uvis/instance/ScreenTemplateInstance');
 import uihtiM = module('uvis/instance/HTMLTemplateInstance');
+import uipiM = module('uvis/instance/PropertyInstance');
 import utccM = module('uvis/template/ComputeContext');
+import utpstM = module('uvis/template/PropertySetTemplate');
 
 export module uvis.instance {
     import utcc = utccM.uvis.template;
@@ -18,7 +20,7 @@ export module uvis.instance {
         constructor(name?: string) {
             this._name = name;
         }
-        
+
         get dataSources() {
             return this._dataSources;
         }
@@ -40,7 +42,10 @@ export module uvis.instance {
         }
 
         set propertySets(value) {
-            this._propertySets = value;
+            if (value instanceof uudM.uvis.util.Dictionary)
+                this._propertySets = value;
+            else
+                throw new Error('Value must be an instance of uudM.uvis.util.Dictionary.');
         }
 
         get name() {
@@ -62,6 +67,9 @@ export module uvis.instance {
         public initialize() {
             var screenTemplate = this.screens.get('/');
             var cc = utcc.extend(utcc.DefaultComputeContext, { map: this.dataSources });
+            
+            AppInstance.createCssClasses(this.propertySets, cc);
+
             if (screenTemplate) {
                 screenTemplate.createInstance(cc).last((screenInstance: uistiM.uvis.instance.ScreenTemplateInstance) => {
 
@@ -77,13 +85,33 @@ export module uvis.instance {
 
                     // insert all nodes at once
                     var docFragment = screenInstance.getContent();
-                    console.log(docFragment);
                     document.body.appendChild(docFragment);
-
-                });                
+                });
             } else {
                 alert('No screen found matching the URL');
             }
+        }
+
+        private static createCssClasses(propertySets: uudM.uvis.util.Dictionary, computeContext: utcc.ComputeContext) {
+            uupM.uvis.util.Promise.when(propertySets.map((id: string, ps: utpstM.uvis.template.PropertySetTemplate) => {
+                return ps.computeValue(computeContext);
+
+            })).last((sets: uipiM.uvis.instance.PropertyInstance[]) => {
+                // simple guide for inserting styles: https://developer.mozilla.org/en-US/docs/DOM/CSSStyleSheet/insertRule
+                var style = document.createElement('style');
+                document.getElementsByTagName('head')[0].appendChild(style);
+                var s = <CSSStyleSheet>document.styleSheets[document.styleSheets.length - 1];
+
+                sets.forEach((pi, index) => {
+                    // build a style attribute according to specifications
+                    // @see http://www.w3.org/TR/css-style-attr/
+                    var value = '';
+                    pi.value.forEach((name: string, propertyInstance: any) => {
+                        value += name + ':' + propertyInstance.value + ';';
+                    });
+                    s.insertRule('.' + pi.name + '{' + value + '}', index);
+                });
+            });
         }
     }
 }

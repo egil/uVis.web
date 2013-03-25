@@ -76,7 +76,6 @@
     <Content Include="src\uvis\data\IData.js">
       <DependentUpon>IData.ts</DependentUpon>
     </Content>
-    <TypeScriptCompile Include="src\uvis\instance\PropertyInstance.ts" />
     <TypeScriptCompile Include="src\uvis\instance\HTMLTemplateInstance.ts" />
     <TypeScriptCompile Include="src\uvis\instance\AbstractTemplateInstance.ts" />
     <TypeScriptCompile Include="src\uvis\data\JSONDataSource.ts" />
@@ -96,6 +95,7 @@
     <Content Include="src\uvis\instance\PropertyInstance.js">
       <DependentUpon>PropertyInstance.ts</DependentUpon>
     </Content>
+    <Content Include="src\uvis\instance\PropertyInstance.ts" />
     <Content Include="src\uvis\instance\ScreenTemplateInstance.js">
       <DependentUpon>ScreenTemplateInstance.ts</DependentUpon>
     </Content>
@@ -107,12 +107,20 @@
       <DependentUpon>AbstractTemplate.ts</DependentUpon>
     </Content>
     <TypeScriptCompile Include="src\uvis\template\AppTemplate.ts" />
+    <TypeScriptCompile Include="src\uvis\template\AppDefinitionValidator.ts" />
+    <Content Include="src\uvis\template\AppDefinitionValidator.js">
+      <DependentUpon>AppDefinitionValidator.ts</DependentUpon>
+    </Content>
     <Content Include="src\uvis\template\AppTemplate.js">
       <DependentUpon>AppTemplate.ts</DependentUpon>
     </Content>
     <TypeScriptCompile Include="src\uvis\template\ComputeContext.ts" />
     <Content Include="src\uvis\template\ComputeContext.js">
       <DependentUpon>ComputeContext.ts</DependentUpon>
+    </Content>
+    <TypeScriptCompile Include="src\uvis\template\Definitions.ts" />
+    <Content Include="src\uvis\template\Definitions.js">
+      <DependentUpon>Definitions.ts</DependentUpon>
     </Content>
     <Content Include="src\uvis\template\FormTemplate.js">
       <DependentUpon>FormTemplate.ts</DependentUpon>
@@ -176,9 +184,6 @@
     <Content Include="src\uvis\template\PropertyTemplate.js.map">
       <DependentUpon>PropertyTemplate.ts</DependentUpon>
     </Content>
-    <Content Include="src\uvis\instance\PropertyInstance.js.map">
-      <DependentUpon>PropertyInstance.ts</DependentUpon>
-    </Content>
     <Content Include="src\uvis\instance\HTMLTemplateInstance.js.map">
       <DependentUpon>HTMLTemplateInstance.ts</DependentUpon>
     </Content>
@@ -232,6 +237,15 @@
     </Content>
     <Content Include="apps\patient-demo\patient-data.json" />
     <None Include="apps\patient-demo\patient-definition.json" />
+    <Content Include="src\uvis\template\Definitions.js.map">
+      <DependentUpon>Definitions.ts</DependentUpon>
+    </Content>
+    <Content Include="src\uvis\template\AppDefinitionValidator.js.map">
+      <DependentUpon>AppDefinitionValidator.ts</DependentUpon>
+    </Content>
+    <Content Include="src\uvis\instance\PropertyInstance.js.map">
+      <DependentUpon>PropertyInstance.ts</DependentUpon>
+    </Content>
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
