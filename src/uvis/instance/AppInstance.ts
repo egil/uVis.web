@@ -1,5 +1,6 @@
 import uudM = module('uvis/util/Dictionary');
 import uupM = module('uvis/util/Promise');
+import utstM = module('uvis/template/ScreenTemplate');
 import uiatiM = module('uvis/instance/AbstractTemplateInstance');
 import uistiM = module('uvis/instance/ScreenTemplateInstance');
 import uihtiM = module('uvis/instance/HTMLTemplateInstance');
@@ -65,11 +66,11 @@ export module uvis.instance {
         }
 
         public initialize() {
-            var screenTemplate = this.screens.get('/');
+            var screenTemplate: utstM.uvis.template.ScreenTemplate = this.screens.get('/');
             var cc = utcc.extend(utcc.DefaultComputeContext, { map: this.dataSources });
             
             // set the page title
-            document.title = this.name + ' | ' + document.title;
+            document.title = screenTemplate.name + ' | ' + this.name + ' | ' + document.title;
 
             // add classes to the head
             AppInstance.createCssClasses(this.propertySets, cc);
