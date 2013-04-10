@@ -1,6 +1,5 @@
 ﻿import uiatiM = module('uvis/instance/AbstractTemplateInstance');
 import uihtiM = module('uvis/instance/HTMLTemplateInstance');
-import utccM = module('uvis/template/ComputeContext');
 
 export module uvis.instance {
     export class ScreenTemplateInstance extends uiatiM.uvis.instance.AbstractTemplateInstance {

@@ -8,8 +8,8 @@ export module uvis.template {
     export class PropertySetTemplate extends utptM.uvis.template.PropertyTemplate {
         private _properties: uudM.uvis.util.Dictionary;
 
-        constructor(name: string, defaultValue?: any) {
-            super(name, undefined, defaultValue);
+        constructor(id: string, defaultValue?: any) {
+            super(id, undefined, defaultValue);
             this._properties = new uudM.uvis.util.Dictionary;
         }
 
@@ -18,7 +18,7 @@ export module uvis.template {
         }
 
         public addProperty(property: utptM.uvis.template.PropertyTemplate) {
-            this._properties.add(property.name, property);
+            this._properties.add(property.id, property);
         }
 
         public addProperties(properties: utptM.uvis.template.PropertyTemplate[]) {
@@ -36,11 +36,11 @@ export module uvis.template {
             // then we move all calculated results into a dictionary for easier lookup later
             .then((properties: any[]) => {
                 var d = new uudM.uvis.util.Dictionary();
-                var res = new uipiM.uvis.instance.PropertyInstance(this.name, d);
+                var res = new uipiM.uvis.instance.PropertyInstance(this.id, d);
 
                 // copy the nested properties into the property instance
-                properties.forEach((pair) => {
-                    d.add(pair.name, pair);
+                properties.forEach((pair: uipiM.uvis.instance.PropertyInstance) => {
+                    d.add(pair.id, pair);
                 });
 
                 return res;

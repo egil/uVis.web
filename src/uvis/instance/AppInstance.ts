@@ -115,7 +115,7 @@ export module uvis.instance {
                     pi.value.forEach((name: string, propertyInstance: any) => {
                         value += name + ':' + propertyInstance.value + ';';
                     });
-                    s.insertRule('.' + pi.name + '{' + value + '}', index);
+                    s.insertRule('.' + pi.id + '{' + value + '}', index);
                 });
             });
         }

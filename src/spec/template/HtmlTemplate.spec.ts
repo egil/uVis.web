@@ -83,7 +83,7 @@ export module uvis.spec {
                 e1 = new MockData(2);
                 t1 = new utht.HTMLTemplate('data-test', 'div');
                 // data source is 2 === creates two instances
-                t1.dataSource = e1;
+                t1.dataQuery = e1;
 
                 runs(() => {
                     t1.createInstance(cc).last((i) => {
@@ -216,7 +216,7 @@ export module uvis.spec {
 
             it('should make template runtime variables available (index, data, parent) to the compute function', () => {
                 t1 = new utht.HTMLTemplate('id', 'div');
-                t1.dataSource = new MockData('42');
+                t1.dataQuery = new MockData('42');
                 e1 = new uihti.uvis.instance.HTMLTemplateInstance();
 
                 p1 = new utpt.PropertyTemplate('data-has-data', (context) => {
@@ -368,11 +368,11 @@ export module uvis.spec {
                 });
             });
 
-            describe('depending on the content of dataSource', () => {
-                it('should create a single control instance if the dataSource is an object', () => {
+            describe('depending on the content of dataQuery', () => {
+                it('should create a single control instance if the dataQuery is an object', () => {
                     e1 = new MockData({ 'Name': 'Homer' });
                     t1 = new utht.HTMLTemplate('data-test', 'div');
-                    t1.dataSource = e1;
+                    t1.dataQuery = e1;
 
                     runs(() => {
                         t1.createInstance(cc).last((i) => {
@@ -389,10 +389,10 @@ export module uvis.spec {
                     });
                 });
 
-                it('should create a single control instance if the dataSource is an undefined', () => {
+                it('should create a single control instance if the dataQuery is an undefined', () => {
                     t1 = new utht.HTMLTemplate('data-test', 'div');
 
-                    // t1.dataSource is undefined
+                    // t1.dataQuery is undefined
 
                     runs(() => {
                         t1.createInstance(cc).last((i) => {
@@ -409,11 +409,11 @@ export module uvis.spec {
                     });
                 });
 
-                it('should create zero control instance dataSource if it is an empty array', () => {
+                it('should create zero control instance dataQuery if it is an empty array', () => {
                     completed = false;
                     e1 = new MockData([]);
                     t1 = new utht.HTMLTemplate('data-test', 'div');
-                    t1.dataSource = e1;
+                    t1.dataQuery = e1;
 
                     runs(() => {
                         t1.createInstance(cc).last((i) => {
@@ -431,10 +431,10 @@ export module uvis.spec {
                     });
                 });
 
-                it('should create a control instance foreach object in dataSource if it is an array', () => {
+                it('should create a control instance foreach object in dataQuery if it is an array', () => {
                     e1 = new MockData([{ 'Name': 'Homer' }, { 'Name': 'Marge' }, { 'Name': 'Bart' }, { 'Name': 'Lisa' }]);
                     t1 = new utht.HTMLTemplate('data-test', 'div');
-                    t1.dataSource = e1;
+                    t1.dataQuery = e1;
 
                     runs(() => {
                         t1.createInstance(cc).last((i) => {
@@ -452,10 +452,10 @@ export module uvis.spec {
                     });
                 });
 
-                it('should create N control instances if dataSource is number N', () => {
+                it('should create N control instances if dataQuery is number N', () => {
                     e1 = new MockData(4);
                     t1 = new utht.HTMLTemplate('data-test', 'div');
-                    t1.dataSource = e1;
+                    t1.dataQuery = e1;
 
                     runs(() => {
                         t1.createInstance(cc).last((i) => {
@@ -484,7 +484,7 @@ export module uvis.spec {
 
                     // set data for child t2
                     e1 = new MockData('child-data');
-                    t2.dataSource = e1;
+                    t2.dataQuery = e1;
 
                     // create a property so we can detect data usage 
                     p1 = new utpt.PropertyTemplate('data-child', (context) => {
@@ -516,7 +516,7 @@ export module uvis.spec {
 
                     // add data to parent
                     e1 = new MockData('parent-data');
-                    t1.dataSource = e1;
+                    t1.dataQuery = e1;
 
                     // create child
                     t2 = new utht.HTMLTemplate('child-data-test', 'div');
@@ -526,7 +526,7 @@ export module uvis.spec {
 
                     // set data for child t2
                     e2 = new MockData('child-data');
-                    t2.dataSource = e2;
+                    t2.dataQuery = e2;
 
                     // create a property so we can detect data usage 
                     p1 = new utpt.PropertyTemplate('data-child', (context) => {
@@ -556,7 +556,7 @@ export module uvis.spec {
 
                     // add data to parent
                     e1 = new MockData('parent-data');
-                    t1.dataSource = e1;
+                    t1.dataQuery = e1;
 
                     // create child
                     t2 = new utht.HTMLTemplate('child-data-test', 'div');
@@ -592,7 +592,7 @@ export module uvis.spec {
 
                     // add data to parent
                     e1 = new MockData('parent-data');
-                    t1.dataSource = e1;
+                    t1.dataQuery = e1;
 
                     // create child
                     t2 = new utht.HTMLTemplate('child', 'div');
@@ -602,7 +602,7 @@ export module uvis.spec {
 
                     // set data for child t2
                     e2 = new MockData(2);
-                    t2.dataSource = e2;
+                    t2.dataQuery = e2;
 
                     // create a property so we can detect data usage 
                     p1 = new utpt.PropertyTemplate('data-child', (context) => {
@@ -670,7 +670,7 @@ export module uvis.spec {
                     t1.addChildren(t2, t3);
 
                     // add data
-                    t2.dataSource = new MockData('mock');
+                    t2.dataQuery = new MockData('mock');
 
                     // create tree
                     t1.createInstance(cc).last((instance) => {
@@ -700,7 +700,7 @@ export module uvis.spec {
                     t1.addChildren(t2, t3);
 
                     // add data
-                    t2.dataSource = new MockData(['mock', 'one', 'more']);
+                    t2.dataQuery = new MockData(['mock', 'one', 'more']);
 
                     // create tree
                     t1.createInstance(cc).last((instance) => {
@@ -733,7 +733,7 @@ export module uvis.spec {
                     t1.addChildren(t2, t3);
 
                     // add data
-                    t2.dataSource = new MockData([]);
+                    t2.dataQuery = new MockData([]);
 
                     // create tree
                     t1.createInstance(cc).last((instance) => {
@@ -763,7 +763,7 @@ export module uvis.spec {
                     t1.addChildren(t2, t3);
 
                     // add data
-                    t1.dataSource = new MockData('mock');
+                    t1.dataQuery = new MockData('mock');
 
                     // create tree
                     t1.createInstance(cc).last((instance) => {
@@ -794,8 +794,8 @@ export module uvis.spec {
                     t1.addChildren(t2, t3);
 
                     // add data
-                    t1.dataSource = new MockData('mock-parent');
-                    t2.dataSource = new MockData('mock-child');
+                    t1.dataQuery = new MockData('mock-parent');
+                    t2.dataQuery = new MockData('mock-child');
 
                     // create tree
                     t1.createInstance(cc).last((instance) => {
@@ -826,8 +826,8 @@ export module uvis.spec {
                     t1.addChildren(t2, t3);
 
                     // add data
-                    t1.dataSource = new MockData('mock-parent');
-                    t2.dataSource = new MockData(['mock', 'one', 'more']);
+                    t1.dataQuery = new MockData('mock-parent');
+                    t2.dataQuery = new MockData(['mock', 'one', 'more']);
 
                     // create tree
                     t1.createInstance(cc).last((instance) => {
@@ -860,8 +860,8 @@ export module uvis.spec {
                     t1.addChildren(t2, t3);
 
                     // add data
-                    t1.dataSource = new MockData('mock-parent');
-                    t2.dataSource = new MockData([]);
+                    t1.dataQuery = new MockData('mock-parent');
+                    t2.dataQuery = new MockData([]);
 
                     // create tree
                     t1.createInstance(cc).last((instance) => {
@@ -892,7 +892,7 @@ export module uvis.spec {
                     t1.addChildren(t2, t3);
 
                     // add data
-                    t1.dataSource = new MockData(['mock', 'one', 'two']);
+                    t1.dataQuery = new MockData(['mock', 'one', 'two']);
 
                     // create tree
                     t1.createInstance(cc).last((instance) => {
@@ -936,8 +936,8 @@ export module uvis.spec {
                     t1.addChildren(t2, t3);
 
                     // add data
-                    t1.dataSource = new MockData(['mock', 'one', 'two']);
-                    t2.dataSource = new MockData('child-mock');
+                    t1.dataQuery = new MockData(['mock', 'one', 'two']);
+                    t2.dataQuery = new MockData('child-mock');
 
 
                     // create tree
@@ -982,8 +982,8 @@ export module uvis.spec {
                     t1.addChildren(t2, t3);
 
                     // add data
-                    t1.dataSource = new MockData(['mock', 'one', 'two']);
-                    t2.dataSource = new MockData(['mock', 'four']);
+                    t1.dataQuery = new MockData(['mock', 'one', 'two']);
+                    t2.dataQuery = new MockData(['mock', 'four']);
 
 
                     // create tree
@@ -1034,8 +1034,8 @@ export module uvis.spec {
                     t1.addChildren(t2, t3);
 
                     // add data
-                    t1.dataSource = new MockData(['mock', 'one', 'two']);
-                    t2.dataSource = new MockData([]);
+                    t1.dataQuery = new MockData(['mock', 'one', 'two']);
+                    t2.dataQuery = new MockData([]);
 
 
                     // create tree
@@ -1080,7 +1080,7 @@ export module uvis.spec {
                     t1.addChildren(t2, t3);
 
                     // add data
-                    t1.dataSource = new MockData([]);
+                    t1.dataQuery = new MockData([]);
 
                     // create tree
                     t1.createInstance(cc).last((instance) => {
@@ -1116,7 +1116,7 @@ export module uvis.spec {
                 runs(() => {
                     // <table title="This is a fantastic table!">
                     var table = new utht.HTMLTemplate('table1', 'table');
-                    table.dataSource = new MockData({ caption: 'This is a fantastic table!' });
+                    table.dataQuery = new MockData({ caption: 'This is a fantastic table!' });
                     table.addProperty(new utpt.PropertyTemplate('title', (context) => {
                         return uup.Promise.resolve(context.data.caption);
                     }));
@@ -1131,7 +1131,7 @@ export module uvis.spec {
 
                     // <th>Title</th><th>Rating</th>
                     var th = new utht.HTMLTemplate('th', 'th');
-                    th.dataSource = new MockData(['Title', 'Rating']);
+                    th.dataQuery = new MockData(['Title', 'Rating']);
                     th.addProperty(new utpt.PropertyTemplate('text', (context) => {
                         return uup.Promise.resolve(context.data);
                     }));
@@ -1146,7 +1146,7 @@ export module uvis.spec {
 
                     // <tr>
                     var tbodyRow = new utht.HTMLTemplate('row', 'tr');
-                    tbodyRow.dataSource = new MockData([{ Title: 'Pandoras Star', Rating: 10 }, { Title: 'Judas Unchained', Rating: 9 }]);
+                    tbodyRow.dataQuery = new MockData([{ Title: 'Pandoras Star', Rating: 10 }, { Title: 'Judas Unchained', Rating: 9 }]);
                     tbody.children.push(tbodyRow);
 
                     // <td>Pandoras Star</td><td>10</td>

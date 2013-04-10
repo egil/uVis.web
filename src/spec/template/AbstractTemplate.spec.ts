@@ -6,7 +6,7 @@ import uup = uupM.uvis.util;
 import utat = utatM.uvis.template;
 import utpt = utptM.uvis.template;
 export module uvis.spec {
-    describe('Abstract Template:', () => {
+    describe('AbstractTemplate:', () => {
         var c, actual, expected, fn;
 
         uupM.uvis.util.Promise.debug = true;
@@ -53,7 +53,7 @@ export module uvis.spec {
                 c.properties.add('class', new utpt.PropertyTemplate('class', () => {
                     uup.Promise.resolve('should-be-here');
                 }));
-                expect(c.properties.get('class').name).toBe('class');
+                expect(c.properties.get('class').id).toBe('class');
             });
         });
     });

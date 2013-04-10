@@ -1,14 +1,14 @@
 export module uvis.instance {
     export class PropertyInstance {
-        private _name: string;
+        private _id: string;
         private _value: any;
 
-        constructor(name: string, value: any) {
-            this._name = name;
+        constructor(id: string, value: any) {
+            this._id = id;
             this._value = value;
         }
-        get name() {
-            return this._name;
+        get id() {
+            return this._id;
         }
 
         get value() {

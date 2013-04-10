@@ -2,6 +2,7 @@ import uudM = module('uvis/util/Dictionary');
 import uupM = module('uvis/util/Promise');
 import utatM = module('uvis/template/AbstractTemplate');
 import utptM = module('uvis/template/PropertyTemplate');
+import uiptM = module('uvis/instance/PropertyInstance')
 import uihtiM = module('uvis/instance/HTMLTemplateInstance');
 import utccM = module('uvis/template/ComputeContext');
 
@@ -38,8 +39,8 @@ export module uvis.template {
             }
                 // if there is a data source, we first get the data and then
                 // handle the different cases according to the type of data
-            else if (this.dataSource) {
-                return this.dataSource.getData(context)
+            else if (this.dataQuery) {
+                return this.dataQuery.getData(context)
                     .then((data) => {
                         if (Array.isArray(data)) {
                             // create an instance for each object in the array,
@@ -115,8 +116,8 @@ export module uvis.template {
             // then we move all calculated results into a dictionary for easier lookup later
             .then((propertiesInstances: any[]) => {
                 var d = new uud.Dictionary();
-                propertiesInstances.forEach((propertyInstance) => {
-                    d.add(propertyInstance.name, propertyInstance);
+                propertiesInstances.forEach((propertyInstance: uiptM.uvis.instance.PropertyInstance) => {
+                    d.add(propertyInstance.id, propertyInstance);
                 });
                 return d;
             })

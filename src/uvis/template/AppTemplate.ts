@@ -52,7 +52,7 @@ export module uvis.template {
             if (Array.isArray(this._appdef.propertySets)) {
                 var dict = new uudM.uvis.util.Dictionary();
                 this.createPropertyTemplates(this._appdef.propertySets).forEach((prop) => {
-                    dict.add(prop.name, prop);
+                    dict.add(prop.id, prop);
                 });
                 propertySets = dict;
             }
@@ -104,7 +104,7 @@ export module uvis.template {
 
                     // create and set the data query, if any.
                     if (fdef.dataQuery !== undefined) {
-                        f.dataSource = this.createDataQuery(fdef.dataQuery);
+                        f.dataQuery = this.createDataQuery(fdef.dataQuery);
                     }
 
                     // create child templates
@@ -135,7 +135,7 @@ export module uvis.template {
 
             // create and set the data query, if any.
             if (def.dataQuery !== undefined) {
-                c.dataSource = this.createDataQuery(def.dataQuery);
+                c.dataQuery = this.createDataQuery(def.dataQuery);
             }
 
             // create child templates

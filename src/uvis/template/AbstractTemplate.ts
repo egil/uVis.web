@@ -14,7 +14,7 @@ export module uvis.template {
         private _properties = new uudM.uvis.util.Dictionary();
         private _instances: uiatiM.uvis.instance.AbstractTemplateInstance[] = [];
         private _id: string;
-        private _dataSource: uddM.uvis.data.IData;
+        private _dataQuery: uddM.uvis.data.IData;
 
         constructor(id: string) {
             if (typeof (id) !== 'string' || id.length === 0) {
@@ -47,12 +47,12 @@ export module uvis.template {
             return this._instances;
         }
 
-        get dataSource(): uddM.uvis.data.IData {
-            return this._dataSource;
+        get dataQuery(): uddM.uvis.data.IData {
+            return this._dataQuery;
         }
 
-        set dataSource(value: uddM.uvis.data.IData) {
-            this._dataSource = value;
+        set dataQuery(value: uddM.uvis.data.IData) {
+            this._dataQuery = value;
         }
 
         public createId(index): string {
@@ -68,7 +68,7 @@ export module uvis.template {
         }
 
         public addProperty(property: utptM.uvis.template.PropertyTemplate) {
-            this.properties.add(property.name, property);
+            this.properties.add(property.id, property);
         }
 
         public addProperties(properties: utptM.uvis.template.PropertyTemplate[]) {

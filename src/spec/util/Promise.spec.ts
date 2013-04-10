@@ -1,7 +1,7 @@
 /// <reference path="../../.typings/jasmine.d.ts" />
 
-import promiseModule = module('uvis/util/Promise');
-import p = promiseModule.uvis.util;
+import uupM = module('uvis/util/Promise');
+import p = uupM.uvis.util;
 declare function nextTick(fn: Function): void;
 
 export module uvis.spec {
