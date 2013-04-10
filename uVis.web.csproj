@@ -62,14 +62,6 @@
     </Content>
     <TypeScriptCompile Include="src\uvis\data\IData.ts" />
     <TypeScriptCompile Include="src\uvis\data\DataQuery.ts" />
-    <TypeScriptCompile Include="src\uvis\component\ComponentFactory.ts" />
-    <TypeScriptCompile Include="src\uvis\component\ComponentDefinition.ts" />
-    <Content Include="src\uvis\component\ComponentDefinition.js">
-      <DependentUpon>ComponentDefinition.ts</DependentUpon>
-    </Content>
-    <Content Include="src\uvis\component\ComponentFactory.js">
-      <DependentUpon>ComponentFactory.ts</DependentUpon>
-    </Content>
     <Content Include="src\uvis\data\DataQuery.js">
       <DependentUpon>DataQuery.ts</DependentUpon>
     </Content>
@@ -204,12 +196,6 @@
     </Content>
     <Content Include="src\spec\template\AppTemplate.spec.js.map">
       <DependentUpon>AppTemplate.spec.ts</DependentUpon>
-    </Content>
-    <Content Include="src\uvis\component\ComponentFactory.js.map">
-      <DependentUpon>ComponentFactory.ts</DependentUpon>
-    </Content>
-    <Content Include="src\uvis\component\ComponentDefinition.js.map">
-      <DependentUpon>ComponentDefinition.ts</DependentUpon>
     </Content>
     <Content Include="src\uvis\data\JSONDataSource.js.map">
       <DependentUpon>JSONDataSource.ts</DependentUpon>
