@@ -7,7 +7,7 @@ export module uvis.template {
         private _visible: bool;
         private _name: string;
 
-        constructor(id: string, name?: string, visible?: bool = false) {
+        constructor(id: string, name?: string, visible: bool = false) {
             super(id, 'div');            
             this._visible = visible;
             // add the name as the 'title' attribute to the div element

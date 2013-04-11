@@ -21,9 +21,22 @@
     <UpgradeBackupLocation />
   </PropertyGroup>
   <ItemGroup>
+    <Content Include="proto-specrunner.html" />
     <Content Include="src\libs\nextTick.js" />
     <Content Include="src\libs\shims.js" />
     <Content Include="src\libs\when-1.8.1.js" />
+    <TypeScriptCompile Include="src\proto-specrunner.ts" />
+    <Content Include="src\proto-specrunner.js">
+      <DependentUpon>proto-specrunner.ts</DependentUpon>
+    </Content>
+    <TypeScriptCompile Include="src\proto\spec.ts" />
+    <TypeScriptCompile Include="src\proto\Observable.ts" />
+    <Content Include="src\proto\Observable.js">
+      <DependentUpon>Observable.ts</DependentUpon>
+    </Content>
+    <Content Include="src\proto\spec.js">
+      <DependentUpon>spec.ts</DependentUpon>
+    </Content>
     <Content Include="src\specrunner.js">
       <DependentUpon>specrunner.ts</DependentUpon>
     </Content>
@@ -100,9 +113,6 @@
     </Content>
     <TypeScriptCompile Include="src\uvis\template\AppTemplate.ts" />
     <TypeScriptCompile Include="src\uvis\template\AppDefinitionValidator.ts" />
-    <Content Include="src\uvis\template\AppDefinitionValidator.js">
-      <DependentUpon>AppDefinitionValidator.ts</DependentUpon>
-    </Content>
     <Content Include="src\uvis\template\AppTemplate.js">
       <DependentUpon>AppTemplate.ts</DependentUpon>
     </Content>
@@ -226,9 +236,6 @@
     <Content Include="src\uvis\template\Definitions.js.map">
       <DependentUpon>Definitions.ts</DependentUpon>
     </Content>
-    <Content Include="src\uvis\template\AppDefinitionValidator.js.map">
-      <DependentUpon>AppDefinitionValidator.ts</DependentUpon>
-    </Content>
     <Content Include="src\uvis\instance\PropertyInstance.js.map">
       <DependentUpon>PropertyInstance.ts</DependentUpon>
     </Content>
@@ -283,6 +290,7 @@
     <Reference Include="System.Web" />
     <Reference Include="System.Xml" />
   </ItemGroup>
+  <ItemGroup />
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
     <VSToolsPath Condition="'$(VSToolsPath)' == ''">$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)</VSToolsPath>

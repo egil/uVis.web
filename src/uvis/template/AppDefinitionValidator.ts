@@ -58,20 +58,20 @@ export module uvis.template {
             dataSourcesDef.forEach((def) => {
                 var unkProps;
                 if (!def.id || !idRegex.test(def.id))
-                    throw new Error(prefixMsg + 'dataSource.id' + invalidId + def.id);
+                    throw new Error(prefixMsg + 'dataQuery.id' + invalidId + def.id);
 
                 ensureGloballyUniqueId(def.id, def);
 
                 if (!def.type || dataSourceTypes.indexOf(def.type) === -1)
-                    throw new Error(prefixMsg + 'dataSource[' + def.id + '].type is not valid or undefined. Value is: ' + def.type);
+                    throw new Error(prefixMsg + 'dataQuery[' + def.id + '].type is not valid or undefined. Value is: ' + def.type);
 
                 if (isUndefinedOrEmpty(def.source) && (def.data || typeof def.data === 'object')) {
-                    throw new Error(prefixMsg + 'dataSource[' + def.id + '] both source and data is undefined or empty.');
+                    throw new Error(prefixMsg + 'dataQuery[' + def.id + '] both source and data is undefined or empty.');
                 }
 
                 unkProps = unknownProperties(def, allowedProperties);
                 if (unkProps.hasUnknownProperties)
-                    throw new Error(prefixMsg + 'dataSource[' + def.id + '] contains unknown properties. Unknown properties are: ' + unkProps.unknownProperties);
+                    throw new Error(prefixMsg + 'dataQuery[' + def.id + '] contains unknown properties. Unknown properties are: ' + unkProps.unknownProperties);
             });
         }
         

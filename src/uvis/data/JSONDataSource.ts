@@ -14,6 +14,10 @@ export module uvis.data {
             this._data = data;
         }
 
+        get id() {
+            return this._id;
+        }
+
         get data(): uupM.uvis.util.IPromise {
             var promise = new uupM.uvis.util.Promise();
             if (this._data === undefined) {
