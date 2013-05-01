@@ -66,20 +66,28 @@ export module uvis.util {
             return item;
         }
         
-        forEach(func: (key: string, value: any) => void) {
+        forEach(func: (key: string, value: any, count: number) => void) {
+            var count = 0;
             for (var prop in this._d) {
                 if (this.contains(prop)) {
-                    func(prop, this._d[prop]);
+                    func(prop, this._d[prop], count++);
                 }
             }
         }
 
-        map(func: (key: string, value: any) => any ) : any[] {
+        map(func: (key: string, value: any, count: number) => any ) : any[] {
+            var count = 0;
             var res = [];
             this.forEach((key, value) => {
-                res.push(func(key, value));
+                res.push(func(key, value, count++));
             });
             return res;
+        }
+
+        count(): number {
+            var count = 0;
+            this.forEach(_ => { count++; });
+            return count;
         }
     }
 }

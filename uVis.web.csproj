@@ -21,7 +21,37 @@
     <UpgradeBackupLocation />
   </PropertyGroup>
   <ItemGroup>
+    <Content Include="src\.typings\rx.d.ts" />
     <Content Include="src\libs\nextTick.js" />
+    <None Include="src\libs\rx\rx-vsdoc.js" />
+    <None Include="src\libs\rx\rx.aggregates-vsdoc.js" />
+    <Content Include="src\libs\rx\rx.aggregates.js" />
+    <Content Include="src\libs\rx\rx.aggregates.min.js" />
+    <None Include="src\libs\rx\rx.binding-vsdoc.js" />
+    <Content Include="src\libs\rx\rx.binding.js" />
+    <Content Include="src\libs\rx\rx.binding.min.js" />
+    <None Include="src\libs\rx\rx.coincidence-vsdoc.js" />
+    <Content Include="src\libs\rx\rx.coincidence.js" />
+    <Content Include="src\libs\rx\rx.coincidence.min.js" />
+    <None Include="src\libs\rx\rx.experimental-vsdoc.js" />
+    <Content Include="src\libs\rx\rx.experimental.js" />
+    <Content Include="src\libs\rx\rx.experimental.min.js" />
+    <Content Include="src\libs\rx\rx.html.js" />
+    <Content Include="src\libs\rx\rx.html.min.js" />
+    <None Include="src\libs\rx\rx.joinpatterns-vsdoc.js" />
+    <Content Include="src\libs\rx\rx.joinpatterns.js" />
+    <Content Include="src\libs\rx\rx.joinpatterns.min.js" />
+    <None Include="src\libs\rx\rx.jquery-vsdoc.js" />
+    <Content Include="src\libs\rx\rx.jquery.js" />
+    <Content Include="src\libs\rx\rx.jquery.min.js" />
+    <Content Include="src\libs\rx\rx.js" />
+    <Content Include="src\libs\rx\rx.min.js" />
+    <None Include="src\libs\rx\rx.testing-vsdoc.js" />
+    <Content Include="src\libs\rx\rx.testing.js" />
+    <Content Include="src\libs\rx\rx.testing.min.js" />
+    <None Include="src\libs\rx\rx.time-vsdoc.js" />
+    <Content Include="src\libs\rx\rx.time.js" />
+    <Content Include="src\libs\rx\rx.time.min.js" />
     <Content Include="src\libs\shims.js" />
     <Content Include="src\libs\when-1.8.1.js" />
     <Content Include="src\specrunner.js">
@@ -36,6 +66,30 @@
     </Content>
     <TypeScriptCompile Include="src\uvis\util\Extensions.ts" />
     <TypeScriptCompile Include="src\uvis\template\HTMLTemplate.ts" />
+    <TypeScriptCompile Include="src\spec\component\ComponentTemplate.spec.ts" />
+    <TypeScriptCompile Include="src\spec\component\ComponentInstance.spec.ts" />
+    <Content Include="src\spec\component\ComponentInstance.spec.js">
+      <DependentUpon>ComponentInstance.spec.ts</DependentUpon>
+    </Content>
+    <Content Include="src\spec\component\ComponentTemplate.spec.js">
+      <DependentUpon>ComponentTemplate.spec.ts</DependentUpon>
+    </Content>
+    <TypeScriptCompile Include="src\spec\component\Context.spec.ts" />
+    <Content Include="src\spec\component\Context.spec.js">
+      <DependentUpon>Context.spec.ts</DependentUpon>
+    </Content>
+    <TypeScriptCompile Include="src\spec\data\DataSource.spec.ts" />
+    <TypeScriptCompile Include="src\spec\component\Property.spec.ts" />
+    <Content Include="src\spec\component\Property.spec.js">
+      <DependentUpon>Property.spec.ts</DependentUpon>
+    </Content>
+    <Content Include="src\spec\data\DataSource.spec.js">
+      <DependentUpon>DataSource.spec.ts</DependentUpon>
+    </Content>
+    <TypeScriptCompile Include="src\spec\data\DataView.spec.ts" />
+    <Content Include="src\spec\data\DataView.spec.js">
+      <DependentUpon>DataView.spec.ts</DependentUpon>
+    </Content>
     <Content Include="src\spec\data\JSONDataSource.spec.js">
       <DependentUpon>JSONDataSource.spec.ts</DependentUpon>
     </Content>
@@ -62,8 +116,32 @@
     </Content>
     <TypeScriptCompile Include="src\uvis\data\IData.ts" />
     <TypeScriptCompile Include="src\uvis\data\DataQuery.ts" />
+    <TypeScriptCompile Include="src\uvis\component\ComponentTemplate.ts" />
+    <TypeScriptCompile Include="src\uvis\component\ComponentInstance.ts" />
+    <Content Include="src\uvis\component\ComponentInstance.js">
+      <DependentUpon>ComponentInstance.ts</DependentUpon>
+    </Content>
+    <Content Include="src\uvis\component\ComponentTemplate.js">
+      <DependentUpon>ComponentTemplate.ts</DependentUpon>
+    </Content>
+    <TypeScriptCompile Include="src\uvis\component\Context.ts" />
+    <Content Include="src\uvis\component\Context.js">
+      <DependentUpon>Context.ts</DependentUpon>
+    </Content>
+    <TypeScriptCompile Include="src\uvis\component\Property.ts" />
+    <Content Include="src\uvis\component\Property.js">
+      <DependentUpon>Property.ts</DependentUpon>
+    </Content>
     <Content Include="src\uvis\data\DataQuery.js">
       <DependentUpon>DataQuery.ts</DependentUpon>
+    </Content>
+    <TypeScriptCompile Include="src\uvis\data\DataSource.ts" />
+    <Content Include="src\uvis\data\DataSource.js">
+      <DependentUpon>DataSource.ts</DependentUpon>
+    </Content>
+    <TypeScriptCompile Include="src\uvis\data\DataView.ts" />
+    <Content Include="src\uvis\data\DataView.js">
+      <DependentUpon>DataView.ts</DependentUpon>
     </Content>
     <Content Include="src\uvis\data\IData.js">
       <DependentUpon>IData.ts</DependentUpon>
@@ -73,6 +151,10 @@
     <TypeScriptCompile Include="src\uvis\data\JSONDataSource.ts" />
     <Content Include="src\uvis\data\JSONDataSource.js">
       <DependentUpon>JSONDataSource.ts</DependentUpon>
+    </Content>
+    <TypeScriptCompile Include="src\uvis\data\SessionDataSource.ts" />
+    <Content Include="src\uvis\data\SessionDataSource.js">
+      <DependentUpon>SessionDataSource.ts</DependentUpon>
     </Content>
     <Content Include="src\uvis\instance\AbstractTemplateInstance.js">
       <DependentUpon>AbstractTemplateInstance.ts</DependentUpon>
@@ -92,9 +174,10 @@
       <DependentUpon>ScreenTemplateInstance.ts</DependentUpon>
     </Content>
     <Content Include="src\uvis\instance\ScreenTemplateInstance.ts" />
-    <Content Include="src\uvis\Property.js">
-      <DependentUpon>Property.ts</DependentUpon>
+    <Content Include="src\uvis\property.js">
+      <DependentUpon>property.ts</DependentUpon>
     </Content>
+    <Content Include="src\uvis\property.ts" />
     <Content Include="src\uvis\template\AbstractTemplate.js">
       <DependentUpon>AbstractTemplate.ts</DependentUpon>
     </Content>
@@ -157,9 +240,6 @@
     </Content>
     <Content Include="src\spec\Property.spec.js.map">
       <DependentUpon>Property.spec.ts</DependentUpon>
-    </Content>
-    <Content Include="src\uvis\Property.js.map">
-      <DependentUpon>Property.ts</DependentUpon>
     </Content>
     <Content Include="src\spec\template\AbstractTemplate.spec.js.map">
       <DependentUpon>AbstractTemplate.spec.ts</DependentUpon>
@@ -232,6 +312,48 @@
     <Content Include="src\uvis\template\AppDefinitionValidator.js.map">
       <DependentUpon>AppDefinitionValidator.ts</DependentUpon>
     </Content>
+    <Content Include="src\spec\component\ComponentTemplate.spec.js.map">
+      <DependentUpon>ComponentTemplate.spec.ts</DependentUpon>
+    </Content>
+    <Content Include="src\uvis\property.js.map">
+      <DependentUpon>property.ts</DependentUpon>
+    </Content>
+    <Content Include="src\uvis\component\ComponentTemplate.js.map">
+      <DependentUpon>ComponentTemplate.ts</DependentUpon>
+    </Content>
+    <Content Include="src\uvis\data\DataSource.js.map">
+      <DependentUpon>DataSource.ts</DependentUpon>
+    </Content>
+    <Content Include="src\uvis\data\DataView.js.map">
+      <DependentUpon>DataView.ts</DependentUpon>
+    </Content>
+    <Content Include="src\uvis\component\Context.js.map">
+      <DependentUpon>Context.ts</DependentUpon>
+    </Content>
+    <Content Include="src\spec\component\Context.spec.js.map">
+      <DependentUpon>Context.spec.ts</DependentUpon>
+    </Content>
+    <Content Include="src\uvis\component\ComponentInstance.js.map">
+      <DependentUpon>ComponentInstance.ts</DependentUpon>
+    </Content>
+    <Content Include="src\uvis\component\Property.js.map">
+      <DependentUpon>Property.ts</DependentUpon>
+    </Content>
+    <Content Include="src\spec\data\DataSource.spec.js.map">
+      <DependentUpon>DataSource.spec.ts</DependentUpon>
+    </Content>
+    <Content Include="src\spec\data\DataView.spec.js.map">
+      <DependentUpon>DataView.spec.ts</DependentUpon>
+    </Content>
+    <Content Include="src\uvis\data\SessionDataSource.js.map">
+      <DependentUpon>SessionDataSource.ts</DependentUpon>
+    </Content>
+    <Content Include="src\spec\component\ComponentInstance.spec.js.map">
+      <DependentUpon>ComponentInstance.spec.ts</DependentUpon>
+    </Content>
+    <Content Include="src\spec\component\Property.spec.js.map">
+      <DependentUpon>Property.spec.ts</DependentUpon>
+    </Content>
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
@@ -242,7 +364,6 @@
     <TypeScriptCompile Include="src\spec\util\Promise.spec.ts" />
     <TypeScriptCompile Include="src\specrunner.ts" />
     <TypeScriptCompile Include="src\spec\Property.spec.ts" />
-    <None Include="apps\demo1.json" />
     <Content Include="app.css" />
     <Content Include="index.html" />
     <Content Include="src\.typings\jasmine.d.ts" />
@@ -262,7 +383,6 @@
       <DependentUpon>main.ts</DependentUpon>
     </Content>
     <TypeScriptCompile Include="src\uvis\template\AbstractTemplate.ts" />
-    <TypeScriptCompile Include="src\uvis\Property.ts" />
     <TypeScriptCompile Include="src\uvis\util\Dictionary.ts" />
     <None Include="src\libs\jquery-1.9.0.intellisense.js" />
     <Content Include="src\.typings\jquery.d.ts" />

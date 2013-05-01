@@ -67,5 +67,36 @@ export module uvis.spec {
 
             expect(mustThrow).toThrow();
         });
+
+        it('should return the correct number of entries in the dictionary', () => {
+            var d = new util.Dictionary();
+            var e = 3;
+            d.add('k1', 'v1');
+            d.add('k2', 'v2');
+            d.add('k3', 'v3');
+            expect(d.count()).toBe(e);
+        });
+
+        it('should should return the number of items returned so far in .forEach', () => {
+            var d = new util.Dictionary();
+            d.add('k1', 'v1');
+            d.add('k2', 'v2');
+            d.add('k3', 'v3');
+            var expected = 0;
+            d.forEach((x, y, count) => {
+                expect(count).toBe(expected++);
+            })                        
+        });
+
+        it('should should return the number of items returned so far in .map', () => {
+            var d = new util.Dictionary();
+            d.add('k1', 'v1');
+            d.add('k2', 'v2');
+            d.add('k3', 'v3');
+            var expected = 0;
+            d.map((x, y, count) => {
+                expect(count).toBe(expected++);
+            })
+        });
     });
 }

@@ -1,5 +1,5 @@
 ﻿// Avoid `console` errors in browsers that lack a console.
-(function () {
+;(function () {
     var method;
     var noop = function () { };
     var methods = [
@@ -18,5 +18,20 @@
         if (!console[method]) {
             console[method] = noop;
         }
-    }
+    }   
 }());
+
+(function() {
+    if (!String.prototype.endsWith) {
+        Object.defineProperty(String.prototype, 'endsWith', {
+            enumerable: false,
+            configurable: false,
+            writable: false,
+            value: function (searchString, position) {
+                position = position || this.length;
+                position = position - searchString.length;
+                return this.lastIndexOf(searchString) === position;
+            }
+        });
+    }
+})();

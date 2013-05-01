@@ -1,4 +1,4 @@
-export module uvis.util {
+export module uvis {
     /**
       * Will search an array using the binary search algorithm.
       * Note: assumes the array is already sorted.
@@ -23,5 +23,13 @@ export module uvis.util {
                 return target;
             }
         }
+    }
+
+    export function initArray(length: number, value?: any, factory?: () => any): any[] {
+        var arr = new Array(length);
+        for (var i = 0, len = arr.length; i < len; i += 1) {
+            arr[i] = value === undefined ? factory() : value;
+        }
+        return arr;
     }
 }
