@@ -6,6 +6,7 @@ src/*/*/*/*.js
 *.map
 
 !src/libs/*.js
+src/.typings/rx.d.ts
 
 #################
 ## Eclipse
