@@ -3,8 +3,35 @@
 <head>
     <meta charset="utf-8" />
     <title>uVis.web</title>
-    <link rel="stylesheet" href="app.css" type="text/css" />
+    <link href="bootstrap.min.css" rel="stylesheet" />
+    <style type="text/css">
+        .name {
+            display: inline-block;
+            min-width: 90px;
+        }
+        .note {
+            display: inline;
+            padding: 5px 10px;
+            margin: 0 5px;
+            border-radius: 10px;
+            cursor: pointer;
+        }
+        .yyy {
+            color: whitesmoke;
+            background-color: brown;
+        }
+
+        .xxx {
+            color: seashell;
+            background-color: steelblue;
+        }
+    </style>
     <script src="src/libs/jquery-1.9.0.min.js"></script>
+    <script src="src/libs/rx/rx.js"></script>
+    <script src="src/libs/rx/rx.binding.js"></script>
+    <script src="src/libs/rx/rx.aggregates.js"></script>
+    <script src="src/libs/rx/rx.time.js"></script>
+    <script src="src/libs/rx/rx.coincidence.js"></script>
     <script data-main="src/main" type="text/javascript" src="src/libs/require.js"></script>
 </head>
 <body>

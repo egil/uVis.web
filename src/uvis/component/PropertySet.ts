@@ -19,6 +19,12 @@ export module uvis.component {
             return this._properties;
         }
 
+        public addProperties(properties: ucp.IProperty[]) {
+            properties.forEach((prop: ucp.IProperty) => {
+                this.properties.add(prop.id, prop);
+            });
+        }
+
         public getValue(context?: uccM.uvis.component.Context): Rx.Internals.AnonymousObservable {
             var total = this.properties.count();
             var completeCounter = 0;

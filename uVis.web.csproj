@@ -126,6 +126,10 @@
     <TypeScriptCompile Include="src\uvis\data\DataQuery.ts" />
     <TypeScriptCompile Include="src\uvis\component\ComponentTemplate.ts" />
     <TypeScriptCompile Include="src\uvis\component\ComponentInstance.ts" />
+    <TypeScriptCompile Include="src\uvis\component\App.ts" />
+    <Content Include="src\uvis\component\App.js">
+      <DependentUpon>App.ts</DependentUpon>
+    </Content>
     <Content Include="src\uvis\component\ComponentInstance.js">
       <DependentUpon>ComponentInstance.ts</DependentUpon>
     </Content>
@@ -388,6 +392,9 @@
     </Content>
     <Content Include="src\uvis\component\PropertySet.js.map">
       <DependentUpon>PropertySet.ts</DependentUpon>
+    </Content>
+    <Content Include="src\uvis\component\App.js.map">
+      <DependentUpon>App.ts</DependentUpon>
     </Content>
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>

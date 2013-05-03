@@ -14,10 +14,10 @@ export module uvis.component {
     export class ComponentTemplate {
         private _id: string;
         private _parent: ComponentTemplate;
-        // Dictionary <key: string, IProperty >
+        // Dictionary <key: string, IProperty>
         private _properties: uudM.uvis.util.Dictionary;
         private _data: uddsM.uvis.data.IDataSource;
-        private _children: ComponentTemplate[];
+        _children: ComponentTemplate[];
         private _events: uce.Event[];
 
         constructor(id?: string, parent?: ComponentTemplate) {
@@ -32,6 +32,10 @@ export module uvis.component {
 
         get parent(): ComponentTemplate {
             return this._parent;
+        }
+
+        set parent(value) {
+            this._parent = value;
         }
 
         get data(): uddsM.uvis.data.IDataSource {
@@ -51,6 +55,10 @@ export module uvis.component {
 
         get events(): uce.Event[]{
             return this._events;
+        }
+
+        get children(): ComponentTemplate[] {
+            return this._children;
         }
 
         public addEvent(evt: uce.Event) {
@@ -91,8 +99,16 @@ export module uvis.component {
             context = context !== undefined ? context.clone({ template: this }) : new ucc.Context({ template: this });
 
             // one or both of this.data or context.data have to have an observable data stream
-            var data = this.data !== undefined ? this.data.query() : context.data;
+            var data = this.data !== undefined ? this.data.query(context) : context.data;
             data = data || Rx.Observable.returnValue(undefined);
+
+            //data = data.firstOrDefault();
+
+            //oAction(d => {
+            //    if (Array.isArray(d)) {
+            //        data = Rx.Observable.fromArray(d);
+            //    }
+            //});
 
             var res = data.select(d => {
                 // wrap data in observable to keep interface consistent
@@ -114,12 +130,12 @@ export module uvis.component {
             });
 
             // if there are any child objects, generate these as well
-            if (this._children !== undefined && this._children.length > 0) {
+            if (this.children !== undefined && this.children.length > 0) {
                 res = res.selectMany(ci => {
                     // we create a new shared context for all the children
                     var childContext = ci.context.clone({ parent: ci });
                     // then we get all the create observables for the children
-                    var childrenObs = this._children.map(ct => ct.create(childContext));
+                    var childrenObs = this.children.map(ct => ct.create(childContext));
                     // then we subscribe to each and aggregate their result into ci
                     return Rx.Observable.concat(childrenObs)
                         .aggregate(ci, (ci, child) => {
@@ -133,7 +149,7 @@ export module uvis.component {
         }
 
         private createInstanceObject(): ucci.IComponentInstance { }
-    }
+    }   
 
     export class HTMLComponentTemplate extends ComponentTemplate {
         private _tag: string;
@@ -144,6 +160,61 @@ export module uvis.component {
 
         private createInstanceObject(): ucci.IComponentInstance {
             return new ucci.HTMLComponentInstance(this._tag);
+        }
+    }
+
+    export class FormComponentTemplate extends HTMLComponentTemplate {
+        private _visible: bool;
+        private _name: string;
+
+        constructor(id: string, name?: string, visible?: bool) {
+            super('div', id);
+            this._visible = visible || false;
+
+            // add the name as the 'title' attribute to the div element
+            if (name !== undefined) {
+                this.addProperty(new ucp.ReadOnlyProperty('title', name));
+            }
+            this._name = name;
+        }
+
+        get name() {
+            return this._name;
+        }
+
+        public get visible() {
+            return this._visible;
+        }
+        set visible(visible) {
+            // todo dispose of/hide children
+            this._visible = visible;
+        }
+    }
+
+    export class ScreenComponentTemplate extends HTMLComponentTemplate {
+        private _name: string;
+        private _url: string;
+
+        constructor(id: string, name: string, url: string) {
+            super('div', id);
+            this._name = name;
+            this._url = url;
+        }
+
+        get url() {
+            return this._url;
+        }
+
+        get name() {
+            return this._name;
+        }
+
+        get children(): FormComponentTemplate[] {
+            var ch = <FormComponentTemplate[]>this._children;
+            if (ch !== undefined)
+                return ch.filter(x => x.visible);
+            else
+                return ch;
         }
     }
 }

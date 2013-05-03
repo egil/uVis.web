@@ -1,0 +1,113 @@
+﻿{
+    "id": "lifeline",
+    "name": "Lifeline Demo",
+    "description": "A demo app, inspired from the example on page 21 in VisTool Requirements",
+    "dataSources": [
+        {
+            "id": "patient",
+            "type": "ODATA",
+            "url": "http://ehrsystem.local:3477/EHRSystemDataService.svc/Patient?&$format=json"
+        },
+        {
+            "id": "noteType",
+            "type": "ODATA",
+            "url": "http://ehrsystem.local:3477/EHRSystemDataService.svc/NoteType()?$orderby=noteTypeName desc&$format=json"
+        }
+    ],
+    "screens": [
+        {
+            "id": "scrPatient",
+            "name": "Patient",
+            "url": "/",
+            "forms": [
+                {
+                    "id": "frmPatient",
+                    "visible": true,
+                    "data": {
+                        "id": "selected",
+                        "type": "ODATA",
+                        "url": "http://ehrsystem.local:3477/EHRSystemDataService.svc/Patient?$filter=CPR eq '010350-0276'&$expand=MedOrder,PtNote,Diagnosis&$format=json"
+                    },
+                    "children": [
+                        {
+                            "id": "ptInfo",
+                            "type": "div",
+                            "children": [
+                                {
+                                    "type": "h1",
+                                    "properties": [
+                                        {
+                                            "id": "text",
+                                            "expression": "data.select(function(patient){ return patient.ptName; })"
+                                        }
+                                    ]
+                                },
+                                {
+                                    "type": "h2",
+                                    "properties": [
+                                        {
+                                            "id": "text",
+                                            "expression": "data.select(function(patient){ return patient.CPR; })"
+                                        }
+                                    ]
+                                }
+                            ]
+                        },
+                        {
+                            "type": "div",
+                            "children": [
+                                {
+                                    "type": "p",
+                                    "data": {
+                                        "id": "patientNotes",
+                                        "type": "VIEW",
+                                        "query": "source.selectMany(function(p){var notes = Rx.Observable.fromArray(p.PtNote);var type = map.get('noteType').query();return notes.join(type, function(note) { return Rx.Observable.empty(); }, function(type) { return Rx.Observable.empty(); }, function(note, type) { if(note.noteType === type.ID) return { type: type.noteTypeName, id: note.note_id, time: note.noteTime, text: note.noteText }; }).where(function(x){return x;});}).groupBy(function(x){ return x.type;})",
+                                        "source": "selected"
+                                    },
+                                    "children": [
+                                        {
+                                            "type": "strong",
+                                            "properties": [
+                                                {
+                                                    "id": "class",
+                                                    "default":"name" 
+                                                },
+                                                {
+                                                    "id": "text",
+                                                    "expression": "data.select(function(x){ return x.key; })"
+                                                }
+                                            ]
+                                        },
+                                        {
+                                            "id": "many-cells",
+                                            "type": "span",
+                                            "data": {
+                                                "type": "VIEW",
+                                                "query": "data.selectMany(function(x){ return x; }).doAction(function(x){ console.log(x); })",
+                                                "source": "selected"
+                                            },
+                                            "properties": [
+                                                {
+                                                    "id": "class",
+                                                    "expression": "data.select(function(x){ return (((x.id * 3) % 2 === 0) ? 'note xxx' : 'note yyy');})"
+                                                },
+												{
+                                                    "id": "title",
+                                                    "expression": "data.select(function(x){ return x.text;})"
+                                                },
+                                                {
+                                                    "id": "text",
+                                                    "expression": "data.select(function(x){ return x.id;})"
+                                                }
+                                            ]
+                                        }
+                                    ]
+                                }
+                            ]
+                        }
+                    ]
+                }
+            ]
+        }
+    ]
+}

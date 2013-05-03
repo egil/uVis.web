@@ -1,9 +1,12 @@
 /// <reference path="../../.typings/rx.d.ts" />
+
+import uccM = module('uvis/component/Context');
+
 export module uvis.data {
 
     export interface IDataSource {
         id: string;
-        query(query?: (source: Rx.Internals.AnonymousObservable) => Rx.Internals.AnonymousObservable): Rx.Internals.AnonymousObservable;
+        query(context?: uccM.uvis.component.Context): Rx.Internals.AnonymousObservable;
     }
 
     export interface IDataChangeNotifier {

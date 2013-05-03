@@ -19,7 +19,7 @@ export module uvis.spec {
         it('should set ctor parameters correctly', () => {
             var ds = new udsds.SessionDataSource('ds', comparer, initValues);
             var query = source => source.where(x => x.name.endsWith('son'));
-            var dv = new uddv.DataView('id', ds, query);
+            var dv = new uddv.DataView('id', () => ds, query);
             expect(dv.id).toBe('id');
             expect(dv.source).toBe(ds);
             // unable to verify query directly as it is private
@@ -27,7 +27,7 @@ export module uvis.spec {
 
         it('should apply filter correctly', () => {
             var ds = new udsds.SessionDataSource('ds', comparer, initValues);
-            var dv = new uddv.DataView('id', ds, query);
+            var dv = new uddv.DataView('id', () => ds, query);
 
             var res = { data: [], err: undefined, completed: false };
             var sub;
@@ -48,7 +48,7 @@ export module uvis.spec {
 
         it('should apply filter to changes correctly', () => {
             var ds = new udsds.SessionDataSource('ds', comparer, initValues);
-            var dv = new uddv.DataView('id', ds, query);
+            var dv = new uddv.DataView('id', () => ds, query);
 
             var res = { data: [], err: undefined, completed: false };
             var sub;

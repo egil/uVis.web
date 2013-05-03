@@ -15,12 +15,13 @@ require.config({
     }
 });
 
-require(['nextTick', 'shims', 'uvis/template/AppTemplate'], (nt, s, utatM) => {
+require(['nextTick', 'shims', 'uvis/component/App'], (nt, s, ucaM) => {
+    //var app = new ucaM.uvis.App('Test App');
+    //app.initialize();
     $(document).ready(() => {
-        $.getJSON('/apps/patient-demo/patient-definition.json', null, (definition) => {            
-            var appTemplate = new utatM.uvis.template.AppTemplate(definition, true);
-            var appInstance = appTemplate.createInstance();
-            appInstance.initialize();
+        $.getJSON('/apps/lifeline-demo/lifeline-definition.json', null, (definition) => {
+            var app = ucaM.uvis.createAppInstance(definition, true);
+            app.initialize();
         });
     });
 });

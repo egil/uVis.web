@@ -51,10 +51,10 @@ export module uvis.spec {
         it('should share global properties dataSource and forms between instances', () => {
             var c1 = new ucc.Context();
             var c2 = new ucc.Context();
-            c1.dataSources.push(new udsdsM.uvis.data.SessionDataSource(null, null, null));
-            c2.forms.push(new ucct.ComponentTemplate());
-            expect(c1.forms.length).toBe(1);
-            expect(c2.dataSources.length).toBe(1);
+            c1.dataSources.add('ds', new udsdsM.uvis.data.SessionDataSource(null, null, null));
+            c2.forms.add('f',new ucct.ComponentTemplate());
+            expect(c1.forms.count()).toBe(1);
+            expect(c2.dataSources.count()).toBe(1);
         });
     });
 }

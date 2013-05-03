@@ -2,6 +2,7 @@
 import uddsM = module('uvis/data/DataSource');
 import ucciM = module('uvis/component/ComponentInstance');
 import ucctM = module('uvis/component/ComponentTemplate');
+import uudM = module('uvis/util/Dictionary');
 
 export module uvis.component {
     export class Context {
@@ -54,15 +55,22 @@ export module uvis.component {
         /**
          * Global dictionary of available forms in the app
          */
-        public get forms(): ucctM.uvis.component.ComponentTemplate[] {
+        public get forms(): uudM.uvis.util.Dictionary {
             return Context.forms;
         }
 
         /**
          * Gobal dictionary of available data sources in the app
          */
-        public get dataSources(): uddsM.uvis.data.IDataSource[] {
+        public get dataSources(): uudM.uvis.util.Dictionary {
             return Context.dataSources;
+        }
+
+        /**
+         * Gobal dictionary of available data sources in the app
+         */
+        public get instances(): uudM.uvis.util.Dictionary {
+            return Context._instances;
         }
 
         /**
@@ -77,19 +85,27 @@ export module uvis.component {
         /**
          * Global dictionary of available forms in the app
          */
-        public static get forms(): ucctM.uvis.component.ComponentTemplate[] {
+        public static get forms(): uudM.uvis.util.Dictionary {
             return Context._forms;
         }
 
         /**
          * Gobal dictionary of available data sources in the app
          */
-        public static get dataSources(): uddsM.uvis.data.IDataSource[] {
+        public static get dataSources(): uudM.uvis.util.Dictionary {
             return Context._dataSources;
         }
 
-        private static _forms: ucctM.uvis.component.ComponentTemplate[] = new Array();
-        private static _dataSources: uddsM.uvis.data.IDataSource[] = new Array();
+        /**
+         * Gobal dictionary of available data sources in the app
+         */
+        public static get instances(): uudM.uvis.util.Dictionary {
+            return Context._instances;
+        }
+
+        private static _forms = new uudM.uvis.util.Dictionary();
+        private static _dataSources = new uudM.uvis.util.Dictionary();
+        private static _instances = new uudM.uvis.util.Dictionary();
     }
 
 }

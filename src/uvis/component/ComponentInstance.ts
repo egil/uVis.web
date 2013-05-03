@@ -34,6 +34,7 @@ export module uvis.component {
         constructor() {
             this._properties = new uudM.uvis.util.Dictionary();
             this._children = new Array();
+            this._attachedEvents = new uudM.uvis.util.Dictionary();
         }
 
         public get children() {
@@ -83,6 +84,7 @@ export module uvis.component {
         constructor(tag: string) {
             super();
             this._tag = tag.toUpperCase();
+
         }
 
         public get tag(): string {
@@ -173,7 +175,7 @@ export module uvis.component {
 
                 // attach events
                 if (this.context && this.context.template && Array.isArray(this.context.template.events)) {
-                    this.attachedEvents = new uudM.uvis.util.Dictionary();
+
                     this.context.template.events.forEach(e => {
                         var fn = e.create(this.context);
                         this.attachedEvents.add(e.name, fn)
