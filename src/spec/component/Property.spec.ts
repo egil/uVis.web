@@ -1,6 +1,7 @@
 /// <reference path="../../.typings/jasmine.d.ts" />
 /// <reference path="../../.typings/require.d.ts" />
 /// <reference path="../../.typings/rx.d.ts" />
+import ucctM = module('uvis/component/ComponentTemplate');
 import ucpM = module('uvis/component/Property');
 import uccM = module('uvis/component/Context');
 

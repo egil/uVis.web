@@ -1,13 +1,15 @@
 import uudM = module('uvis/util/Dictionary');
-import ucpM = module('uvis/component/Property');
 import uccM = module('uvis/component/Context');
-import ucciM = module('uvis/component/ComponentInstance');
+import ucpM = module('uvis/component/Property');
 import uddsM = module('uvis/data/DataSource');
+import ucciM = module('uvis/component/ComponentInstance');
+import uceM = module('uvis/component/Event');
 
 export module uvis.component {
     import ucci = ucciM.uvis.component;
     import ucc = uccM.uvis.component;
     import ucp = ucpM.uvis.component;
+    import uce = uceM.uvis.component;
 
     export class ComponentTemplate {
         private _id: string;
@@ -16,6 +18,7 @@ export module uvis.component {
         private _properties: uudM.uvis.util.Dictionary;
         private _data: uddsM.uvis.data.IDataSource;
         private _children: ComponentTemplate[];
+        private _events: uce.Event[];
 
         constructor(id?: string, parent?: ComponentTemplate) {
             this._id = id;
@@ -46,6 +49,15 @@ export module uvis.component {
             return this._properties;
         }
 
+        get events(): uce.Event[]{
+            return this._events;
+        }
+
+        public addEvent(evt: uce.Event) {
+            if (this._events === undefined) this._events = new Array();
+            this._events.push(evt);
+        }
+
         public addChild(child: ComponentTemplate) {
             if (this._children === undefined) this._children = new Array();
 
@@ -71,76 +83,67 @@ export module uvis.component {
             properties.forEach(this.addProperty, this);
         }
 
+        /**
+         * Create the instances of this template.
+         */
         public create(context?: ucc.Context): Rx.Internals.AnonymousObservable {
-            return this.createInstances(context);
-        }
-
-        private createInstances(context?: ucc.Context): Rx.Internals.AnonymousObservable {
-            return Rx.Observable.empty();
-            
-            // get context and update it
+            // get context and update it, or create new.
             context = context !== undefined ? context.clone({ template: this }) : new ucc.Context({ template: this });
-            
-            if (context.data === undefined && this.data === undefined) {
-                // since there is neither data from parent nor this template,
-                // we make sure index is set to 0. Index should always
-                // point to the context.data index compared.
-                context.index = 0;  
-                return this.createSingleInstance(context);
 
-            } else if (this.data !== undefined) {
-                // for each entity in the query, produce one instance
-                return this.data.query().select((entity, index) => {
-                    var instContext = context.clone({ data: entity, index: index });
-                    return this.createSingleInstance(instContext);
-                }).concatObservable();
+            // one or both of this.data or context.data have to have an observable data stream
+            var data = this.data !== undefined ? this.data.query() : context.data;
+            data = data || Rx.Observable.returnValue(undefined);
 
-            } else if (Array.isArray(context.data)) {
-                var observables = (<Array>context.data).map((entity, index) => {
-                    var instContext = context.clone({ data: entity, index: index });
-                    return this.createSingleInstance(instContext);
+            var res = data.select(d => {
+                // wrap data in observable to keep interface consistent
+                return d === undefined ? d : Rx.Observable.returnValue(d);
+            }).select((d, i) => {
+                // add data to new context
+                return context.clone({ data: d, index: i });
+            }).select(ctx => {
+                // create instance object and assign context
+                var ci = this.createInstanceObject();
+                ci.context = ctx;
+                return ci;
+            }).select(ci => {
+                // assign properties to it instance object
+                this.properties.forEach((key, prop: ucp.IProperty) => {
+                    ci.properties.add(key, prop.getValue(ci.context));
                 });
-                return Rx.Observable.fromArray(observables).concatObservable();
+                return ci;
+            });
 
-            } if (typeof context.data === 'number') {
-                // if data is a number N, create N instances
-                if (context.data > 0) {
-                    var counter = context.data, index = 0, observables = new Array(counter);
-                    // remove data do make sure child instances do not inherit 
-                    context.data = undefined;
-                    while (index < counter) {
-                        observables.push(this.createSingleInstance(context.clone({ index: index })));
-                        index++;
-                    }
-                    return Rx.Observable.fromArray(observables).concatObservable();
-                } else {
-                    return Rx.Observable.empty();
-                }
-
-            } else {
-                // else, data is a single object
-                return this.createSingleInstance(context);
+            // if there are any child objects, generate these as well
+            if (this._children !== undefined && this._children.length > 0) {
+                res = res.selectMany(ci => {
+                    // we create a new shared context for all the children
+                    var childContext = ci.context.clone({ parent: ci });
+                    // then we get all the create observables for the children
+                    var childrenObs = this._children.map(ct => ct.create(childContext));
+                    // then we subscribe to each and aggregate their result into ci
+                    return Rx.Observable.concat(childrenObs)
+                        .aggregate(ci, (ci, child) => {
+                            ci.addChild(child);
+                            return ci;
+                        });
+                });
             }
+
+            return res;
         }
 
-        // PRIVATE METHODS
-        //private createSingleInstance(context: ucc.Context): Rx.Internals.AnonymousObservable {
-        //    return null;
-        //}
-        //    var instance = new ucci.HTMLComponentInstance();
+        private createInstanceObject(): ucci.IComponentInstance { }
+    }
 
-        //    // for each property, create
+    export class HTMLComponentTemplate extends ComponentTemplate {
+        private _tag: string;
+        constructor(tag: string, id?: string, parent?: ComponentTemplate) {
+            super(id, parent);
+            this._tag = tag;
+        }
 
-        //    // for each event, create
-
-        //    // create child context
-        //    var childContext = context.clone({ parent: instance, index: 0 });
-
-        //    // for each child, create
-
-        //    return Rx.Observable.empty();
-        //}
-
-        // STATICS
+        private createInstanceObject(): ucci.IComponentInstance {
+            return new ucci.HTMLComponentInstance(this._tag);
+        }
     }
 }

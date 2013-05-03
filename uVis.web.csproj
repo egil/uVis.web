@@ -80,6 +80,10 @@
     </Content>
     <TypeScriptCompile Include="src\spec\data\DataSource.spec.ts" />
     <TypeScriptCompile Include="src\spec\component\Property.spec.ts" />
+    <TypeScriptCompile Include="src\spec\component\Event.spec.ts" />
+    <Content Include="src\spec\component\Event.spec.js">
+      <DependentUpon>Event.spec.ts</DependentUpon>
+    </Content>
     <Content Include="src\spec\component\Property.spec.js">
       <DependentUpon>Property.spec.ts</DependentUpon>
     </Content>
@@ -94,6 +98,10 @@
       <DependentUpon>JSONDataSource.spec.ts</DependentUpon>
     </Content>
     <Content Include="src\spec\data\JSONDataSource.spec.ts" />
+    <TypeScriptCompile Include="src\spec\data\ODataDataSource.spec.ts" />
+    <Content Include="src\spec\data\ODataDataSource.spec.js">
+      <DependentUpon>ODataDataSource.spec.ts</DependentUpon>
+    </Content>
     <Content Include="src\spec\Property.spec.js">
       <DependentUpon>Property.spec.ts</DependentUpon>
     </Content>
@@ -129,8 +137,16 @@
       <DependentUpon>Context.ts</DependentUpon>
     </Content>
     <TypeScriptCompile Include="src\uvis\component\Property.ts" />
+    <TypeScriptCompile Include="src\uvis\component\Event.ts" />
+    <Content Include="src\uvis\component\Event.js">
+      <DependentUpon>Event.ts</DependentUpon>
+    </Content>
     <Content Include="src\uvis\component\Property.js">
       <DependentUpon>Property.ts</DependentUpon>
+    </Content>
+    <TypeScriptCompile Include="src\uvis\component\PropertySet.ts" />
+    <Content Include="src\uvis\component\PropertySet.js">
+      <DependentUpon>PropertySet.ts</DependentUpon>
     </Content>
     <Content Include="src\uvis\data\DataQuery.js">
       <DependentUpon>DataQuery.ts</DependentUpon>
@@ -153,6 +169,10 @@
       <DependentUpon>JSONDataSource.ts</DependentUpon>
     </Content>
     <TypeScriptCompile Include="src\uvis\data\SessionDataSource.ts" />
+    <TypeScriptCompile Include="src\uvis\data\ODataDataSource.ts" />
+    <Content Include="src\uvis\data\ODataDataSource.js">
+      <DependentUpon>ODataDataSource.ts</DependentUpon>
+    </Content>
     <Content Include="src\uvis\data\SessionDataSource.js">
       <DependentUpon>SessionDataSource.ts</DependentUpon>
     </Content>
@@ -353,6 +373,21 @@
     </Content>
     <Content Include="src\spec\component\Property.spec.js.map">
       <DependentUpon>Property.spec.ts</DependentUpon>
+    </Content>
+    <Content Include="src\uvis\component\Event.js.map">
+      <DependentUpon>Event.ts</DependentUpon>
+    </Content>
+    <Content Include="src\spec\component\Event.spec.js.map">
+      <DependentUpon>Event.spec.ts</DependentUpon>
+    </Content>
+    <Content Include="src\uvis\data\ODataDataSource.js.map">
+      <DependentUpon>ODataDataSource.ts</DependentUpon>
+    </Content>
+    <Content Include="src\spec\data\ODataDataSource.spec.js.map">
+      <DependentUpon>ODataDataSource.spec.ts</DependentUpon>
+    </Content>
+    <Content Include="src\uvis\component\PropertySet.js.map">
+      <DependentUpon>PropertySet.ts</DependentUpon>
     </Content>
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>

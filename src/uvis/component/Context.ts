@@ -5,7 +5,7 @@ import ucctM = module('uvis/component/ComponentTemplate');
 
 export module uvis.component {
     export class Context {
-        constructor(properties?: { index?: number; parent?: ucciM.uvis.component.IComponentInstance; template?: ucctM.uvis.component.ComponentTemplate; data?: any; }) {
+        constructor(properties?: { index?: number; parent?: ucciM.uvis.component.IComponentInstance; template?; data?: any; }) {
             this.index = 0;
             if (properties !== undefined) {
                 this.index = properties.index || 0;
@@ -15,7 +15,7 @@ export module uvis.component {
             }
         }
 
-        public clone(properties?: { index?: number; parent?: ucciM.uvis.component.IComponentInstance; template?: ucctM.uvis.component.ComponentTemplate; data?: any; }): Context {
+        public clone(properties?: { index?: number; parent?: ucciM.uvis.component.IComponentInstance; template?; data?: any; }): Context {
             var clone = new Context();
             if (properties !== undefined) {
                 clone.index = properties.index || this.index;

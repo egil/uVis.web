@@ -3,7 +3,6 @@ import ucpM = module('uvis/component/Property');
 import uudM = module('uvis/util/Dictionary');
 import uccM = module('uvis/component/Context');
 import uddsM = module('uvis/data/DataSource');
-import ucctM = module('uvis/component/ComponentTemplate');
 import uueM = module('uvis/util/Extensions');
 
 export module uvis.component {
@@ -29,6 +28,8 @@ export module uvis.component {
         private _children: IComponentInstance[];
         // dictionary<string, Rx.Internals.AnonymousObservable>
         private _properties: uudM.uvis.util.Dictionary;
+        // dictionary<name: string, fn>
+        private _attachedEvents: uudM.uvis.util.Dictionary;
 
         constructor() {
             this._properties = new uudM.uvis.util.Dictionary();
@@ -54,8 +55,19 @@ export module uvis.component {
             return this._properties;
         }
 
+        /**
+         * Dictionary<name: string, fn>
+         */
+        public get attachedEvents() {
+            return this._attachedEvents;
+        }
+
         public addChild(child: IComponentInstance) {
             this._children.push(child);
+        }
+
+        public addChildren(children: IComponentInstance[]) {
+            children.forEach(this.addChild, this);
         }
 
         public removeChild(child: IComponentInstance) {
@@ -113,6 +125,13 @@ export module uvis.component {
             }
 
             // element.removeEventListener...
+            if (this.attachedEvents !== undefined) {
+                this.attachedEvents.forEach((name, fn) => {
+                    this._element.removeEventListener(name, fn, false);
+                });
+            }
+
+            // dispose of all children
             this.children.forEach(child => child.dispose());
 
             // null element to make it collectable
@@ -152,6 +171,16 @@ export module uvis.component {
                 // the actual html element to produce
                 this._element = document.createElement(this._tag);
 
+                // attach events
+                if (this.context && this.context.template && Array.isArray(this.context.template.events)) {
+                    this.attachedEvents = new uudM.uvis.util.Dictionary();
+                    this.context.template.events.forEach(e => {
+                        var fn = e.create(this.context);
+                        this.attachedEvents.add(e.name, fn)
+                        this._element.addEventListener(e.name, fn, false);
+                    });
+                }
+
                 if (missing > 0) {
                     isItemDone = new Array(missing);
 
@@ -166,7 +195,24 @@ export module uvis.component {
                             var sub = prop.subscribe((value) => {
                                 // each time the onNext is triggered we update the
                                 // provided attribute
-                                this._element.setAttribute(key, value);
+                                if (key === 'text') {                                    
+                                    // update if text node already exists
+                                    if (this._element.hasChildNodes() && this._element.firstChild.nodeType === 3) {
+                                        var text = <CharacterData>this._element.firstChild;
+                                        text.replaceData(0, text.length, value);
+                                    } else {
+                                        // else we create a new text node
+                                        var text = document.createTextNode(value);
+                                        // and make sure it is inserted as the first element
+                                        if (this._element.hasChildNodes()) {
+                                            text.insertBefore(this._element.firstChild);
+                                        } else {
+                                            this._element.appendChild(text);
+                                        }
+                                    }                                    
+                                } else {
+                                    this._element.setAttribute(key, value);
+                                }                                                                
                                 done(index);
                             },
                                 // pass any errors to the observer
