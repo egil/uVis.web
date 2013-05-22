@@ -7,7 +7,7 @@ export module uvis.component {
         /**
          * Create an observable for this property, i.e. and instance of this property.
          */
-        getValue(context?: uccM.uvis.component.Context): Rx.Internals.AnonymousObservable;
+        create(context?: uccM.uvis.component.Context): Rx.Internals.AnonymousObservable;
     }
 
     export interface IWriteProperty {
@@ -28,7 +28,7 @@ export module uvis.component {
         /**
          * Create an observable for this property, i.e. and instance of this property.
          */
-        public getValue(): Rx.Internals.AnonymousObservable {
+        public create(): Rx.Internals.AnonymousObservable {
             return Rx.Observable.returnValue(this._value);
         }
     }
@@ -41,7 +41,7 @@ export module uvis.component {
             this._subject = new Rx.BehaviorSubject(initialvalue);
         }
 
-        public getValue(): Rx.Internals.AnonymousObservable {
+        public create(): Rx.Internals.AnonymousObservable {
             return this._subject.distinctUntilChanged();
         }
 
@@ -63,7 +63,7 @@ export module uvis.component {
         /**
          * Create an observable for this property, i.e. and instance of this property.
          */
-        public getValue(context?: uccM.uvis.component.Context): Rx.Internals.AnonymousObservable {
+        public create(context?: uccM.uvis.component.Context): Rx.Internals.AnonymousObservable {
             var isSubjectSubscribed = false;
             var subject = new Rx.ReplaySubject(1);
 

@@ -43,5 +43,5 @@ export module uvis.data {
         public remove(entity): void {
             this.source.remove(entity);
         }
-    }   
+    }
 }

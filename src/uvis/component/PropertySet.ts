@@ -25,7 +25,7 @@ export module uvis.component {
             });
         }
 
-        public getValue(context?: uccM.uvis.component.Context): Rx.Internals.AnonymousObservable {
+        public create(context?: uccM.uvis.component.Context): Rx.Internals.AnonymousObservable {
             var total = this.properties.count();
             var completeCounter = 0;
             var valueCounter = 0;

@@ -18,7 +18,7 @@ export module uvis.spec {
                 var sub;
 
                 runs(() => {
-                    sub = p.getValue().subscribe((x) => { res.data.push(x); }, err => { res.err = err; }, () => { res.completed = true; });
+                    sub = p.create().subscribe((x) => { res.data.push(x); }, err => { res.err = err; }, () => { res.completed = true; });
                 });
 
                 waitsFor(() => res.completed, '', 20);
@@ -39,7 +39,7 @@ export module uvis.spec {
                 var sub;
 
                 runs(() => {
-                    sub = p.getValue().subscribe((x) => { res.data.push(x); }, err => { res.err = err; }, () => { res.completed = true; });
+                    sub = p.create().subscribe((x) => { res.data.push(x); }, err => { res.err = err; }, () => { res.completed = true; });
                 });
 
                 waitsFor(() => res.data[0] === 'x', 'for x to be pushed', 20);
@@ -66,7 +66,7 @@ export module uvis.spec {
                 var sub;
 
                 runs(() => {
-                    sub = p.getValue().subscribe((x) => {
+                    sub = p.create().subscribe((x) => {
                         res.data.push(x);
                     }, err => { res.err = err; }, () => { res.completed = true; });
                     p.setValue('z');
@@ -101,7 +101,7 @@ export module uvis.spec {
                 var sub;
 
                 runs(() => {
-                    sub = p.getValue(c).subscribe((x) => { res.data.push(x); }, err => { res.err = err; }, () => { res.completed = true; });
+                    sub = p.create(c).subscribe((x) => { res.data.push(x); }, err => { res.err = err; }, () => { res.completed = true; });
                 });
 
                 waitsFor(() => res.completed, '', 20);
@@ -125,7 +125,7 @@ export module uvis.spec {
                 var sub;
 
                 runs(() => {
-                    sub = p.getValue(c).subscribe((x) => { res.data.push(x); }, err => { res.err = err; }, () => { res.completed = true; });
+                    sub = p.create(c).subscribe((x) => { res.data.push(x); }, err => { res.err = err; }, () => { res.completed = true; });
                 });
 
                 waitsFor(() => res.data[0] === 'abd42', '', 20);
@@ -154,7 +154,7 @@ export module uvis.spec {
                 var sub;
 
                 runs(() => {
-                    sub = p.getValue().subscribe((x) => { res.data.push(x); }, err => { res.err = err; }, () => { res.completed = true; });
+                    sub = p.create().subscribe((x) => { res.data.push(x); }, err => { res.err = err; }, () => { res.completed = true; });
                     // complete without sending out values...
                     sourceA.onCompleted();
                 });
@@ -178,7 +178,7 @@ export module uvis.spec {
                 var res2 = { data: [], err: undefined, completed: false };
                 var sub1;
                 var sub2;
-                var observable = p.getValue();
+                var observable = p.create();
 
                 sourceA.onNext('z');
 
@@ -223,7 +223,7 @@ export module uvis.spec {
                 var res2 = { data: [], err: undefined, completed: false };
                 var sub1;
                 var sub2;
-                var observable = p.getValue();
+                var observable = p.create();
 
                 sourceA.onNext('z');
 
@@ -259,9 +259,9 @@ export module uvis.spec {
 
                 var context = new ucc.Context();
 
-                map.push(a.getValue(context));
-                map.push(b.getValue(context));
-                map.push(c.getValue(context));
+                map.push(a.create(context));
+                map.push(b.create(context));
+                map.push(c.create(context));
 
                 var res = { data: [], err: undefined, completed: false };
                 var sub;

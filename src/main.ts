@@ -25,3 +25,13 @@ require(['nextTick', 'shims', 'uvis/component/App'], (nt, s, ucaM) => {
         });
     });
 });
+
+
+
+
+
+
+
+
+// function(p) { return Rx.Observable.fromArray(p.PtNote); }
+p => Rx.Observable.fromArray(p.PtNote);

@@ -21,8 +21,11 @@
     <UpgradeBackupLocation />
   </PropertyGroup>
   <ItemGroup>
+    <Content Include="bootstrap.min.css" />
+    <Content Include="insert-vs-update-perf-test.js" />
     <Content Include="src\.typings\rx.d.ts" />
     <Content Include="src\libs\nextTick.js" />
+    <Content Include="apps\lifeline-demo\lifeline-definition.json" />
     <None Include="src\libs\rx\rx-vsdoc.js" />
     <None Include="src\libs\rx\rx.aggregates-vsdoc.js" />
     <Content Include="src\libs\rx\rx.aggregates.js" />
@@ -54,6 +57,9 @@
     <Content Include="src\libs\rx\rx.time.min.js" />
     <Content Include="src\libs\shims.js" />
     <Content Include="src\libs\when-1.8.1.js" />
+    <Content Include="src\main.min.js">
+      <DependentUpon>main.ts</DependentUpon>
+    </Content>
     <Content Include="src\specrunner.js">
       <DependentUpon>specrunner.ts</DependentUpon>
     </Content>
@@ -71,30 +77,54 @@
     <Content Include="src\spec\component\ComponentInstance.spec.js">
       <DependentUpon>ComponentInstance.spec.ts</DependentUpon>
     </Content>
+    <Content Include="src\spec\component\ComponentInstance.spec.min.js">
+      <DependentUpon>ComponentInstance.spec.ts</DependentUpon>
+    </Content>
     <Content Include="src\spec\component\ComponentTemplate.spec.js">
       <DependentUpon>ComponentTemplate.spec.ts</DependentUpon>
     </Content>
     <TypeScriptCompile Include="src\spec\component\Context.spec.ts" />
+    <Content Include="src\spec\component\ComponentTemplate.spec.min.js">
+      <DependentUpon>ComponentTemplate.spec.ts</DependentUpon>
+    </Content>
     <Content Include="src\spec\component\Context.spec.js">
       <DependentUpon>Context.spec.ts</DependentUpon>
     </Content>
     <TypeScriptCompile Include="src\spec\data\DataSource.spec.ts" />
     <TypeScriptCompile Include="src\spec\component\Property.spec.ts" />
     <TypeScriptCompile Include="src\spec\component\Event.spec.ts" />
+    <Content Include="src\spec\component\Context.spec.min.js">
+      <DependentUpon>Context.spec.ts</DependentUpon>
+    </Content>
     <Content Include="src\spec\component\Event.spec.js">
       <DependentUpon>Event.spec.ts</DependentUpon>
     </Content>
+    <Content Include="src\spec\component\Event.spec.min.js">
+      <DependentUpon>Event.spec.ts</DependentUpon>
+    </Content>
     <Content Include="src\spec\component\Property.spec.js">
+      <DependentUpon>Property.spec.ts</DependentUpon>
+    </Content>
+    <Content Include="src\spec\component\Property.spec.min.js">
       <DependentUpon>Property.spec.ts</DependentUpon>
     </Content>
     <Content Include="src\spec\data\DataSource.spec.js">
       <DependentUpon>DataSource.spec.ts</DependentUpon>
     </Content>
     <TypeScriptCompile Include="src\spec\data\DataView.spec.ts" />
+    <Content Include="src\spec\data\DataSource.spec.min.js">
+      <DependentUpon>DataSource.spec.ts</DependentUpon>
+    </Content>
     <Content Include="src\spec\data\DataView.spec.js">
       <DependentUpon>DataView.spec.ts</DependentUpon>
     </Content>
+    <Content Include="src\spec\data\DataView.spec.min.js">
+      <DependentUpon>DataView.spec.ts</DependentUpon>
+    </Content>
     <Content Include="src\spec\data\JSONDataSource.spec.js">
+      <DependentUpon>JSONDataSource.spec.ts</DependentUpon>
+    </Content>
+    <Content Include="src\spec\data\JSONDataSource.spec.min.js">
       <DependentUpon>JSONDataSource.spec.ts</DependentUpon>
     </Content>
     <Content Include="src\spec\data\JSONDataSource.spec.ts" />
@@ -102,21 +132,39 @@
     <Content Include="src\spec\data\ODataDataSource.spec.js">
       <DependentUpon>ODataDataSource.spec.ts</DependentUpon>
     </Content>
+    <Content Include="src\spec\data\ODataDataSource.spec.min.js">
+      <DependentUpon>ODataDataSource.spec.ts</DependentUpon>
+    </Content>
     <Content Include="src\spec\Property.spec.js">
       <DependentUpon>Property.spec.ts</DependentUpon>
     </Content>
     <TypeScriptCompile Include="src\spec\template\HTMLTemplate.spec.ts" />
+    <Content Include="src\spec\Property.spec.min.js">
+      <DependentUpon>Property.spec.ts</DependentUpon>
+    </Content>
     <Content Include="src\spec\template\AbstractTemplate.spec.js">
       <DependentUpon>AbstractTemplate.spec.ts</DependentUpon>
     </Content>
     <TypeScriptCompile Include="src\spec\template\AppTemplate.spec.ts" />
+    <Content Include="src\spec\template\AbstractTemplate.spec.min.js">
+      <DependentUpon>AbstractTemplate.spec.ts</DependentUpon>
+    </Content>
     <Content Include="src\spec\template\AppTemplate.spec.js">
+      <DependentUpon>AppTemplate.spec.ts</DependentUpon>
+    </Content>
+    <Content Include="src\spec\template\AppTemplate.spec.min.js">
       <DependentUpon>AppTemplate.spec.ts</DependentUpon>
     </Content>
     <Content Include="src\spec\template\HtmlTemplate.spec.js">
       <DependentUpon>HTMLTemplate.spec.ts</DependentUpon>
     </Content>
+    <Content Include="src\spec\template\HtmlTemplate.spec.min.js">
+      <DependentUpon>HTMLTemplate.spec.ts</DependentUpon>
+    </Content>
     <Content Include="src\spec\util\Dictionary.spec.js">
+      <DependentUpon>Dictionary.spec.ts</DependentUpon>
+    </Content>
+    <Content Include="src\spec\util\Dictionary.spec.min.js">
       <DependentUpon>Dictionary.spec.ts</DependentUpon>
     </Content>
     <Content Include="src\spec\util\Promise.spec.js">
@@ -127,40 +175,80 @@
     <TypeScriptCompile Include="src\uvis\component\ComponentTemplate.ts" />
     <TypeScriptCompile Include="src\uvis\component\ComponentInstance.ts" />
     <TypeScriptCompile Include="src\uvis\component\App.ts" />
+    <Content Include="src\spec\util\Promise.spec.min.js">
+      <DependentUpon>Promise.spec.ts</DependentUpon>
+    </Content>
     <Content Include="src\uvis\component\App.js">
       <DependentUpon>App.ts</DependentUpon>
     </Content>
+    <Content Include="src\uvis\component\App.min.js">
+      <DependentUpon>App.ts</DependentUpon>
+    </Content>
     <Content Include="src\uvis\component\ComponentInstance.js">
+      <DependentUpon>ComponentInstance.ts</DependentUpon>
+    </Content>
+    <Content Include="src\uvis\component\ComponentInstance.min.js">
       <DependentUpon>ComponentInstance.ts</DependentUpon>
     </Content>
     <Content Include="src\uvis\component\ComponentTemplate.js">
       <DependentUpon>ComponentTemplate.ts</DependentUpon>
     </Content>
     <TypeScriptCompile Include="src\uvis\component\Context.ts" />
+    <Content Include="src\uvis\component\ComponentTemplate.min.js">
+      <DependentUpon>ComponentTemplate.ts</DependentUpon>
+    </Content>
     <Content Include="src\uvis\component\Context.js">
       <DependentUpon>Context.ts</DependentUpon>
     </Content>
     <TypeScriptCompile Include="src\uvis\component\Property.ts" />
     <TypeScriptCompile Include="src\uvis\component\Event.ts" />
+    <TypeScriptCompile Include="src\uvis\component\Definitions.ts" />
+    <Content Include="src\uvis\component\Context.min.js">
+      <DependentUpon>Context.ts</DependentUpon>
+    </Content>
+    <Content Include="src\uvis\component\Definitions.js">
+      <DependentUpon>Definitions.ts</DependentUpon>
+    </Content>
+    <Content Include="src\uvis\component\Definitions.min.js">
+      <DependentUpon>Definitions.ts</DependentUpon>
+    </Content>
     <Content Include="src\uvis\component\Event.js">
+      <DependentUpon>Event.ts</DependentUpon>
+    </Content>
+    <Content Include="src\uvis\component\Event.min.js">
       <DependentUpon>Event.ts</DependentUpon>
     </Content>
     <Content Include="src\uvis\component\Property.js">
       <DependentUpon>Property.ts</DependentUpon>
     </Content>
     <TypeScriptCompile Include="src\uvis\component\PropertySet.ts" />
+    <Content Include="src\uvis\component\Property.min.js">
+      <DependentUpon>Property.ts</DependentUpon>
+    </Content>
     <Content Include="src\uvis\component\PropertySet.js">
+      <DependentUpon>PropertySet.ts</DependentUpon>
+    </Content>
+    <Content Include="src\uvis\component\PropertySet.min.js">
       <DependentUpon>PropertySet.ts</DependentUpon>
     </Content>
     <Content Include="src\uvis\data\DataQuery.js">
       <DependentUpon>DataQuery.ts</DependentUpon>
     </Content>
     <TypeScriptCompile Include="src\uvis\data\DataSource.ts" />
+    <Content Include="src\uvis\data\DataQuery.min.js">
+      <DependentUpon>DataQuery.ts</DependentUpon>
+    </Content>
     <Content Include="src\uvis\data\DataSource.js">
       <DependentUpon>DataSource.ts</DependentUpon>
     </Content>
     <TypeScriptCompile Include="src\uvis\data\DataView.ts" />
+    <Content Include="src\uvis\data\DataSource.min.js">
+      <DependentUpon>DataSource.ts</DependentUpon>
+    </Content>
     <Content Include="src\uvis\data\DataView.js">
+      <DependentUpon>DataView.ts</DependentUpon>
+    </Content>
+    <Content Include="src\uvis\data\DataView.min.js">
       <DependentUpon>DataView.ts</DependentUpon>
     </Content>
     <Content Include="src\uvis\data\IData.js">
@@ -169,36 +257,66 @@
     <TypeScriptCompile Include="src\uvis\instance\HTMLTemplateInstance.ts" />
     <TypeScriptCompile Include="src\uvis\instance\AbstractTemplateInstance.ts" />
     <TypeScriptCompile Include="src\uvis\data\JSONDataSource.ts" />
+    <Content Include="src\uvis\data\IData.min.js">
+      <DependentUpon>IData.ts</DependentUpon>
+    </Content>
     <Content Include="src\uvis\data\JSONDataSource.js">
       <DependentUpon>JSONDataSource.ts</DependentUpon>
     </Content>
     <TypeScriptCompile Include="src\uvis\data\SessionDataSource.ts" />
     <TypeScriptCompile Include="src\uvis\data\ODataDataSource.ts" />
+    <Content Include="src\uvis\data\JSONDataSource.min.js">
+      <DependentUpon>JSONDataSource.ts</DependentUpon>
+    </Content>
     <Content Include="src\uvis\data\ODataDataSource.js">
       <DependentUpon>ODataDataSource.ts</DependentUpon>
     </Content>
+    <Content Include="src\uvis\data\ODataDataSource.min.js">
+      <DependentUpon>ODataDataSource.ts</DependentUpon>
+    </Content>
     <Content Include="src\uvis\data\SessionDataSource.js">
+      <DependentUpon>SessionDataSource.ts</DependentUpon>
+    </Content>
+    <Content Include="src\uvis\data\SessionDataSource.min.js">
       <DependentUpon>SessionDataSource.ts</DependentUpon>
     </Content>
     <Content Include="src\uvis\instance\AbstractTemplateInstance.js">
       <DependentUpon>AbstractTemplateInstance.ts</DependentUpon>
     </Content>
     <TypeScriptCompile Include="src\uvis\instance\AppInstance.ts" />
+    <Content Include="src\uvis\instance\AbstractTemplateInstance.min.js">
+      <DependentUpon>AbstractTemplateInstance.ts</DependentUpon>
+    </Content>
     <Content Include="src\uvis\instance\AppInstance.js">
+      <DependentUpon>AppInstance.ts</DependentUpon>
+    </Content>
+    <Content Include="src\uvis\instance\AppInstance.min.js">
       <DependentUpon>AppInstance.ts</DependentUpon>
     </Content>
     <Content Include="src\uvis\instance\HTMLTemplateInstance.js">
       <DependentUpon>HTMLTemplateInstance.ts</DependentUpon>
     </Content>
+    <Content Include="src\uvis\instance\HTMLTemplateInstance.min.js">
+      <DependentUpon>HTMLTemplateInstance.ts</DependentUpon>
+    </Content>
     <Content Include="src\uvis\instance\PropertyInstance.js">
+      <DependentUpon>PropertyInstance.ts</DependentUpon>
+    </Content>
+    <Content Include="src\uvis\instance\PropertyInstance.min.js">
       <DependentUpon>PropertyInstance.ts</DependentUpon>
     </Content>
     <Content Include="src\uvis\instance\PropertyInstance.ts" />
     <Content Include="src\uvis\instance\ScreenTemplateInstance.js">
       <DependentUpon>ScreenTemplateInstance.ts</DependentUpon>
     </Content>
+    <Content Include="src\uvis\instance\ScreenTemplateInstance.min.js">
+      <DependentUpon>ScreenTemplateInstance.ts</DependentUpon>
+    </Content>
     <Content Include="src\uvis\instance\ScreenTemplateInstance.ts" />
     <Content Include="src\uvis\property.js">
+      <DependentUpon>property.ts</DependentUpon>
+    </Content>
+    <Content Include="src\uvis\property.min.js">
       <DependentUpon>property.ts</DependentUpon>
     </Content>
     <Content Include="src\uvis\property.ts" />
@@ -207,21 +325,39 @@
     </Content>
     <TypeScriptCompile Include="src\uvis\template\AppTemplate.ts" />
     <TypeScriptCompile Include="src\uvis\template\AppDefinitionValidator.ts" />
+    <Content Include="src\uvis\template\AbstractTemplate.min.js">
+      <DependentUpon>AbstractTemplate.ts</DependentUpon>
+    </Content>
     <Content Include="src\uvis\template\AppDefinitionValidator.js">
+      <DependentUpon>AppDefinitionValidator.ts</DependentUpon>
+    </Content>
+    <Content Include="src\uvis\template\AppDefinitionValidator.min.js">
       <DependentUpon>AppDefinitionValidator.ts</DependentUpon>
     </Content>
     <Content Include="src\uvis\template\AppTemplate.js">
       <DependentUpon>AppTemplate.ts</DependentUpon>
     </Content>
     <TypeScriptCompile Include="src\uvis\template\ComputeContext.ts" />
+    <Content Include="src\uvis\template\AppTemplate.min.js">
+      <DependentUpon>AppTemplate.ts</DependentUpon>
+    </Content>
     <Content Include="src\uvis\template\ComputeContext.js">
       <DependentUpon>ComputeContext.ts</DependentUpon>
     </Content>
     <TypeScriptCompile Include="src\uvis\template\Definitions.ts" />
+    <Content Include="src\uvis\template\ComputeContext.min.js">
+      <DependentUpon>ComputeContext.ts</DependentUpon>
+    </Content>
     <Content Include="src\uvis\template\Definitions.js">
       <DependentUpon>Definitions.ts</DependentUpon>
     </Content>
+    <Content Include="src\uvis\template\Definitions.min.js">
+      <DependentUpon>Definitions.ts</DependentUpon>
+    </Content>
     <Content Include="src\uvis\template\FormTemplate.js">
+      <DependentUpon>FormTemplate.ts</DependentUpon>
+    </Content>
+    <Content Include="src\uvis\template\FormTemplate.min.js">
       <DependentUpon>FormTemplate.ts</DependentUpon>
     </Content>
     <Content Include="src\uvis\template\FormTemplate.ts" />
@@ -230,14 +366,26 @@
     <Content Include="src\uvis\template\HTMLTemplate.js">
       <DependentUpon>HTMLTemplate.ts</DependentUpon>
     </Content>
+    <Content Include="src\uvis\template\HtmlTemplate.min.js">
+      <DependentUpon>HTMLTemplate.ts</DependentUpon>
+    </Content>
     <Content Include="src\uvis\template\PropertySetTemplate.js">
+      <DependentUpon>PropertySetTemplate.ts</DependentUpon>
+    </Content>
+    <Content Include="src\uvis\template\PropertySetTemplate.min.js">
       <DependentUpon>PropertySetTemplate.ts</DependentUpon>
     </Content>
     <Content Include="src\uvis\template\PropertyTemplate.js">
       <DependentUpon>PropertyTemplate.ts</DependentUpon>
     </Content>
     <TypeScriptCompile Include="src\uvis\template\ScreenTemplate.ts" />
+    <Content Include="src\uvis\template\PropertyTemplate.min.js">
+      <DependentUpon>PropertyTemplate.ts</DependentUpon>
+    </Content>
     <Content Include="src\uvis\template\ScreenTemplate.js">
+      <DependentUpon>ScreenTemplate.ts</DependentUpon>
+    </Content>
+    <Content Include="src\uvis\template\ScreenTemplate.min.js">
       <DependentUpon>ScreenTemplate.ts</DependentUpon>
     </Content>
     <Content Include="src\uvis\util\Dictionary.js">
@@ -246,7 +394,13 @@
     <Content Include="src\uvis\util\Extensions.js">
       <DependentUpon>Extensions.ts</DependentUpon>
     </Content>
+    <Content Include="src\uvis\util\Extensions.min.js">
+      <DependentUpon>Extensions.ts</DependentUpon>
+    </Content>
     <Content Include="src\uvis\util\Promise.js">
+      <DependentUpon>Promise.ts</DependentUpon>
+    </Content>
+    <Content Include="src\uvis\util\Promise.min.js">
       <DependentUpon>Promise.ts</DependentUpon>
     </Content>
     <Content Include="Web.config" />
@@ -395,6 +549,9 @@
     </Content>
     <Content Include="src\uvis\component\App.js.map">
       <DependentUpon>App.ts</DependentUpon>
+    </Content>
+    <Content Include="src\uvis\component\Definitions.js.map">
+      <DependentUpon>Definitions.ts</DependentUpon>
     </Content>
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>

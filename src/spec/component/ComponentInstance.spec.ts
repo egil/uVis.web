@@ -160,13 +160,13 @@ export module uvis.spec {
                     var styleProp = new ucps.StylePropertySet('style');
                     var widthProp = new ucp.ReadWriteProperty('width', '100px');
                     var heightProp = new ucp.ReadWriteProperty('height', '10px');
-                    styleProp.properties.add('width', widthProp.getValue());
-                    styleProp.properties.add('height', heightProp.getValue());
+                    styleProp.properties.add('width', widthProp.create());
+                    styleProp.properties.add('height', heightProp.create());
 
                     var i = new ucci.HTMLComponentInstance('DIV');
 
                     i.context = context;
-                    i.properties.add('style', styleProp.getValue(context));
+                    i.properties.add('style', styleProp.create(context));
 
                     var res = { data: [], err: undefined, completed: false };
                     var sub;
