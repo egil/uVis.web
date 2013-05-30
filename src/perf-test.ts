@@ -1,4 +1,4 @@
-/// <reference path=".typings/jquery.d.ts" />
+﻿/// <reference path=".typings/jquery.d.ts" />
 /// <reference path=".typings/jasmine.d.ts" />
 /// <reference path=".typings/require.d.ts" />
 require.config({
@@ -16,11 +16,9 @@ require.config({
 });
 
 require(['nextTick', 'shims', 'uvis/component/App'], (nt, s, ucaM) => {
-    //var app = new ucaM.uvis.App('Test App');
-    //app.initialize();
-    $(document).ready(() => {
-        $.getJSON('/apps/lifeline-demo/lifeline-definition.json', null, (definition) => {
-            var app = ucaM.uvis.createAppInstance(definition, true);
+    $(() => {
+        $.getJSON('/apps/perf-test/perf-test.json', null, (definition) => {
+            var app = ucaM.uvis.createAppInstance(definition);
             app.initialize();
         });
     });

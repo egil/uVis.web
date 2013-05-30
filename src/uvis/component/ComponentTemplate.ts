@@ -94,53 +94,53 @@ export module uvis.component {
         /**
          * Create the instances of this template.
          */
-public create(context?: ucc.Context): Rx.Internals.AnonymousObservable {
-    // get context and update it, or create new.
-    context = context !== undefined ? context.clone({ template: this }) : new ucc.Context({ template: this });
+        public create(context?: ucc.Context): Rx.Internals.AnonymousObservable {
+            // get context and update it, or create new.
+            context = context !== undefined ? context.clone({ template: this }) : new ucc.Context({ template: this });
 
-    // decide which data source to use in create process
-    var data = this.data !== undefined ? this.data.query(context) : context.data;
+            // decide which data source to use in create process
+            var data = this.data !== undefined ? this.data.query(context) : context.data;
 
-    // if data is undefined, we create a dummy root for the Rx expression tree with no data
-    data = data || Rx.Observable.returnValue(undefined);
+            // if data is undefined, we create a dummy root for the Rx expression tree with no data
+            data = data || Rx.Observable.returnValue(undefined);
 
-    var res = data.select((d, i) => {
-        // create instance object and assign context
-        var ci = this.createInstanceObject();
+            var res = data.select((d, i) => {
+                // create instance object and assign context
+                var ci = this.createInstanceObject();
 
-        // map the data from the data source in an Rx observable,
-        // unless it is undefined, then we do not care
-        d = d === undefined ? d : Rx.Observable.returnValue(d);
+                // map the data from the data source in an Rx observable,
+                // unless it is undefined, then we do not care
+                d = d === undefined ? d : Rx.Observable.returnValue(d);
 
-        // add data to new context
-        ci.context = context.clone({ data: d, index: i });
+                // add data to new context
+                ci.context = context.clone({ data: d, index: i });
 
-        // assign properties to it instance object
-        this.properties.forEach((key, prop: ucp.IProperty) => {
-            ci.properties.add(key, prop.create(ci.context));
-        });
-
-        return ci;
-    });
-
-    // if there are any child objects, generate these as well
-    if (this.children !== undefined && this.children.length > 0) {
-        res = res.selectMany(ci => {
-            // we create a new shared context for all the children
-            var childContext = ci.context.clone({ parent: ci });
-            // then we get all the create observables for the children
-            var childrenObs = this.children.map(ct => ct.create(childContext));
-            // then we subscribe to each and aggregate their result into ci
-            return Rx.Observable.concat(childrenObs)
-                .aggregate(ci, (ci, child) => {
-                    ci.addChild(child);
-                    return ci;
+                // assign properties to it instance object
+                this.properties.forEach((key, prop: ucp.IProperty) => {
+                    ci.properties.add(key, prop.create(ci.context));
                 });
-        });
-    }
 
-    return res;
-}
+                return ci;
+            });
+
+            // if there are any child objects, generate these as well
+            if (this.children !== undefined && this.children.length > 0) {
+                res = res.selectMany(ci => {
+                    // we create a new shared context for all the children
+                    var childContext = ci.context.clone({ parent: ci });
+                    // then we get all the create observables for the children
+                    var childrenObs = this.children.map(ct => ct.create(childContext));
+                    // then we subscribe to each and aggregate their result into ci
+                    var temp = Rx.Observable.concat(childrenObs);
+                    return temp.aggregate(ci, (ci, child) => {
+                            ci.addChild(child);
+                            return ci;
+                        });
+                });
+            }
+
+            return res;
+        }
 
         private createInstanceObject(): ucci.IComponentInstance { }
     }

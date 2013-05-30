@@ -8,6 +8,7 @@ import uceM = module('uvis/component/Event');
 import udM = module('uvis/component/Definitions');
 import udoddsM = module('uvis/data/ODataDataSource');
 import uddvM = module('uvis/data/DataView');
+import uddgM = module('uvis/data/DataGenerator');
 import uddsM = module('uvis/data/DataSource');
 
 export module uvis {
@@ -74,6 +75,10 @@ export module uvis {
                 break;
             case 'SESSION':
                 console.error('SESSION not implemented');
+                break;
+            case 'GENERATOR':
+                qfn = compileProperty(translateQuery(def.generator));
+                ds = new uddgM.uvis.data.DataGenerator(def.id, qfn);
                 break;
         }
         return ds;
@@ -187,7 +192,7 @@ export module uvis {
         return code;
     }
 
-    private compileProperty(javaScriptCode: string): Function {
+    function compileProperty(javaScriptCode: string): Function {
         return new Function('___c___', javaScriptCode);
     }
 
@@ -271,7 +276,7 @@ export module uvis {
             var screenTemplate: ucct.ScreenComponentTemplate = this.screens.get('/');
 
             // set the page title
-            document.title = screenTemplate.name + ' | ' + this.name + ' | ' + document.title;
+            document.title = screenTemplate.name + ' | ' + this.name;
 
             //// add classes to the head
             //AppInstance.createCssClasses(this.propertySets, cc);

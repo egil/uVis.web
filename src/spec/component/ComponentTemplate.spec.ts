@@ -5,6 +5,7 @@
 import ucctM = module('uvis/component/ComponentTemplate');
 import ucciM = module('uvis/component/ComponentInstance');
 import uddvM = module('uvis/data/DataView');
+import uddgM = module('uvis/data/DataGenerator');
 import ucpM = module('uvis/component/Property');
 import uddsM = module('uvis/data/DataSource');
 import udsdsM = module('uvis/data/SessionDataSource');
@@ -309,10 +310,13 @@ export module uvis.spec {
             });
 
             it('should return N instances if either context.data or this.data produces a single number N', () => {
-                // secondary data source of length 0
-                var sds = Rx.Observable.returnValue(10);
+                var sds = new uddgM.uvis.data.DataGenerator('dg', () => { return Rx.Observable.range(0, 2); });
 
-                var ct = new utcc.HTMLComponentTemplate('div');
+                var ct = new utcc.HTMLComponentTemplate('span');
+                ct.data = sds;
+
+                var div = new utcc.HTMLComponentTemplate('div');
+                div.addChild(ct);
 
                 var ci: ucci.IComponentInstance;
                 var res = { data: [], err: undefined, completed: false };
@@ -320,7 +324,7 @@ export module uvis.spec {
 
                 runs(() => {
                     // pass in secondary data source via context. It should not be used
-                    sub = ct.create(new ucc.Context({ data: sds })).subscribe((x) => { res.data.push(x); }, err => {
+                    sub = div.create().subscribe((x) => { res.data.push(x); }, err => {
                         console.error(err);
                         res.err = err;
                     }, () => {
@@ -332,7 +336,7 @@ export module uvis.spec {
 
                 runs(() => {
                     expect(res.err).toBeUndefined();
-                    expect(res.data.length).toBe(10);
+                    expect(res.data.length).toBe(1);
                 });
             });
 

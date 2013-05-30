@@ -1,0 +1,38 @@
+﻿{
+    "id": "perf-test",
+    "name": "Perf-test",
+	"dataSources": [], 
+    "screens": [
+        {
+            "id": "s1",
+            "name": "uVis Observable",
+            "url": "/",
+            "forms": [
+                {
+                    "id": "frm",
+                    "visible": true,					
+                    "children": [
+                        {
+							"id": "s", 
+                            "type": "span",
+							"data": {  
+								"type": "GENERATOR", 
+								"generator": "Rx.Observable.range(0, 20000)"
+							},
+							"properties": [{
+                                "id": "class",
+                                "expression": "data.select(function(x){ return (x % 2 === 0 ? \"odd\" : 'even'); })"
+							},{
+                                "id": "title",
+                                "expression": "data.select(function(x){ return x; })"
+							},{
+                                "id": "text",
+                                "expression": "data.select(function(x){ return x; })"
+							}]
+                        }
+                    ]
+                }
+            ]
+        }
+    ]
+}

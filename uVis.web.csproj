@@ -21,11 +21,21 @@
     <UpgradeBackupLocation />
   </PropertyGroup>
   <ItemGroup>
+    <Content Include="perf-test.html" />
+    <Content Include="perf-test-baseline.html" />
     <Content Include="bootstrap.min.css" />
     <Content Include="insert-vs-update-perf-test.js" />
     <Content Include="src\.typings\rx.d.ts" />
+    <Content Include="src\perf-test.js">
+      <DependentUpon>perf-test.ts</DependentUpon>
+    </Content>
+    <Content Include="src\perf-test.min.js">
+      <DependentUpon>perf-test.ts</DependentUpon>
+    </Content>
+    <Content Include="src\perf-test.ts" />
     <Content Include="src\libs\nextTick.js" />
     <Content Include="apps\lifeline-demo\lifeline-definition.json" />
+    <Content Include="apps\perf-test\perf-test.json" />
     <None Include="src\libs\rx\rx-vsdoc.js" />
     <None Include="src\libs\rx\rx.aggregates-vsdoc.js" />
     <Content Include="src\libs\rx\rx.aggregates.js" />
@@ -60,6 +70,13 @@
     <Content Include="src\main.min.js">
       <DependentUpon>main.ts</DependentUpon>
     </Content>
+    <Content Include="src\perf-test-baseline.js">
+      <DependentUpon>perf-test-baseline.ts</DependentUpon>
+    </Content>
+    <Content Include="src\perf-test-baseline.min.js">
+      <DependentUpon>perf-test-baseline.ts</DependentUpon>
+    </Content>
+    <Content Include="src\perf-test-baseline.ts" />
     <Content Include="src\specrunner.js">
       <DependentUpon>specrunner.ts</DependentUpon>
     </Content>
@@ -231,6 +248,13 @@
     <Content Include="src\uvis\component\PropertySet.min.js">
       <DependentUpon>PropertySet.ts</DependentUpon>
     </Content>
+    <TypeScriptCompile Include="src\uvis\data\DataGenerator.ts" />
+    <Content Include="src\uvis\data\DataGenerator.js">
+      <DependentUpon>DataGenerator.ts</DependentUpon>
+    </Content>
+    <Content Include="src\uvis\data\DataGenerator.min.js">
+      <DependentUpon>DataGenerator.ts</DependentUpon>
+    </Content>
     <Content Include="src\uvis\data\DataQuery.js">
       <DependentUpon>DataQuery.ts</DependentUpon>
     </Content>
@@ -389,6 +413,9 @@
       <DependentUpon>ScreenTemplate.ts</DependentUpon>
     </Content>
     <Content Include="src\uvis\util\Dictionary.js">
+      <DependentUpon>Dictionary.ts</DependentUpon>
+    </Content>
+    <Content Include="src\uvis\util\Dictionary.min.js">
       <DependentUpon>Dictionary.ts</DependentUpon>
     </Content>
     <Content Include="src\uvis\util\Extensions.js">
@@ -552,6 +579,15 @@
     </Content>
     <Content Include="src\uvis\component\Definitions.js.map">
       <DependentUpon>Definitions.ts</DependentUpon>
+    </Content>
+    <Content Include="src\perf-test-baseline.js.map">
+      <DependentUpon>perf-test-baseline.ts</DependentUpon>
+    </Content>
+    <Content Include="src\perf-test.js.map">
+      <DependentUpon>perf-test.ts</DependentUpon>
+    </Content>
+    <Content Include="src\uvis\data\DataGenerator.js.map">
+      <DependentUpon>DataGenerator.ts</DependentUpon>
     </Content>
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>

@@ -15,6 +15,7 @@ export module uvis {
         data?: any;
         url?: string;
         query?: string;
+        generator?: string;
     }
 
     export interface ScreenDefinition {
