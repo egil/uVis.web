@@ -1,5 +1,6 @@
-/// <reference path=".typings/jasmine.d.ts" />
 /// <reference path=".typings/require.d.ts" />
+/// <reference path=".typings/jasmine.d.ts" />
+
 require.config({
     baseUrl: 'src',
     paths: {
@@ -17,23 +18,8 @@ require.config({
     }
 });
 
-require(['nextTick', 'shims',
-         'spec/component/ComponentTemplate.spec',
-         'spec/component/ComponentInstance.spec',
-         'spec/component/Context.spec',
-         'spec/component/Property.spec',
-         'spec/component/Event.spec',
-         'spec/data/DataSource.spec',
-         'spec/data/DataView.spec',
-         'spec/data/ODataDataSource.spec',
-         //'spec/util/Promise.spec',
-         'spec/util/Dictionary.spec'
-         //'spec/Property.spec',
-         //'spec/data/JSONDataSource.spec',
-         //'spec/template/AbstractTemplate.spec',
-         //'spec/template/HTMLTemplate.spec',
-         //'spec/template/AppTemplate.spec'
-], () => {
+require(['nextTick', 'shims', 'spec/util/Dictionary.spec',
+    'spec/uvis/App.spec', 'spec/uvis/Template.spec', 'spec/uvis/Component.spec'], () => {
     // execute jasmine
     var jasmineEnv = jasmine.getEnv();
     jasmineEnv.execute();

@@ -1,160 +1,168 @@
-import utilModule = module('uvis/util/Promise');
-import util = utilModule.uvis.util; 
+/// <reference path="../.typings/rx.js.d.ts" />
 
 export module uvis {
-    declare function nextTick(fn: Function): void;
 
-    export var PropertyState = {
-        CURRENT: 'current',
-        STALE: 'stale',
-        STATIC: 'static',
-        UPDATING: 'updating'
-    }
+    export class ReadOnlyPropertyInstance {
+        private _observable;
+        private _creating = false;
+        private _id: string;
+        private _propertyObservableFactory: () => Rx.IObservable;
 
-    export class Property {
-        private _key: string;
-        private _value: any;
-        private _subscribers: any[];
-
-        /** 
-          * Creates a new instance of a property.
-          * @param key a string with representing the key of the property.
-          * @param value an value of the property
-          */
-        constructor(key: string, value?: any) {
-            this._key = key;
-            this._value = value;
-            this._subscribers = [];
+        constructor(id: string, factory: () => Rx.IObservable) {
+            this._id = id;
+            this._propertyObservableFactory = factory;
         }
 
-        /** Gets this property's key */
-        get key() {
-            return this._key;
-        }
-
-        /** Gets this property's value */
-        get value() {
-            return this._value;
-        }
-
-        /** Triggers a re-calculation of the property's value */
-        public calculate(index = 1): util.IPromise {
-            return util.Promise.resolve(this);
-        }
-
-        /** Gets this property's state.
-          * PropertyState.CURRENT  = the property is up to date
-          * PropertyState.UPDATING = the property is currently being calculated
-          * PropertyState.STALE    = the property is needs updating
-          * PropertyState.STATIC   = the property is static and will always return the same result
-          */
-        get state(): string {
-            return PropertyState.STATIC;
-        }
-
-        /** Sets this propertys' value */
-        set value(newValue: any) {
-            // only set if value is different
-            if (this.value !== newValue) {
-                this._value = newValue;
-                this.notify();
+        get observable(): Rx.IObservable<any> {
+            // If the observable for the property is already created, return it.
+            // This is the same as checking if state of a cell is
+            // 'updated' in the spreadsheet algorithm
+            if (this._observable !== undefined) {
+                return this._observable;
             }
-        }
 
-        get hasSubscribers(): bool {
-            return this._subscribers.length > 0;
-        }
-
-        public subscribe(func: (property: Property) => void ): Property {
-            // varify that func is not already subscribed
-            if (this._subscribers.indexOf(func) !== -1) {
-                throw new Error('Already subscribed');
+            // If we are already creating the observable we have a 
+            // cyclic dependency. Then we return an observable that 
+            // will thrown an exception when subscribed to. 
+            // This is the same as checking if state of a cell is
+            // 'visited' in the spreadsheet algorithm
+            if (this._creating) {
+                return Rx.Observable.throwException('Cyclic dependency detected for property: ' + this._id);
             }
-            this._subscribers.push(func);
-            return this;
+
+            // Set creating to true, to enable detection of cyclic dependencies,
+            // e.g. mark the property as 'visited'.
+            this._creating = true;
+
+            // Create the observable using the factory method from the property template.
+            this._observable = this._propertyObservableFactory();
+
+            // Unset creating, e.g. mark the property as 'updated'.
+            this._creating = false;
+
+            return this._observable;
         }
 
-        public unsubscribe(func: (property: Property) => void ): Property {
-            var index = this._subscribers.indexOf(func);
-            if (index !== -1) {
-                this._subscribers.splice(index, 1);
-            }
-            return this;
-        }
-
-        private notify(): void {
-            // Following rule #67: Never call asynchronous callbacks synchronously
-            this._subscribers.forEach((fn) => {
-                nextTick(fn.bind(null, this));
-            });
+        get isCreated(): boolean {
+            return this._observable !== undefined;
         }
     }
 
-    export class CalculatedProperty extends Property {
-        private _isStale = false;
-        private _updating = false;
-        private _calculatedPromise: util.IPromise;
-        private _calculatorFunc: (number) => util.IPromise;
-
-        constructor(key: string, calculatorFunc: (number) => util.IPromise) {
-            super(key);
-            this._calculatorFunc = calculatorFunc;
+    export class PropertyInstance extends ReadOnlyPropertyInstance {
+        
+        constructor(id: string, factory: () => Rx.IAnonymousSubject) {
+            super(id, factory);
         }
 
-        get state(): string {
-            return this._updating ? PropertyState.UPDATING :
-                   this._isStale ? PropertyState.STALE : PropertyState.CURRENT;
-        }
-
-        public calculate(index = 1): util.IPromise {
-            // if already updating, return the existing promise
-            if (this._updating && this._calculatedPromise !== undefined) {
-                return this._calculatedPromise;
-            }
-            
-            // else start a new calculation
-            this._updating = true;            
-            this._calculatedPromise = this._calculatorFunc(index);
-
-            // subscribe to the result of the calculation
-            this._calculatedPromise.last((calculatedValue) => {
-                // set updating and stale values
-                this._updating = false;
-                this._isStale = false;
-
-                // set it to undefined so a new calculation and update can 
-                // start if requested
-                this._calculatedPromise = undefined;
-
-                // setting value triggers a notification of subscribers
-                this.value = calculatedValue;
-
-            }, () => {
-                // if something did not go correctly, we
-                // just set updating to false and let somebody
-                // else handle the problem
-                this._updating = false;
-            });
-
-            return this._calculatedPromise;
-        }
-
-        /** Function to be called when a dependency has changed
-          * @source the dependency that changed
-          */
-        public dependencyChanged(source: Property) {
-            this._isStale = true;
-
-            // if there is already an update/recalculation
-            // active, we do not react to the change in dependency
-            // as the recalculation will pull the updated data
-            // when it needs it.
-            //
-            // otherwise we trigger a recalculation if this property
-            // has subscribers
-            if (!this._updating && this.hasSubscribers) {
-                this.calculate();
+        setValue(value) {
+            // only push new value if there are observers
+            if (this.isCreated) {
+                (<Rx.IAnonymousSubject>this.observable).onNext(value);
             }
         }
     }
+
 }
+
+
+///// <reference path="../../.typings/rx.d.ts" />
+//import uccM = module('uvis/component/Context');
+
+//export module uvis.component {
+//    export interface IProperty {
+//        id: string;
+//        /**
+//         * Create an observable for this property, i.e. and instance of this property.
+//         */
+//        create(context?: uccM.uvis.component.Context): Rx.Internals.AnonymousObservable;
+//    }
+
+//    export interface IWriteProperty {
+//        setValue(value): void;
+//    }
+
+//    export class ReadOnlyProperty implements IProperty {
+//        private _id: string;
+//        private _value;
+//        constructor(id: string, value?) {
+//            this._id = id;
+//            this._value = value;
+//        }
+//        get id(): string {
+//            return this._id;
+//        }
+
+//        /**
+//         * Create an observable for this property, i.e. and instance of this property.
+//         */
+//        public create(): Rx.Internals.AnonymousObservable {
+//            return Rx.Observable.returnValue(this._value);
+//        }
+//    }
+
+//    export class ReadWriteProperty extends ReadOnlyProperty implements IProperty implements IWriteProperty {
+//        private _subject: Rx.BehaviorSubject;
+
+//        constructor(id: string, initialvalue?: any) {
+//            super(id);
+//            this._subject = new Rx.BehaviorSubject(initialvalue);
+//        }
+
+//        public create(): Rx.Internals.AnonymousObservable {
+//            return this._subject.distinctUntilChanged();
+//        }
+
+//        public setValue(value) {
+//            this._subject.onNext(value);
+//        }
+//    }
+
+//    export class CalculatedProperty extends ReadOnlyProperty implements IProperty {
+//        private _valueFactory: (context?: uccM.uvis.component.Context) => any;
+//        private _defaultValue;
+
+//        constructor(id: string, valueFactory: (context?: uccM.uvis.component.Context) => any, defaultValue?: any) {
+//            super(id);
+//            this._valueFactory = valueFactory;
+//            this._defaultValue = defaultValue;
+//        }
+
+//        /**
+//         * Create an observable for this property, i.e. and instance of this property.
+//         */
+//        public create(context?: uccM.uvis.component.Context): Rx.Internals.AnonymousObservable {
+//            var isSubjectSubscribed = false;
+//            var subject = new Rx.ReplaySubject(1);
+
+//            // additional filters on subject
+//            var output = subject
+//                .distinctUntilChanged() // only publish new values                
+//                .catchException((err) => {
+//                    return Rx.Observable.throwException(new Error('Possible cyclic dependencies detected.'));
+//                }) // catch possible exception that most likely indicate cyclic dependencies                       
+//                .defaultIfEmpty(this._defaultValue); // if the stream completes without a value, used the default
+
+//            return Rx.Observable.defer(() => {
+//                var orgStream: Rx.Internals.AnonymousObservable;
+
+//                // Delay calling valueFactory till subscription, otherwise
+//                // we cannot loosely couple properties etc, with eachother.
+//                // Also, only subscribe once to prevent duplicated values
+//                if (!isSubjectSubscribed) {
+//                    isSubjectSubscribed = true;
+//                    orgStream = this._valueFactory(context);
+//                    // If the result of the value factory is not an 
+//                    // observable, we wrap the result in an observable and 
+//                    // continue. This can happen as there are no type
+//                    // checking in pure javascript, and valueFactory is parsed
+//                    // directly to JavaScript.
+//                    if (!(orgStream instanceof Rx.Internals.AnonymousObservable)) {
+//                        orgStream = Rx.Observable.returnValue(orgStream);
+//                    }
+//                    orgStream.subscribe(subject);
+//                }
+//                return output;
+//            });
+//        }
+//    }
+//}

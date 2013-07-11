@@ -199,8 +199,17 @@ interface RequireDefine {
 	*	@return module definition
 	**/
 	(name: string, deps: string[], ready: (...deps: any[]) => any): void;
+	
+	/**
+	* Defines whether require js supports multiple versions of jQuery being loaded
+	**/
+	amd: {
+		jQuery: bool;
+	};
 }
 
 // Ambient declarations for 'require' and 'define'
-var require: Require;
-var define: RequireDefine;
+declare var require: Require;
+declare var requirejs: Require;
+declare var req: Require;
+declare var define: RequireDefine;

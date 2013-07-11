@@ -1,12 +1,11 @@
 /// <reference path="../../.typings/jasmine.d.ts" />
 
-import dictionaryModule = module('uvis/util/Dictionary');
-import util = dictionaryModule.uvis.util;
+import ud = require('../../util/Dictionary');
 
 export module uvis.spec {
     describe('Dictionary', () => {
         it('should return a value added to it', () => {
-            var d = new util.Dictionary();
+            var d = new ud.Dictionary<string>();
             var actual;
             var key = 'k1';
             var expected = 'v1';
@@ -16,7 +15,7 @@ export module uvis.spec {
         });
 
         it('should only return key-value pairs added to it', () => {
-            var d = new util.Dictionary();
+            var d = new ud.Dictionary<string>();
             var c = 0;
             d.add('k1', 'v1');
             d.add('k2', 'v2');
@@ -33,7 +32,7 @@ export module uvis.spec {
         });
 
         it('should not be possible to replace built in functions', () => {
-            var d = new util.Dictionary();
+            var d = new ud.Dictionary<string>();
             var orgAdd = d.add;
             var actual;
             var key = 'add';
@@ -45,7 +44,7 @@ export module uvis.spec {
         });
 
         it('set should override existing values', () => {
-            var d = new util.Dictionary();
+            var d = new ud.Dictionary<string>();
             var actual;
             var key = 'add';
             var expected = 'exp';
@@ -56,7 +55,7 @@ export module uvis.spec {
         });
 
         it('add should throw an error if key already exists in dictionary', () => {
-            var d = new util.Dictionary();
+            var d = new ud.Dictionary<string>();
             var actual;
             var key = 'add';
             d.add(key, 'one valu');
@@ -69,7 +68,7 @@ export module uvis.spec {
         });
 
         it('should return the correct number of entries in the dictionary', () => {
-            var d = new util.Dictionary();
+            var d = new ud.Dictionary<string>();
             var e = 3;
             d.add('k1', 'v1');
             d.add('k2', 'v2');
@@ -78,7 +77,7 @@ export module uvis.spec {
         });
 
         it('should should return the number of items returned so far in .forEach', () => {
-            var d = new util.Dictionary();
+            var d = new ud.Dictionary<string>();
             d.add('k1', 'v1');
             d.add('k2', 'v2');
             d.add('k3', 'v3');
@@ -89,7 +88,7 @@ export module uvis.spec {
         });
 
         it('should should return the number of items returned so far in .map', () => {
-            var d = new util.Dictionary();
+            var d = new ud.Dictionary<string>();
             d.add('k1', 'v1');
             d.add('k2', 'v2');
             d.add('k3', 'v3');
