@@ -135,8 +135,6 @@
     <Content Include="src\spec\util\Dictionary.spec.min.js">
       <DependentUpon>Dictionary.spec.ts</DependentUpon>
     </Content>
-    <TypeScriptCompile Include="src\uvis\data\IData.ts" />
-    <TypeScriptCompile Include="src\uvis\data\DataQuery.ts" />
     <TypeScriptCompile Include="src\uvis\Template.ts" />
     <TypeScriptCompile Include="src\uvis\Component.ts" />
     <TypeScriptCompile Include="src\spec\uvis\Template.spec.ts" />
@@ -149,6 +147,13 @@
     </Content>
     <TypeScriptCompile Include="src\uvis\Property.ts" />
     <TypeScriptCompile Include="src\uvis\data\IDataSource.ts" />
+    <TypeScriptCompile Include="src\spec\uvis\PropertyTemplate.spec.ts" />
+    <Content Include="src\spec\uvis\PropertyTemplate.spec.js">
+      <DependentUpon>PropertyTemplate.spec.ts</DependentUpon>
+    </Content>
+    <Content Include="src\spec\uvis\PropertyTemplate.spec.min.js">
+      <DependentUpon>PropertyTemplate.spec.ts</DependentUpon>
+    </Content>
     <Content Include="src\spec\uvis\Template.spec.js">
       <DependentUpon>Template.spec.ts</DependentUpon>
     </Content>
@@ -179,65 +184,18 @@
     <Content Include="src\uvis\Property.min.js">
       <DependentUpon>Property.ts</DependentUpon>
     </Content>
-    <TypeScriptCompile Include="src\uvis\data\DataGenerator.ts" />
-    <Content Include="src\uvis\data\DataGenerator.js">
-      <DependentUpon>DataGenerator.ts</DependentUpon>
-    </Content>
-    <Content Include="src\uvis\data\DataGenerator.min.js">
-      <DependentUpon>DataGenerator.ts</DependentUpon>
-    </Content>
-    <Content Include="src\uvis\data\DataQuery.js">
-      <DependentUpon>DataQuery.ts</DependentUpon>
-    </Content>
-    <TypeScriptCompile Include="src\uvis\data\DataSource.ts" />
-    <Content Include="src\uvis\data\DataQuery.min.js">
-      <DependentUpon>DataQuery.ts</DependentUpon>
-    </Content>
-    <Content Include="src\uvis\data\DataSource.js">
-      <DependentUpon>DataSource.ts</DependentUpon>
-    </Content>
-    <TypeScriptCompile Include="src\uvis\data\DataView.ts" />
-    <Content Include="src\uvis\data\DataSource.min.js">
-      <DependentUpon>DataSource.ts</DependentUpon>
-    </Content>
-    <Content Include="src\uvis\data\DataView.js">
-      <DependentUpon>DataView.ts</DependentUpon>
-    </Content>
-    <Content Include="src\uvis\data\DataView.min.js">
-      <DependentUpon>DataView.ts</DependentUpon>
-    </Content>
-    <Content Include="src\uvis\data\IData.js">
-      <DependentUpon>IData.ts</DependentUpon>
-    </Content>
-    <TypeScriptCompile Include="src\uvis\data\JSONDataSource.ts" />
-    <Content Include="src\uvis\data\IData.min.js">
-      <DependentUpon>IData.ts</DependentUpon>
-    </Content>
-    <Content Include="src\uvis\data\JSONDataSource.js">
-      <DependentUpon>JSONDataSource.ts</DependentUpon>
-    </Content>
-    <TypeScriptCompile Include="src\uvis\data\SessionDataSource.ts" />
-    <TypeScriptCompile Include="src\uvis\data\ODataDataSource.ts" />
-    <Content Include="src\uvis\data\JSONDataSource.min.js">
-      <DependentUpon>JSONDataSource.ts</DependentUpon>
-    </Content>
-    <Content Include="src\uvis\data\ODataDataSource.js">
-      <DependentUpon>ODataDataSource.ts</DependentUpon>
-    </Content>
-    <Content Include="src\uvis\data\ODataDataSource.min.js">
-      <DependentUpon>ODataDataSource.ts</DependentUpon>
-    </Content>
-    <Content Include="src\uvis\data\SessionDataSource.js">
-      <DependentUpon>SessionDataSource.ts</DependentUpon>
-    </Content>
-    <Content Include="src\uvis\data\SessionDataSource.min.js">
-      <DependentUpon>SessionDataSource.ts</DependentUpon>
-    </Content>
     <Content Include="src\util\Dictionary.js">
       <DependentUpon>Dictionary.ts</DependentUpon>
     </Content>
     <Content Include="src\util\Dictionary.min.js">
       <DependentUpon>Dictionary.ts</DependentUpon>
+    </Content>
+    <TypeScriptCompile Include="src\uvis\PropertyTemplate.ts" />
+    <Content Include="src\uvis\PropertyTemplate.js">
+      <DependentUpon>PropertyTemplate.ts</DependentUpon>
+    </Content>
+    <Content Include="src\uvis\PropertyTemplate.min.js">
+      <DependentUpon>PropertyTemplate.ts</DependentUpon>
     </Content>
     <Content Include="src\uvis\Template.js">
       <DependentUpon>Template.ts</DependentUpon>
@@ -252,26 +210,11 @@
     <Content Include="src\spec\util\Dictionary.spec.js.map">
       <DependentUpon>Dictionary.spec.ts</DependentUpon>
     </Content>
-    <Content Include="src\uvis\data\IData.js.map">
-      <DependentUpon>IData.ts</DependentUpon>
-    </Content>
-    <Content Include="src\uvis\data\DataQuery.js.map">
-      <DependentUpon>DataQuery.ts</DependentUpon>
-    </Content>
-    <Content Include="src\uvis\data\JSONDataSource.js.map">
-      <DependentUpon>JSONDataSource.ts</DependentUpon>
-    </Content>
     <Content Include="src\spec\data\JSONDataSource.spec.js.map">
       <DependentUpon>JSONDataSource.spec.ts</DependentUpon>
     </Content>
     <Content Include="apps\patient-demo\patient-data.json" />
     <None Include="apps\patient-demo\patient-definition.json" />
-    <Content Include="src\uvis\data\DataSource.js.map">
-      <DependentUpon>DataSource.ts</DependentUpon>
-    </Content>
-    <Content Include="src\uvis\data\DataView.js.map">
-      <DependentUpon>DataView.ts</DependentUpon>
-    </Content>
     <Content Include="src\uvis\Property.js.map">
       <DependentUpon>Property.ts</DependentUpon>
     </Content>
@@ -280,12 +223,6 @@
     </Content>
     <Content Include="src\spec\data\DataView.spec.js.map">
       <DependentUpon>DataView.spec.ts</DependentUpon>
-    </Content>
-    <Content Include="src\uvis\data\SessionDataSource.js.map">
-      <DependentUpon>SessionDataSource.ts</DependentUpon>
-    </Content>
-    <Content Include="src\uvis\data\ODataDataSource.js.map">
-      <DependentUpon>ODataDataSource.ts</DependentUpon>
     </Content>
     <Content Include="src\spec\data\ODataDataSource.spec.js.map">
       <DependentUpon>ODataDataSource.spec.ts</DependentUpon>
@@ -296,9 +233,6 @@
     <Content Include="src\perf-test.js.map">
       <DependentUpon>perf-test.ts</DependentUpon>
     </Content>
-    <Content Include="src\uvis\data\DataGenerator.js.map">
-      <DependentUpon>DataGenerator.ts</DependentUpon>
-    </Content>
     <Content Include="src\spec\uvis\App.spec.js.map">
       <DependentUpon>App.spec.ts</DependentUpon>
     </Content>
@@ -307,6 +241,9 @@
     </Content>
     <Content Include="src\spec\uvis\Template.spec.js.map">
       <DependentUpon>Template.spec.ts</DependentUpon>
+    </Content>
+    <Content Include="src\spec\uvis\PropertyTemplate.spec.js.map">
+      <DependentUpon>PropertyTemplate.spec.ts</DependentUpon>
     </Content>
     <None Include="src\spec\uvis\testdefs\t1.json" />
     <Content Include="src\uvis\data\IDataSource.js.map">
@@ -320,6 +257,9 @@
     </Content>
     <Content Include="src\uvis\Template.js.map">
       <DependentUpon>Template.ts</DependentUpon>
+    </Content>
+    <Content Include="src\uvis\PropertyTemplate.js.map">
+      <DependentUpon>PropertyTemplate.ts</DependentUpon>
     </Content>
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>

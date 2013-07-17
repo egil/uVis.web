@@ -4,7 +4,7 @@
 
 import ud = require('util/Dictionary');
 import ct = require('uvis/Template');
-import udids = require('uvis/data/IDataSource');
+import ids = require('uvis/data/IDataSource');
 
 //import uci = require('uvis/ComponentInstance');
 //import up = require('uvis/Property');
@@ -12,7 +12,7 @@ import udids = require('uvis/data/IDataSource');
 export module uvis {
 
     export interface FormDefinition {
-        id: string;
+        name: string;
         visible: boolean;
         content?: string;
         downloaded?: boolean;
@@ -22,7 +22,7 @@ export module uvis {
         private _baseUrl: string;
         private _forms = new ud.Dictionary<ct.uvis.Template>();
         private _formDefs = new ud.Dictionary<FormDefinition>();
-        private _dataSources = new ud.Dictionary<udids.uvis.data.IDataSource>();
+        private _dataSources = new ud.Dictionary<ids.uvis.data.IDataSource>();
 
         constructor(baseUrl: string = '') {
             this._baseUrl = baseUrl;
@@ -40,26 +40,26 @@ export module uvis {
             return this._formDefs;
         }
 
-        get dataSources(): ud.Dictionary<udids.uvis.data.IDataSource> {
+        get dataSources(): ud.Dictionary<ids.uvis.data.IDataSource> {
             return this._dataSources;
         }
 
         addForm(form: ct.uvis.Template) {
-            if (this.forms.contains(form.id)) {
-                throw new Error('Form  with same id has already been added to application. { id: ' + form.id + ' }');
+            if (this.forms.contains(form.name)) {
+                throw new Error('Form  with same name has already been added to application. { name: ' + form.name + ' }');
             }
-            this.forms.add(form.id, form);
+            this.forms.add(form.name, form);
         }
 
         addFormDef(def: FormDefinition) {
-            if (this.formDefs.contains(def.id)) {
-                throw new Error('Form definition with same id has already been added to application. { id: ' + def.id + ' }');
+            if (this.formDefs.contains(def.name)) {
+                throw new Error('Form definition with same name has already been added to application. { name: ' + def.name + ' }');
             }
-            this.formDefs.add(def.id, def);
+            this.formDefs.add(def.name, def);
         }
 
-        addDataSource(def: udids.uvis.data.DataSourceDefinition) {
-            require(['/src/uvis/data/' + def.id], (ds) => {
+        addDataSource(def: ids.uvis.data.DataSourceDefinition) {
+            require(['/src/uvis/data/' + def.name], (ds) => {
                 // init data source, add to dict
             });
         }
@@ -73,7 +73,7 @@ export module uvis {
         }
 
         private downloadForm(def: FormDefinition) {            
-            $.getJSON(this._baseUrl + def.id + '.json', null).then(content => {
+            $.getJSON(this._baseUrl + def.name + '.json', null).then(content => {
                 def.content = content;
                 def.downloaded = true;
             }, err => {

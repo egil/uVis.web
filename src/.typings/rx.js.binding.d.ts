@@ -47,7 +47,7 @@ declare module Rx {
         publishValue(initialValue: T): ConnectableObservable<T>;
         publishValue<TResult>(selector: (item: T) => TResult, initialValue: TResult): ConnectableObservable<TResult>;
 
-        replay(selector?: (source: IObservable<T>) => ReplaySubject<T>, bufferSize?: number, window?: number, scheduler?: IScheduler): ReplaySubject<T>;
+        replay(selector?: (source: IObservable<T>) => ReplaySubject<T>, bufferSize?: number, window?: number, scheduler?: IScheduler): ConnectableObservable<T>;
     }
 
 
