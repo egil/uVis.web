@@ -98,11 +98,12 @@ export module uvis.spec {
 
         describe('ComputedPropertyTemplate.', () => {
             var template = new ut.uvis.Template('t', 'html', undefined, Rx.Observable.empty());
+            var bundle = new uc.uvis.Bundle(template);
 
             it('Should set ctor arguments correctly.', () => {
                 var actual = [];
                 var done = false;
-                var component = new uc.uvis.Component(template, 42);
+                var component = new uc.uvis.Component(template, bundle, 42);
                 var p1 = new pt.uvis.ComputedPropertyTemplate<number>('align', (c) => Rx.Observable.returnValue(c.index));
                 var obs = p1.create(component);
 
@@ -133,8 +134,8 @@ export module uvis.spec {
                 var actual2 = [];
                 var done1 = false;
                 var done2 = false;
-                var c1 = new uc.uvis.Component(template, 1);
-                var c2 = new uc.uvis.Component(template, 2);
+                var c1 = new uc.uvis.Component(template, bundle, 1);
+                var c2 = new uc.uvis.Component(template, bundle, 2);
                 var p1 = new pt.uvis.ComputedPropertyTemplate<number>('align', (c) => Rx.Observable.returnValue(c.index));
                 var obs = p1.create(c1);
                 obs.connect();
@@ -159,7 +160,7 @@ export module uvis.spec {
 
             it('Should create observable uses default value if source does not produce a value.', () => {
                 var actual = [];
-                var component = new uc.uvis.Component(template, 1);
+                var component = new uc.uvis.Component(template, bundle, 1);
                 var p1 = new pt.uvis.ComputedPropertyTemplate<number>('align', (c) => Rx.Observable.never(), 42);
                 var obs = p1.create(component);
                 obs.connect();
@@ -181,7 +182,7 @@ export module uvis.spec {
                 var prodCount = 0;
                 var done1 = false;
                 var done2 = false;
-                var component = new uc.uvis.Component(template, 1);
+                var component = new uc.uvis.Component(template, bundle, 1);
                 var p1 = new pt.uvis.ComputedPropertyTemplate<number>('align', (c) => Rx.Observable.returnValue(c.index).doAction(() => { prodCount++; }));
                 var obs = p1.create(component);
                 obs.connect();
@@ -211,7 +212,7 @@ export module uvis.spec {
                 var prodCount = 0;
                 var done1 = false;
                 var done2 = false;
-                var component = new uc.uvis.Component(template, 1);
+                var component = new uc.uvis.Component(template, bundle, 1);
                 var source = new Rx.Subject<number>();
                 var produceTracker = source.doAction(() => { prodCount++; });
                 var p1 = new pt.uvis.ComputedPropertyTemplate<number>('align', (c) => produceTracker);
@@ -247,7 +248,7 @@ export module uvis.spec {
                 var prodCount = 0;
                 var done1 = false;
                 var done2 = false;
-                var component = new uc.uvis.Component(template, 42);
+                var component = new uc.uvis.Component(template, bundle, 42);
                 var p1 = new pt.uvis.ComputedPropertyTemplate<number>('align', (c) => Rx.Observable.returnValue(c.index).doAction(() => { prodCount++; }), 1);
 
                 var obs = p1.create(component);
@@ -278,7 +279,7 @@ export module uvis.spec {
                 var done1 = false;
                 var done2 = false;
                 var prodCount = 0;
-                var component = new uc.uvis.Component(template, 1);
+                var component = new uc.uvis.Component(template, bundle, 1);
                 var source = new Rx.Subject<number>();
                 var produceTracker = source.doAction(() => { prodCount++; });
                 var p1 = new pt.uvis.ComputedPropertyTemplate<number>('align', (c) => produceTracker, 1);

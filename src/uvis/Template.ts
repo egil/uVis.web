@@ -18,11 +18,12 @@ export module uvis {
         private _name: string;
         private _type: string;
         private _parent: Template;
+        private _children: ud.Dictionary<Template>;
         private _rowCount: Rx.IObservable<number>;
         private _lastRowCount: number = 0;
         private _properties: ud.Dictionary<pt.uvis.IPropertyTemplate<any, Rx.IObservable<any>>> = new ud.Dictionary<pt.uvis.IPropertyTemplate>();
         private _rows: Rx.IObservable<any>;
-        private _bundles = new Array<uc.uvis.Component>();
+        private _bundles = new Array<uc.uvis.Bundle>();
         private _componentFactory: Rx.ConnectableObservable<uc.uvis.Component>;
         private _componentFactoryConnection: Rx._IDisposable;
         private _nextComponent: (component: uc.uvis.Component) => void;
@@ -89,6 +90,14 @@ export module uvis {
             return this._parent;
         }
 
+        get children(): ud.Dictionary<Template> {
+            if (this._children === undefined) {
+                this._children = new ud.Dictionary<Template>();
+            }
+
+            return this._children;
+        }
+
         get type(): string {
             return this._type;
         }
@@ -103,90 +112,46 @@ export module uvis {
 
         get properties(): ud.Dictionary<pt.uvis.IPropertyTemplate<T, Rx.IObservable<T>>>{
             return this._properties;
-        }
-       
-        /**
-         * Multi purpose function that will retrive either:
-         * 
-         *  - Bundle: get(bundle: number) 
-         *  - Component in a specific bundle: get(bundle: number, index: number)
-         *  - Property on a component in a specific bundle: get(bundle: number, index: number, name: string)
-         *
-         * It will create bundles and components first if they do not exist.
-         */
-        get(bundle: number, index: number, name: string): Rx.IObservable<any> {            
-            // We use the components observable to find the right component.
-            var res = this.parent === undefined ?
-                this.components.where(c => c.index === index) :
-                this.components.where(c => c.parent.index === bundle && c.index === index);
-            
-            // Then we select the component property observable and
-            // use switchLatest to subscribe to it.
-            //
-            // This has two purposes:
-            // 1. If the property/component does not exist, we can subscribe to its creation.
-            // 2. If the component is removed and added again later, switchLatest will
-            //    just switch to the next property observable, selected for it.
-            //    That makes it possible for a something to depend on a property on a 
-            //    component that is removed and added from time to time.
-            return res.select(c => c.getProperty(name)).switchLatest();
-        }
+        }       
 
         // A bundle is a component created by the parent
         // template. We can ask it for its container for
         // the components this template has created for it.
-        get bundles(): uc.uvis.Component[] {
+        get bundles(): uc.uvis.Bundle[] {
             return this._bundles;
         }
 
         get components(): Rx.IObservable<uc.uvis.Component> {
-            if (this.state !== TemplateState.ACTIVE) {
+            // If the template has not been initialized,
+            // we do so now, so it starts producing components.
+            if (this.state === TemplateState.INACTIVE) {
                 this.initialize();
             }
-            // The startWith methed is used to send all previous,
-            // still valid components to new subscribers.
+            
             return this._componentFactory.startWith.apply(this._componentFactory, this.existingComponents);
         }
 
         get existingComponents(): uc.uvis.Component[] {
-            if (this.parent === undefined) {
-                return this.bundles;
-            } else {
-                var res = [];
-
-                this.bundles.forEach(component => {
-                    var bundle = component.getBundle(this);
-                    res = res.concat(bundle);
-                });
-
-                return res;
-            }
+            return this.bundles.reduce((res, bundle) => {
+                return res.concat(bundle.existing);
+            }, new Array<uc.uvis.Component>());
         }
         
         initialize() {
-            if (this.state === TemplateState.ACTIVE) {
-                return;
+            if (this.state !== TemplateState.INACTIVE) {
+                throw new Error('Cannot initialize when state is not INACTIVE. Call dispose() first to put template into an inactive state.');
             }
 
             this._state = TemplateState.ACTIVE;
 
-            // We create a custom observable that will subscribe to the
-            // parent's components observable (if there is a parent) and
-            // the rowCount observable and create new components based on 
-            // components form the parent and the row count.
-            //
-            // We use the publish method to transform the observable
-            // into a ConnectableObservable, such that we can start
-            // the observable even if there are no subscribers yet.
             this._componentFactory = Rx.Observable.createWithDisposable(observer => {
-                var parentSubscription: Rx._IDisposable;
-                var rowCountSubscription: Rx._IDisposable;
+                var group = new Rx.CompositeDisposable();
                 var parentCompleted = false;
                 var rowCountCompleted = false;
-                var completeObserver = () => {
-                    if (parentCompleted && rowCountCompleted) {
-                        //observer.onCompleted();
+                var setCompletedState = () => {
+                    if (rowCountCompleted && (parentCompleted || this.parent.state === TemplateState.COMPLETED)) {
                         this._state = TemplateState.COMPLETED;
+                        observer.onCompleted();
                     }
                 };
 
@@ -196,40 +161,105 @@ export module uvis {
                     observer.onNext(component);
                 };
 
-                // Subscribe to parent's component stream, if there 
-                // is a parent.
+                // Subscribe to parent's component stream, if there is a parent.
+                // Create bundles based on parents components
                 if (this.parent !== undefined) {
-                    parentSubscription = this.parent.components.subscribe(component => {
-                        this.addBundleComponent(this._lastRowCount, component);
+                    group.add(this.parent.components.subscribe(component => {                        
+                        // Create a bundle for this component, if it does
+                        // not already have one.
+                        var bundle = component.bundles.get(this.name);
+                        if (bundle === undefined) {
+                            bundle = component.createBundle(this);
+                        }
+                                        
+                        // Add components to bundle
+                        this.updateComponentCountInBundle(this._lastRowCount, bundle);
+
                     }, observer.onError.bind(observer), () => {
-                            parentCompleted = true;
-                            completeObserver();
-                        });
+                        parentCompleted = true;
+                        setCompletedState();
+                    }));
                 } else {
+                    // If there are no parent, create a default bundle
+                    // to hold this templates components. This template
+                    // is a 'form' since it is at the top of the template data tree.
+                    this.bundles[0] = new uc.uvis.Bundle(this);
+                    
                     parentCompleted = true;
                 }
 
                 // Subscribe to rowCount observable.
-                rowCountSubscription = this.rowCount.subscribe(newCount => {
+                group.add(this.rowCount.subscribe(newCount => {
                     this._lastRowCount = newCount;
                     this.updateComponentCount(newCount);
                 }, observer.onError.bind(observer), () => {
                     rowCountCompleted = true;
-                    completeObserver();
-                });
+                    setCompletedState();
+                }));
 
-                // Then create a disposable that can unsubscribe to the 
-                // parent components and rowCount observable when needed.
-                return Rx.Disposable.create(() => {
-                    if (parentSubscription !== undefined) {
-                        parentSubscription.dispose();
-                        parentSubscription = undefined;
-                    }
-                    rowCountSubscription.dispose();
-                    rowCountSubscription = undefined;
-                    observer.onCompleted();
-                });
+                return group;
             }).publish();
+
+            //// We create a custom observable that will subscribe to the
+            //// parent's components observable (if there is a parent) and
+            //// the rowCount observable and create new components based on 
+            //// components form the parent and the row count.
+            ////
+            //// We use the publish method to transform the observable
+            //// into a ConnectableObservable, such that we can start
+            //// the observable even if there are no subscribers yet.
+            //this._componentFactory = Rx.Observable.createWithDisposable(observer => {
+            //    var parentSubscription: Rx._IDisposable;
+            //    var rowCountSubscription: Rx._IDisposable;
+            //    var parentCompleted = false;
+            //    var rowCountCompleted = false;
+            //    var setCompletedState = () => {
+            //        if (parentCompleted || this.parent.state === TemplateState.COMPLETED && rowCountCompleted) {
+            //            this._state = TemplateState.COMPLETED;
+            //            observer.onCompleted();
+            //        }
+            //    };
+
+            //    // Create the function that takes new components
+            //    // and pushes them to the observer.
+            //    this._nextComponent = (component) => {
+            //        observer.onNext(component);
+            //    };
+
+            //    // Subscribe to parent's component stream, if there 
+            //    // is a parent.
+            //    if (this.parent !== undefined) {
+            //        parentSubscription = this.parent.components.subscribe(component => {
+            //            this.addBundleComponent(this._lastRowCount, component);
+            //        }, observer.onError.bind(observer), () => {
+            //            parentCompleted = true;
+            //            setCompletedState();
+            //        });
+            //    } else {
+            //        parentCompleted = true;
+            //    }
+
+            //    // Subscribe to rowCount observable.
+            //    rowCountSubscription = this.rowCount.subscribe(newCount => {
+            //        this._lastRowCount = newCount;
+            //        this.updateComponentCount(newCount);
+            //    }, observer.onError.bind(observer), () => {
+            //        rowCountCompleted = true;
+            //        setCompletedState();
+            //    });
+
+            //    // Then create a disposable that can unsubscribe to the 
+            //    // parent components and rowCount observable when needed.
+            //    return Rx.Disposable.create(() => {
+            //        if (parentSubscription !== undefined) {
+            //            parentSubscription.dispose();
+            //            parentSubscription = undefined;
+            //        }
+            //        rowCountSubscription.dispose();
+            //        rowCountSubscription = undefined;
+            //        observer.onCompleted();
+            //    });
+            //}).publish();
 
             // Then we use the conenct method start creating components.
             this._componentFactoryConnection = this._componentFactory.connect();
@@ -253,78 +283,43 @@ export module uvis {
             //this._components = undefined;
             //this._components = undefined;
 
-
-            this._state = TemplateState.COMPLETED;
+            this._state = TemplateState.INACTIVE;
         }
 
         // This is triggered when the rowCount observable produces a new 'count'
         private updateComponentCount(count: number) {
-            // If there are no parent, this is the form template,
-            // i.e. we are at the top of the template tree.
-            if (this.parent === undefined) {
-                this.updateComponentCountInBundle(count, this.bundles);
-            } else {
-
-                // Get all of the parent templates components
-                this.parent.bundles.forEach(component => {
-                    // Then for each component, get the bundle that holds
-                    // the components this template has created.
-                    var bundle = component.getBundle(this);
-
-                    // And update the bundle with more/less components.
-                    this.updateComponentCountInBundle(count, bundle, component);
-                });
-            }
+            this.bundles.forEach(bundle => {
+                this.updateComponentCountInBundle(count, bundle);
+            });
         }
 
-        // This is triggered when a the parent template produces new components
-        private addBundleComponent(count: number, component: uc.uvis.Component) {
-            // At, by calling createBundle, the component will be making a
-            // bundle for us that it will track the lifetime of.
-            var bundle = component.createBundle(this);
+        //// This is triggered when a the parent template produces new components
+        //private addBundleComponent(count: number, component: uc.uvis.Component) {
+        //    // At, by calling createBundle, the component will be making a
+        //    // bundle for us that it will track the lifetime of.
+        //    var bundle = component.createBundle(this);
 
-            // Then we can add components created by this template to the bundle
-            this.updateComponentCountInBundle(count, bundle, component);
-        }
+        //    // Then we can add components created by this template to the bundle
+        //    this.updateComponentCountInBundle(count, bundle, component);
+        //}
 
-        private updateComponentCountInBundle(count: number, bundle: uc.uvis.Component[], parent?: uc.uvis.Component) {
-            var orgLength = bundle.length;
+        private updateComponentCountInBundle(count: number, bundle: uc.uvis.Bundle) {
+            var orgLength = bundle.count;
 
             // If count is lower then current number (length),
             // we remove the extraneous components and dispose of them.
             if (orgLength > count) {
-                // Remove components starting from the new length (count)
-                var removedComponents = bundle.splice(count);
-
-                // Then we iterate over each removed component, starting with the
-                // last, and dipose each one. It is important that we start with the
-                // last component, since it will remove itself from the child template's
-                // bundles array it is associated with, and we want to make sure it 
-                // that components are removed from the end of the bundle array, otherwise 
-                // there can become problems when other components try to remove themselves, 
-                // because they expect to be at a certain index, which they might not be at 
-                // anymore.
-                var removedComp;
-                while (removedComp = removedComponents.pop()) {
-                    // Calling dispose will trigger the component
-                    // to signal to components under it in the
-                    // instance data tree to also dispose of themselves.
-                    // Thus emptying bundles that this component is the
-                    // parent of.
-                    removedComp.dispose();
+                while (bundle.count > count) {
+                    bundle.remove();
                 }
-
             } else if (orgLength < count) {
                 // Otherwise we add additional components to the bundle
                 for (var index = orgLength; index < count; index++) {
                     // TODO: Create component based on this.type                    
-                    var component = new uc.uvis.Component(this, index, parent);
-                    bundle[index] = component;
+                    var component = new uc.uvis.Component(this, bundle, index, bundle.parent);
+                    bundle.add(component);
+                    this._nextComponent(component);
                 }
-                // Notify child templates (subscribers) that we
-                // have created new components that might need children.
-                var newComponents = bundle.slice(orgLength);
-                newComponents.forEach(this._nextComponent.bind(this));
             }
         }
     }
