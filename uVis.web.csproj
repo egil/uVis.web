@@ -25,6 +25,7 @@
     <Content Include="perf-test-baseline.html" />
     <Content Include="bootstrap.min.css" />
     <Content Include="insert-vs-update-perf-test.js" />
+    <Content Include="src\.typings\rx.js.uvis.d.ts" />
     <Content Include="src\.typings\jquery.d.ts" />
     <Content Include="src\.typings\rx.js.aggregates.d.ts" />
     <Content Include="src\.typings\rx.js.binding.d.ts" />

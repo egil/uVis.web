@@ -8,6 +8,8 @@ import pt = require('uvis/PropertyTemplate');
 
 export module uvis {
 
+    declare var nextTick: (fn: () => void ) => void;
+
     export enum TemplateState {
         INACTIVE,
         ACTIVE,
@@ -48,7 +50,7 @@ export module uvis {
                 // Wrap the rows observable in a publish + refcount
                 this._rows = rows === undefined ? parent.rows : rows.replay(null, 1).refCount();
             }
-            
+
             // Create rowCount observable, that extends the rows observable and
             // determines how many components should be created.
             this._rowCount = rows === undefined ? parent.rowCount : this._rows.select(result => {
@@ -85,7 +87,7 @@ export module uvis {
             // ... and add it to the properties dictionary.
             this.properties.add(rowPropertyTemplate.name, rowPropertyTemplate);
         }
-
+        
         get state(): TemplateState {
             return this._state;
         }
@@ -122,9 +124,6 @@ export module uvis {
             return this._properties;
         }
 
-        // A bundle is a component created by the parent
-        // template. We can ask it for its container for
-        // the components this template has created for it.
         get bundles(): ub.uvis.Bundle[] {
             return this._bundles;
         }
@@ -143,6 +142,19 @@ export module uvis {
             return this.bundles.reduce((res, bundle) => {
                 return res.concat(bundle.existing);
             }, new Array<uc.uvis.Component>());
+        }
+
+        /**
+         * Selects a single component from the first bundle. 
+         * Use this method to select a form component in a instance data tree.
+         * This method is only usedful when called on a form template 
+         * that creates the form components.
+         */
+        getForm(index: number = 0): Rx.IObservable<uc.uvis.Component> {
+            if (this.state === TemplateState.INACTIVE) {
+                this.initialize();
+            }
+            return this.bundles[0].components.where(c=> c.index === index);
         }
 
         initialize(force = false) {
@@ -174,6 +186,8 @@ export module uvis {
                 // Create bundles based on parents components
                 if (this.parent !== undefined) {
                     group.add(this.parent.components.subscribe(component => {
+                        // Add components to bundle
+
                         // Create a bundle for this component, if it does
                         // not already have one.
                         var bundle = component.bundles.get(this.name);
@@ -181,13 +195,11 @@ export module uvis {
                             bundle = component.createBundle(this);
                         }
 
-                        // Add components to bundle
                         this.updateComponentCountInBundle(this._lastRowCount, bundle);
-
                     }, observer.onError.bind(observer), () => {
-                            parentCompleted = true;
-                            setCompletedState();
-                        }));
+                        parentCompleted = true;
+                        nextTick(setCompletedState);
+                    }));
                 } else {
                     // If there are no parent, create a default bundle
                     // to hold this templates components. This template
@@ -203,7 +215,7 @@ export module uvis {
                     this.updateComponentCount(newCount);
                 }, observer.onError.bind(observer), () => {
                     rowCountCompleted = true;
-                    setCompletedState();
+                    nextTick(setCompletedState);
                 }));
 
                 // Set state to active once we finished subscribing to our sources

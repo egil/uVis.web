@@ -1,3 +1,4 @@
+/// <reference path="../../.typings/rx.js.uvis.d.ts" />
 /// <reference path="../../.typings/rx.js.aggregates.d.ts" />
 /// <reference path="../../.typings/jasmine.d.ts" />
 
@@ -260,36 +261,45 @@ export module uvis.spec {
                     var rows = new Rx.Subject<Object[]>();
                     var t1 = new ut.uvis.Template('t1', 'html', undefined, rows);
 
-                    // create the component instances
-                    t1.initialize();
+                    runs(() => {
+                        // create the component instances
+                        t1.initialize();
 
-                    // creates 3 instances
-                    rows.onNext([{}, {}, {}]);
+                        // creates 3 instances
+                        rows.onNext([{}, {}, {}]);
 
-                    expect(t1.existingComponents.length).toBe(3);
+                    });
+                    
+                    waitsFor(() => t1.existingComponents.length === 3, 'T1 did not create 3 components', 20);
 
-                    // this should deletes one instance
-                    rows.onNext([{}, {}]);
+                    runs(() => {
+                        // this should deletes one instance
+                        rows.onNext([{}, {}]);
+                    });
 
-                    expect(t1.existingComponents.length).toBe(2);
+                    waitsFor(() => t1.existingComponents.length === 2, 'T1 did not delete 1 components', 20);
                 });
 
                 it('Should create N components if new array arrives has N more elements than the previous', () => {
                     var rows = new Rx.Subject<Object[]>();
                     var t1 = new ut.uvis.Template('t1', 'html', undefined, rows);
 
-                    // create the component instances
-                    t1.initialize();
+                    runs(() => {
+                        // create the component instances
+                        t1.initialize();
 
-                    // creates 2 instances
-                    rows.onNext([{}, {}]);
+                        // creates 2 instances
+                        rows.onNext([{}, {}]);
+                    });
 
-                    expect(t1.existingComponents.length).toBe(2);
+                    waitsFor(() => t1.existingComponents.length === 2, 'T1 did not create 2 components', 20);
 
-                    // this should add three instance, total 5
-                    rows.onNext([{}, {}, {}, {}, {}]);
+                    runs(() => {
+                        // this should add three instance, total 5
+                        rows.onNext([{}, {}, {}, {}, {}]);
+                    });
 
-                    expect(t1.existingComponents.length).toBe(5);
+                    waitsFor(() => t1.existingComponents.length === 5, 'T1 did not create 2 addition components', 20);
                 });
             });
 
@@ -340,15 +350,19 @@ export module uvis.spec {
                         t3.initialize();
                     });
 
-                    waitsFor(() => t1.state === ut.uvis.TemplateState.COMPLETED, 'T1 did not complete', 50);
-                    waitsFor(() => t2.state === ut.uvis.TemplateState.COMPLETED, 'T2 did not complete', 50);
-                    waitsFor(() => t3.state === ut.uvis.TemplateState.COMPLETED, 'T3 did not complete', 50);
+                    //waitsFor(() => t1.state === ut.uvis.TemplateState.COMPLETED, 'T1 did not complete', 50);
+                    //waitsFor(() => t2.state === ut.uvis.TemplateState.COMPLETED, 'T2 did not complete', 50);
+                    //waitsFor(() => t3.state === ut.uvis.TemplateState.COMPLETED, 'T3 did not complete', 50);
 
-                    runs(() => {
-                        expect(t1.existingComponents.length).toBe(10);
-                        expect(t2.existingComponents.length).toBe(20);
-                        expect(t3.existingComponents.length).toBe(80);
-                    });
+                    waitsFor(() => t1.existingComponents.length === 10, 'T1 did not create 10 components', 20);
+                    waitsFor(() => t2.existingComponents.length === 20, 'T2 did not create 20 components', 20);
+                    waitsFor(() => t3.existingComponents.length === 80, 'T3 did not create 80 components', 20);
+
+                    //runs(() => {
+                    //    expect(t1.existingComponents.length).toBe(10);
+                    //    expect(t2.existingComponents.length).toBe(20);
+                    //    expect(t3.existingComponents.length).toBe(80);
+                    //});
                 });
 
                 it('Should remove N components based on changed row count for each parent component', () => {
@@ -433,11 +447,10 @@ export module uvis.spec {
                     form.initialize();
 
                     // T11 row that depends on t12!text
-                    // First we get the first bundle in form (the only bundle there will ever be).
                     // Then we select the first component (index = 0) from the bundle
-                    var t11row = form.bundles[0].components.where(c=> c.index === 0)
-                    // Then we use the form component to find its t12 child with index = 2 and its text property. 
-                        .select(c => <Rx.IObservable<number>>c.get('t12', 2, 'text')).switchLatest();
+                    // Then we use the form component to find its t12 child with index = 2 and its text property.
+                    //var t11row = form.getForm().select(c => <Rx.IObservable<number>>c.get('t12', 2, 'text')).switchLatest();
+                    var t11row = form.getForm().get('t12', 2, 'text');
 
                     // Two child templates to form, both one level down in the tree
                     var t11 = new ut.uvis.Template('t11', 'html', form, t11row);
@@ -472,11 +485,9 @@ export module uvis.spec {
                     form.initialize();
 
                     // T11 row that depends on t12!text
-                    // First we get the first bundle in form (the only bundle there will ever be).
-                    // Then we select the first component (index = 0) from the bundle
-                    var t11row = form.bundles[0].components.where(c=> c.index === 0)
-                    // Then we use the form component to find its t12 child with index = 2 and its text property. 
-                        .select(c => <Rx.IObservable<number>>c.get('t12', 0, 'text')).switchLatest();
+                    // We use the form component to find its t12 child with index = 2 and its text property.
+                    //var t11row = form.getForm().select(c => <Rx.IObservable<number>>c.get('t12', 0, 'text')).switchLatest();
+                    var t11row = form.getForm().get('t12', 0, 'text');
 
                     // Two child templates to form, both one level down in the tree
                     var t11 = new ut.uvis.Template('t11', 'html', form, t11row);
@@ -486,13 +497,9 @@ export module uvis.spec {
                         return Rx.Observable.returnValue(5 * c.index);
                     }));
 
-
-                    // T11 row that depends on t12!text
-                    // First we get the first bundle in form (the only bundle there will ever be).
-                    // Then we select the first component (index = 0) from the bundle
-                    var t12row = form.bundles[0].components.where(c=> c.index === 0)
-                    // Then we use the form component to find its t12 child with index = 2 and its text property. 
-                        .select(c => <Rx.IObservable<number>>c.get('t11', 0, 'text')).switchLatest();
+                    // T12 row that depends on t11!text
+                    // var t12row = form.getForm().select(c => <Rx.IObservable<number>>c.get('t11', 0, 'text')).switchLatest();
+                    var t12row = form.getForm().get('t11', 0, 'text');
 
                     var t12 = new ut.uvis.Template('t12', 'html', form, t12row);
 
@@ -514,352 +521,68 @@ export module uvis.spec {
                     waitsFor(() => errorMessage !== undefined, 'No error message arrived', 100);
                 });
             });
+        });   
+
+        describe('Property referencing:', () => {
+            it('should return a property from component in bundle X on index Y as observable (active, no parent)', () => {
+                var obs;
+                var actual = [];
+                var rows = Rx.Observable.returnValue(30);
+                var t1 = new ut.uvis.Template('t1', 'html', undefined, rows);
+
+                // create a text property and add it to the properties dictionary
+                t1.properties.add('text', new pt.uvis.ComputedPropertyTemplate('text', (c) => {
+                    return Rx.Observable.returnValue('My index is ' + c.index);
+                }));
+
+                // init template, create components
+                runs(() => {
+                    t1.initialize();
+                });
+
+                waitsFor(() => t1.existingComponents.length === 30, 'Did not create components', 100);
+
+                runs(() => {
+                    // get the text property from component 2 in bundle 1 (zero indexed).
+                    obs = t1.getForm(1).property('text');
+                    // subscribe to it to get the property value
+                    sub(obs, actual);
+                });
+
+                waitsFor(() => actual.length === 1, 'Did not return property', 20);
+
+                runs(() => {
+                    expect(actual[0]).toBe('My index is 1');
+                });
+
+            });
+
+            it('should return a property from component in bundle X on index Y as observable (inactive, no parent)', () => {
+                var obs;
+                var actual = [];
+                var rows = Rx.Observable.returnValue(4);
+                var t1 = new ut.uvis.Template('parent', 'html', undefined, rows);
+
+                // create a text property and add it to the properties dictionary
+                t1.properties.add('text', new pt.uvis.ComputedPropertyTemplate('text', (c) => {
+                    //return Rx.Observable.returnValue('My index is ' + c.index);
+                    return c.property('row').select(n => 'Data is ' + n);
+                }));
+                
+                runs(() => {
+                    // get the text property from component 2 in bundle 1 (zero indexed).
+                    obs = t1.getForm(2).property('text');
+                    // subscribe to it to get the property value
+                    sub(obs, actual);
+                });
+
+                waitsFor(() => actual.length === 1, 'Did not return property', 20);
+
+                runs(() => {
+                    expect(actual[0]).toBe('Data is 4');
+                })
+            });
         });
-    
-        //describe('Component referencing:', () => {
-        //    // such that child component templates can subscribe to parent
-        //    // component template and use these as bundles
-        //    it('should return component instances (current and future) via an observable', () => {
-        //        var actual = [];
-        //        var done = false;
-        //        var rows = new Rx.Subject<number>();
-        //        var parent = new ut.uvis.Template('parent', 'html', undefined, rows);
-        //        parent.initialize();
 
-        //        rows.onNext(2);
-
-        //        sub(parent.components, actual, () => { done = true; });
-
-        //        expect(actual.length).toBe(2);
-
-        //        rows.onNext(10);
-
-        //        expect(actual.length).toBe(10);
-
-        //        parent.dispose();
-        //    });
-        //});
-
-        //describe('Property referencing:', () => {
-        //    it('should return a property from component in bundle X on index Y as observable (active, no parent)', () => {
-        //        var obs;
-        //        var actual = [];
-        //        var rows = Rx.Observable.returnValue(30);
-        //        var t1 = new ut.uvis.Template('parent', 'html', undefined, rows);
-
-        //        // create a text property and add it to the properties dictionary
-        //        t1.properties.add('text', new pt.uvis.ComputedPropertyTemplate('text', (c) => {
-        //            return Rx.Observable.returnValue('My index is ' + c.index);
-        //        }));
-
-        //        // init template, create components
-        //        runs(() => {
-        //            t1.initialize();
-        //        });
-
-        //        waitsFor(() => t1.existingComponents.length === 30, 'Did not create components', 100);
-
-        //        runs(() => {
-        //            // get the text property from component 2 in bundle 1 (zero indexed).
-        //            obs = t1.get(0, 1, 'text');
-        //            // subscribe to it to get the property value
-        //            sub(obs, actual);
-        //        });
-
-        //        waitsFor(() => actual.length === 1, 'Did not return property', 20);
-
-        //        runs(() => {
-        //            expect(actual[0]).toBe('My index is 1');
-        //        })
-
-        //    });
-
-        //    it('should return a property from component in bundle X on index Y as observable (inactive, no parent)', () => {
-        //        var obs;
-        //        var actual = [];
-        //        var rows = Rx.Observable.returnValue(4);
-        //        var t1 = new ut.uvis.Template('parent', 'html', undefined, rows);
-
-        //        // create a text property and add it to the properties dictionary
-        //        t1.properties.add('text', new pt.uvis.ComputedPropertyTemplate('text', (c) => {
-        //            //return Rx.Observable.returnValue('My index is ' + c.index);
-        //            return c.getProperty('row').select(n => 'Data is ' + n);
-        //        }));
-    
-        //        runs(() => {
-        //            // get the text property from component 2 in bundle 1 (zero indexed).
-        //            obs = t1.get(0, 1, 'text');
-        //            // subscribe to it to get the property value
-        //            sub(obs, actual);
-        //        });
-
-        //        waitsFor(() => actual.length === 1, 'Did not return property', 20);
-
-        //        runs(() => {
-        //            expect(actual[0]).toBe('Data is 4');
-        //        })
-        //    });
-
-        //    it('should enable reconnecting to same property on new component (active, no parent)', () => {
-        //        var obs;
-        //        var actual = [];
-        //        var rows = new Rx.Subject<number>();
-        //        var t1 = new ut.uvis.Template('parent', 'html', undefined, rows);
-
-        //        // create a text property and add it to the properties dictionary
-        //        t1.properties.add('text', new pt.uvis.ComputedPropertyTemplate('text', (c) => {
-        //            return c.getProperty('row').select(n => 'Data is ' + n);
-        //        }));
-
-        //        runs(() => {
-        //            t1.initialize();
-    
-        //            // create two components
-        //            rows.onNext(2);
-        //        });
-
-        //        waitsFor(() => t1.existingComponents.length === 2, 'Did not create components', 100);
-
-        //        runs(() => {
-        //            // get the text property from component 2 in bundle 1 (zero indexed).
-        //            obs = t1.get(0, 1, 'text');
-    
-        //            // subscribe to it to get the property value
-        //            sub(obs, actual);
-        //        });
-
-        //        waitsFor(() => actual.length === 1, 'Did not return property data', 20);
-
-        //        runs(() => {
-        //            // remove one component, i.e. delete the one we are depending on
-        //            rows.onNext(1);
-
-        //            // create four more component (over 2 again)
-        //            rows.onNext(5);
-        //        });
-
-        //        waitsFor(() => actual.length === 2, 'Did not return property data after reconnectinng to new component', 20);
-
-        //        runs(() => {
-        //            expect(actual[0]).toBe('Data is 2');
-        //            expect(actual[1]).toBe('Data is 5');
-        //        })
-        //    });
-
-        //    it('should enable reconnecting to same property on new component (inactive, no parent)', () => {
-        //        var obs;
-        //        var actual = [];
-        //        var rows = new Rx.Subject<number>();
-        //        var t1 = new ut.uvis.Template('parent', 'html', undefined, rows);
-
-        //        // create a text property and add it to the properties dictionary
-        //        t1.properties.add('text', new pt.uvis.ComputedPropertyTemplate('text', (c) => {
-        //            return c.getProperty('row').select(n => 'Data is ' + n);
-        //        }));
-
-        //        // get the text property from component 2 in bundle 1 (zero indexed).
-        //        obs = t1.get(0, 1, 'text');
-    
-        //        // subscribe to it to get the property value
-        //        sub(obs, actual);
-
-        //        runs(() => {
-        //            // create two components
-        //            rows.onNext(2);
-        //        });
-
-        //        waitsFor(() => actual.length === 1, 'Did not return property data', 20);
-
-        //        runs(() => {
-        //            // remove one component, i.e. delete the one we are depending on
-        //            rows.onNext(1);
-
-        //            // create four more component (over 2 again)
-        //            rows.onNext(5);
-        //        });
-
-        //        waitsFor(() => actual.length === 2, 'Did not return property data after reconnectinng to new component', 20);
-
-        //        runs(() => {
-        //            expect(actual[0]).toBe('Data is 2');
-        //            expect(actual[1]).toBe('Data is 5');
-        //        })
-        //    });
-
-        //    it('should return a property from component in bundle X on index Y as observable (active, parent)', () => {
-        //        var actual1 = [];
-        //        var actual2 = [];
-        //        var prows = Rx.Observable.returnValue(20);
-        //        //var prows = new Rx.BehaviorSubject(2);
-        //        var crows = Rx.Observable.returnValue(10);
-        //        //var crows = new Rx.BehaviorSubject(10);
-        //        var parent = new ut.uvis.Template('parent', 'html', undefined, prows);
-        //        var child = new ut.uvis.Template('child', 'html', parent, crows);
-
-        //        // create a text property and add it to the properties dictionary
-        //        parent.properties.add('text', new pt.uvis.ComputedPropertyTemplate('text', (c) => {
-        //            return c.getProperty('row').select(n => 'Data is ' + n + ' Index ' + c.index);
-        //        }));
-
-        //        // create a text property and add it to the properties dictionary
-        //        child.properties.add('text', new pt.uvis.ComputedPropertyTemplate('text', (c) => {
-        //            return c.getProperty('row').select(n => 'Data is ' + n + ' Index ' + c.index + ' Bundle ' + c.parent.index);
-        //        }));
-
-        //        runs(() => {
-        //            child.initialize();
-        //        });
-
-        //        waitsFor(() => child.existingComponents.length === 200, 'Did not create components', 100);
-
-        //        runs(() => {
-        //            // get the text property from component 4 in bundle 1 (zero indexed).
-        //            // subscribe to it to get the property value
-        //            sub(parent.get(0, 16, 'text'), actual1);
-
-        //            // get the text property from component 2 in bundle 2 (zero indexed).
-        //            // subscribe to it to get the property value
-        //            sub(child.get(13, 9, 'text'), actual2);
-        //        });
-
-        //        waitsFor(() => actual1.length === 1, 'Did not return property 1', 100);
-        //        waitsFor(() => actual2.length === 1, 'Did not return property 2', 100);
-
-        //        runs(() => {
-        //            expect(actual1[0]).toBe('Data is 20 Index 16');
-        //            expect(actual2[0]).toBe('Data is 10 Index 9 Bundle 13');
-        //        });
-        //    });
-
-        //    it('should return a property from component in bundle X on index Y as observable (inactive, parent)', () => {
-        //        var actual1 = [];
-        //        var actual2 = [];
-        //        var prows = Rx.Observable.returnValue(4);
-        //        var crows = Rx.Observable.returnValue(2);
-        //        var parent = new ut.uvis.Template('parent', 'html', undefined, prows);
-        //        var child = new ut.uvis.Template('child', 'html', parent, crows);
-
-        //        // create a text property and add it to the properties dictionary
-        //        parent.properties.add('text', new pt.uvis.ComputedPropertyTemplate('text', (c) => {
-        //            //return Rx.Observable.returnValue('My index is ' + c.index);
-        //            return c.getProperty('row').select(n => 'Data is ' + n);
-        //        }));
-
-        //        // create a text property and add it to the properties dictionary
-        //        child.properties.add('text', new pt.uvis.ComputedPropertyTemplate('text', (c) => {
-        //            //return Rx.Observable.returnValue('My index is ' + c.index);
-        //            return c.getProperty('row').select(n => 'Data is ' + n);
-        //        }));
-
-        //        runs(() => {
-        //            // get the text property from component 4 in bundle 1 (zero indexed).
-        //            // subscribe to it to get the property value
-        //            sub(parent.get(0, 3, 'text'), actual1);
-
-        //            // get the text property from component 2 in bundle 2 (zero indexed).
-        //            // subscribe to it to get the property value
-        //            sub(child.get(3, 1, 'text'), actual2);
-        //        });
-
-        //        waitsFor(() => actual1.length === 1, 'Did not return property 1', 20);
-        //        waitsFor(() => actual2.length === 1, 'Did not return property 2', 20);
-
-        //        runs(() => {
-        //            expect(actual1[0]).toBe('Data is 4');
-        //            expect(actual2[0]).toBe('Data is 2');
-        //        });
-        //    });
-
-        //    it('should enable reconnecting to same property on new component (active, parent)', () => {
-        //        var obs;
-        //        var actual = [];
-        //        var prows = new Rx.Subject<number>();
-        //        //var crows = new Rx.Subject<number>();
-        //        var crows = Rx.Observable.returnValue(2);
-        //        var parent = new ut.uvis.Template('parent', 'html', undefined, prows);
-        //        var child = new ut.uvis.Template('child', 'html', parent, crows);
-
-        //        // create a text property and add it to the properties dictionary
-        //        child.properties.add('text', new pt.uvis.ComputedPropertyTemplate('text', (c) => {
-        //            return c.parent.getProperty('row').select(n => 'Data is ' + n);
-        //        }));
-    
-        //        runs(() => {
-        //            child.initialize();
-        //            // create two components
-        //            prows.onNext(2);
-        //        });
-
-        //        waitsFor(() => child.existingComponents.length === 4, 'Did not create components', 100);
-
-        //        runs(() => {
-        //            // get the text property from component 2 in bundle 1 (zero indexed).
-        //            obs = child.get(1, 0, 'text');
-
-        //            // subscribe to it to get the property value
-        //            sub(obs, actual);
-        //        });
-
-        //        waitsFor(() => actual.length === 1, 'Did not return property data', 20);
-
-        //        runs(() => {
-        //            // remove one component, i.e. delete the one we are depending on
-        //            prows.onNext(1);
-
-        //            // create four more component (over 2 again)
-        //            prows.onNext(5);
-        //        });
-
-        //        waitsFor(() => actual.length === 2, 'Did not return property data after reconnectinng to new component', 20);
-
-        //        runs(() => {
-        //            expect(actual[0]).toBe('Data is 2');
-        //            expect(actual[1]).toBe('Data is 5');
-        //        })
-        //    });
-
-        //    it('should enable reconnecting to same property on new component (inactive, parent)', () => {
-        //        var obs;
-        //        var actual = [];
-        //        var prows = new Rx.Subject<number>();
-        //        var crows = new Rx.Subject<number>();
-        //        var parent = new ut.uvis.Template('parent', 'html', undefined, prows);
-        //        var child = new ut.uvis.Template('child', 'html', parent, crows);
-
-        //        // create a text property and add it to the properties dictionary
-        //        child.properties.add('text', new pt.uvis.ComputedPropertyTemplate('text', (c) => {
-        //            return c.getProperty('row').select(n => 'Data is ' + n);
-        //        }));
-
-        //        // get the text property from component 2 in bundle 1 (zero indexed).
-        //        obs = child.get(2, 2, 'text');
-
-        //        // subscribe to it to get the property value
-        //        sub(obs, actual);
-
-        //        runs(() => {
-        //            // create two components
-        //            prows.onNext(3);
-        //            crows.onNext(3);
-        //        });
-
-        //        waitsFor(() => actual.length === 1, 'Did not return property data', 20);
-
-        //        runs(() => {
-        //            // remove one component, i.e. delete the one we are depending on
-        //            crows.onNext(1);
-
-        //            // create four more component (over 2 again)
-        //            crows.onNext(5);
-        //        });
-
-        //        waitsFor(() => actual.length === 2, 'Did not return property data after reconnectinng to new component', 20);
-
-        //        runs(() => {
-        //            expect(actual[0]).toBe('Data is 3');
-        //            expect(actual[1]).toBe('Data is 5');
-        //        })
-        //    });
-        //});
     });
 }

@@ -28,10 +28,10 @@ export module uvis {
             this._parent = parent;
 
             // Run up the instance data tree to find the root component, i.e. the form.
-            //this._form = parent;
-            //while (this._form.parent !== undefined) {
-            //    this._form = this._form.parent;
-            //}
+            this._form = parent === undefined ? this : parent;
+            while (this._form.parent !== undefined) {
+                this._form = this._form.parent;
+            }
         }
 
         /**
@@ -100,7 +100,7 @@ export module uvis {
                 // If there is no template by the requested name,
                 // we return an error message
                 if (template === undefined) {
-                    return Rx.Observable.throwException('There is no such template that can create the requested bundle. ub.uvis.Bundle name = ' + bundleName);
+                    return Rx.Observable.throwException('There is no such template that can create the requested bundle. Bundle name = ' + bundleName);
                 }
 
                 // Create the bundle and initialize template to get the bundle filled with components.
@@ -110,7 +110,7 @@ export module uvis {
 
                 res = bundle.components;
             } else if (bundle.template.state === ut.uvis.TemplateState.INACTIVE) {
-                return Rx.Observable.throwException('A cyclic dependency with template name "' + bundleName + '" was found.');            
+                return Rx.Observable.throwException('A cyclic dependency with template name "' + bundleName + '" was found.');
             }
 
             // If the property name is specifed, but index is omitted,
@@ -233,9 +233,20 @@ export module uvis {
             // Unreference template, parent, etc.
             this._template = null;
             this._parent = null;
+            this._form = null;
             this._bundle = null;
             this._bundles = null;
             this._properties = null;
         }
     }
 }
+
+Rx.Observable.prototype.get = function (bundle: string, index: number, name?: string) {
+    return name === undefined ?
+        this.select(component => component.get(bundle, index)) :
+        this.select(component => component.get(bundle, index, name)).switchLatest();
+};
+
+Rx.Observable.prototype.property = function (name: string) {
+    return this.select(component => component.property(name)).switchLatest();
+};
