@@ -166,6 +166,13 @@
     <Content Include="src\uvis\App.min.js">
       <DependentUpon>App.ts</DependentUpon>
     </Content>
+    <TypeScriptCompile Include="src\uvis\Bundle.ts" />
+    <Content Include="src\uvis\Bundle.js">
+      <DependentUpon>Bundle.ts</DependentUpon>
+    </Content>
+    <Content Include="src\uvis\Bundle.min.js">
+      <DependentUpon>Bundle.ts</DependentUpon>
+    </Content>
     <Content Include="src\uvis\Component.js">
       <DependentUpon>Component.ts</DependentUpon>
     </Content>
@@ -260,6 +267,9 @@
     </Content>
     <Content Include="src\uvis\PropertyTemplate.js.map">
       <DependentUpon>PropertyTemplate.ts</DependentUpon>
+    </Content>
+    <Content Include="src\uvis\Bundle.js.map">
+      <DependentUpon>Bundle.ts</DependentUpon>
     </Content>
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>

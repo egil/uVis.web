@@ -2,101 +2,9 @@
 import ud = require('util/Dictionary');
 import ut = require('uvis/Template');
 import pt = require('uvis/PropertyTemplate');
+import ub = require('uvis/Bundle');
 
 export module uvis {
-
-    export class Bundle {
-        private _components = new Array<Component>();
-        private _subject = new Rx.Subject<Component>();
-        private _template: ut.uvis.Template;
-        private _parent: Component;
-
-        constructor(template: ut.uvis.Template, parent?: Component) {
-            this._template = template;
-            this._parent = parent;
-        }
-
-        get existing(): Component[] {
-            return this._components;
-        }
-
-        /**
-         * Return an observable that will produce components
-         * that is added to it.
-         */
-        get components(): Rx.IObservable<Component> {
-            return this._subject.startWith.apply(this._subject, this.existing);
-        }
-
-        /**
-         * Get the template that produced components in this bundle.
-         */
-        get template(): ut.uvis.Template {
-            return this._template;
-        }
-
-        /**
-         * Get the parent component for this bundle.
-         */
-        get parent(): Component {
-            return this._parent;
-        }
-
-        /**
-         * Get the name of the bundle.
-         */
-        get name(): string {
-            return this._template.name;
-        }
-
-        /**
-         * Get the number of components in the bundle.
-         */
-        get count(): number {
-            return this._components.length;
-        }
-
-        /**
-         * Add a component to the bundle.
-         */
-        add(component: Component) {
-            // Add new component to the proper position
-            this._components[component.index] = component;
-            // Push it to subscribers
-            this._subject.onNext(component);
-        }
-
-        /**
-         * Removes a component at a specific index, or
-         * from the end of the components collection.
-         * When removed, the component is also disposed.
-         */
-        remove(index?: number) {
-            if (index === undefined) {
-                var c = this._components.pop();
-                c.dispose(false);
-            } else {
-                this._components.splice(index, 1)[0].dispose(false);
-            }
-        }
-
-        dispose() {
-            // Dispose of all components in bundle
-            var c;
-            while (c = this._components.pop()) c.dispose();
-
-            // Signal to subscribers that no more components are coming
-            this._subject.onCompleted();
-
-            // Dispose of subject, frees all resources
-            this._subject.dispose();
-
-            // Release all variables
-            this._components = null;
-            this._subject = null;
-            this._template = null;
-        }
-    }
 
     export interface ComponentProperty<T, O extends Rx.IObservable<T>> {
         property?: O;
@@ -108,15 +16,22 @@ export module uvis {
         private _template: ut.uvis.Template;
         private _index: number;
         private _parent: Component;
-        private _bundle: Bundle;
-        private _bundles: ud.Dictionary<Bundle>;
+        private _form: Component;
+        private _bundle: ub.uvis.Bundle;
+        private _bundles: ud.Dictionary<ub.uvis.Bundle>;
         private _properties: ud.Dictionary<ComponentProperty<any, Rx.IObservable<any>>> = new ud.Dictionary<ComponentProperty>();
 
-        constructor(template: ut.uvis.Template, bundle: Bundle, index: number, parent?: Component) {
+        constructor(template: ut.uvis.Template, bundle: ub.uvis.Bundle, index: number, parent?: Component) {
             this._template = template;
             this._bundle = bundle;
             this._index = index;
             this._parent = parent;
+
+            // Run up the instance data tree to find the root component, i.e. the form.
+            //this._form = parent;
+            //while (this._form.parent !== undefined) {
+            //    this._form = this._form.parent;
+            //}
         }
 
         /**
@@ -129,7 +44,7 @@ export module uvis {
         /**
          * Get the bundle that the component belongs to.
          */
-        get bundle(): Bundle {
+        get bundle(): ub.uvis.Bundle {
             return this._bundle;
         }
 
@@ -148,11 +63,19 @@ export module uvis {
         }
 
         /**
+         * Get the form component for this components the instance data tree.
+         */
+        get form() {
+            return this._form;
+        }
+
+
+        /**
          * Get the bundles the component is the parent of.
          */
-        get bundles(): ud.Dictionary<Bundle> {
+        get bundles(): ud.Dictionary<ub.uvis.Bundle> {
             if (this._bundles === undefined) {
-                this._bundles = new ud.Dictionary<Bundle>();
+                this._bundles = new ud.Dictionary<ub.uvis.Bundle>();
             }
             return this._bundles;
         }
@@ -177,7 +100,7 @@ export module uvis {
                 // If there is no template by the requested name,
                 // we return an error message
                 if (template === undefined) {
-                    return Rx.Observable.throwException('There is no such template that can create the requested bundle. Bundle name = ' + bundleName);
+                    return Rx.Observable.throwException('There is no such template that can create the requested bundle. ub.uvis.Bundle name = ' + bundleName);
                 }
 
                 // Create the bundle and initialize template to get the bundle filled with components.
@@ -186,6 +109,8 @@ export module uvis {
                 template.initialize();
 
                 res = bundle.components;
+            } else if (bundle.template.state === ut.uvis.TemplateState.INACTIVE) {
+                return Rx.Observable.throwException('A cyclic dependency with template name "' + bundleName + '" was found.');            
             }
 
             // If the property name is specifed, but index is omitted,
@@ -257,7 +182,7 @@ export module uvis {
             }
         }
 
-        createBundle(template: ut.uvis.Template): Bundle {
+        createBundle(template: ut.uvis.Template): ub.uvis.Bundle {
             if (this.bundles.contains(template.name)) {
                 throw new Error('A bundle already exists for this template.');
                 console.error(template);
@@ -267,7 +192,7 @@ export module uvis {
             // Create the bundle, add it to the local
             // bundles collection and to the templates
             // bundles collection.
-            var bundle = new Bundle(template, this);
+            var bundle = new ub.uvis.Bundle(template, this);
             this.bundles.add(template.name, bundle);
             template.bundles.push(bundle);
 

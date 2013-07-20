@@ -5,6 +5,7 @@ import dict = require('util/Dictionary');
 import ut = require('uvis/Template');
 import uc = require('uvis/Component');
 import pt = require('uvis/PropertyTemplate');
+import ub = require('uvis/Bundle');
 
 export module uvis.spec {
 
@@ -98,7 +99,7 @@ export module uvis.spec {
 
         describe('ComputedPropertyTemplate.', () => {
             var template = new ut.uvis.Template('t', 'html', undefined, Rx.Observable.empty());
-            var bundle = new uc.uvis.Bundle(template);
+            var bundle = new ub.uvis.Bundle(template);
 
             it('Should set ctor arguments correctly.', () => {
                 var actual = [];

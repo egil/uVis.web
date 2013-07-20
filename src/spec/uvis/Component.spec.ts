@@ -3,12 +3,13 @@
 import dict = require('util/Dictionary');
 import ct = require('uvis/Template');
 import uc = require('uvis/Component');
+import ub = require('uvis/Bundle');
 
 export module uvis.spec {
     describe('Component.', () => {
         it('should set ctor arguments correctly', () => {
             var t = new ct.uvis.Template('ct', 'html', undefined, Rx.Observable.empty());
-            var b = new uc.uvis.Bundle(t);
+            var b = new ub.uvis.Bundle(t);
             var c1 = new uc.uvis.Component(t, b, 0);
             var c2 = new uc.uvis.Component(t, b, 2, c1);
 
@@ -28,7 +29,7 @@ export module uvis.spec {
             it('should be able to get a bundle based on template', () => {
                 var t1 = new ct.uvis.Template('t1', 'html', undefined, Rx.Observable.empty());
                 var t2 = new ct.uvis.Template('t2', 'html', undefined, Rx.Observable.empty());
-                var b = new uc.uvis.Bundle(t1);
+                var b = new ub.uvis.Bundle(t1);
                 var c1 = new uc.uvis.Component(t1, b, 0);
                 
                 var expected = c1.createBundle(t2);
@@ -40,7 +41,7 @@ export module uvis.spec {
             it('should throw if creating bundle for template that already has a bundle', () => {
                 var t1 = new ct.uvis.Template('t1', 'html', undefined, Rx.Observable.empty());
                 var t2 = new ct.uvis.Template('t2', 'html', undefined, Rx.Observable.empty());
-                var b = new uc.uvis.Bundle(t1);
+                var b = new ub.uvis.Bundle(t1);
                 var c1 = new uc.uvis.Component(t1, b, 0);
                 c1.createBundle(t2);
                 expect(c1.createBundle.bind(c1, t2)).toThrow();
@@ -54,7 +55,7 @@ export module uvis.spec {
             //    var ct1 = new ct.uvis.Template('ct1', 'html', pct, Rx.Observable.empty());
             //    var ct2 = new ct.uvis.Template('ct2', 'html', pct, Rx.Observable.empty());
 
-            //    var b = new uc.uvis.Bundle(pct);
+            //    var b = new ub.uvis.Bundle(pct);
             //    var c1 = new uc.uvis.Component(pct, b, 0);
             //    var c2 = new uc.uvis.Component(pct, b, 1);
 

@@ -10,6 +10,7 @@ export module uvis {
         name: string;
         create(component?: uc.uvis.Component): Rx.IObservable<T>;
         initialValue: T;
+        dispose();
     }
 
     export class PropertyTemplate<T> implements IPropertyTemplate<T, Rx.ISubject<T>> {
@@ -39,6 +40,8 @@ export module uvis {
                 new Rx.ReplaySubject<T>(1) :
                 new Rx.BehaviorSubject<T>(this._initialValue);
         }
+
+        dispose() { }
     }
 
     export class ComputedPropertyTemplate<T> implements IPropertyTemplate<T, Rx.IObservable<T>> {
@@ -79,6 +82,8 @@ export module uvis {
                 obs.replay(null, 1) :
                 obs.startWith(this.initialValue).replay(null, 1);
         }
+
+        dispose() { }
     }
 
     export class SharedComputedPropertyTemplate<T> implements IPropertyTemplate<T, Rx.IObservable<T>>  {
@@ -118,6 +123,10 @@ export module uvis {
 
         create(): Rx.IObservable<T> {
             return this._sharedObservable;
+        }
+
+        dispose() {
+            this._sharedObservable = null;
         }
     }
 }
