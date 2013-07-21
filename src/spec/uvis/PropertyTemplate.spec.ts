@@ -30,10 +30,16 @@ export module uvis.spec {
             it('Should set ctor arguments correctly.', () => {
                 var p1 = new pt.uvis.PropertyTemplate<number>('top', 42);
                 var p2 = new pt.uvis.PropertyTemplate<number>('bottom');
+                var p3 = new pt.uvis.PropertyTemplate<number>('bottom', 42, true);
                 expect(p1.name).toBe('top');
                 expect(p1.initialValue).toBe(42);
+                expect(p1.internal).toBeFalsy();
                 expect(p2.name).toBe('bottom');
                 expect(p2.initialValue).toBeUndefined();
+                expect(p2.internal).toBeFalsy();
+                expect(p3.name).toBe('bottom');
+                expect(p3.initialValue).toBe(42);
+                expect(p3.internal).toBeTruthy();
             });
 
             it('Should return an ISubject', () => {
@@ -118,6 +124,7 @@ export module uvis.spec {
                 runs(() => {
                     expect(actual[0]).toBe(42);
                     expect(p1.name).toBe('align');
+                    expect(p1.internal).toBeFalsy();
                 });
             });
 
@@ -127,6 +134,17 @@ export module uvis.spec {
                 runs(() => {
                     expect(p1.initialValue).toBe(1);
                     expect(p1.name).toBe('align');
+                    expect(p1.internal).toBeFalsy();
+                });
+            });
+
+            it('Should set ctor arguments correctly (with initialValue, internal).', () => {
+                var p1 = new pt.uvis.ComputedPropertyTemplate<number>('align', (c) => Rx.Observable.empty(), 1, true);
+
+                runs(() => {
+                    expect(p1.initialValue).toBe(1);
+                    expect(p1.name).toBe('align');
+                    expect(p1.internal).toBeTruthy();
                 });
             });
 
@@ -331,6 +349,7 @@ export module uvis.spec {
                 runs(() => {
                     expect(p1.name).toBe('text');
                     expect(actual[0]).toBe(42);
+                    expect(p1.internal).toBeFalsy();
                 });
             });
 
@@ -340,8 +359,20 @@ export module uvis.spec {
                 runs(() => {
                     expect(p1.name).toBe('texty');
                     expect(p1.initialValue).toBe(1);
+                    expect(p1.internal).toBeFalsy();
                 });
             });
+
+            it('Should set ctor arguments correctly (with initialValue).', () => {
+                var p1 = new pt.uvis.SharedComputedPropertyTemplate<number>('texty', () => Rx.Observable.empty(), 1, true);
+
+                runs(() => {
+                    expect(p1.name).toBe('texty');
+                    expect(p1.initialValue).toBe(1);
+                    expect(p1.internal).toBeTruthy();
+                });
+            });
+
 
             it('Should return default value if observable never produces a value or completes.', () => {
                 var source = new Rx.Subject<number>();

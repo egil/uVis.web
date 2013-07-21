@@ -34,17 +34,19 @@ export module uvis.spec {
         
         it('Should set ctor arguments correctly', () => {
             var rows = Rx.Observable.returnValue(42);
-            var t1 = new ut.uvis.Template('t1', 'html', undefined, rows);
-            var t2 = new ut.uvis.Template('t2', 'html', t1);
+            var t1 = new ut.uvis.Template('t1', 'html#p', undefined, rows);
+            var t2 = new ut.uvis.Template('t2', 'html#div', t1);
 
             expect(t1.name).toBe('t1');
             expect(t1.type).toBe('html');
+            expect(t1.subtype).toBe('p');
             expect(t1.parent).toBeUndefined();
             expect(t1.rows).toBeDefined();
             expect(t1.children.contains(t2.name)).toBeTruthy();
 
             expect(t2.name).toBe('t2');
             expect(t2.type).toBe('html');
+            expect(t2.subtype).toBe('div');
             expect(t2.parent).toBe(t1);
             expect(t2.rows).toBe(t1.rows);
         });

@@ -10,24 +10,31 @@ export module uvis {
         name: string;
         create(component?: uc.uvis.Component): Rx.IObservable<T>;
         initialValue: T;
+        internal: boolean;
         dispose();
     }
 
     export class PropertyTemplate<T> implements IPropertyTemplate<T, Rx.ISubject<T>> {
         private _name: string;
         private _initialValue: T;
+        private _internal: boolean;
 
-        constructor(name: string, initialValue?: T) {
+        constructor(name: string, initialValue?: T, internal?: boolean) {
             this._name = name;
             this._initialValue = initialValue;
+            this._internal = internal || false;
         }
 
         get name() {
             return this._name;
         }
 
-        get initialValue() : T {
+        get initialValue(): T {
             return this._initialValue;
+        }
+
+        get internal(): boolean {
+            return this._internal;
         }
 
         create(): Rx.ISubject<T> {
@@ -48,11 +55,13 @@ export module uvis {
         private _name: string;
         private _initialValue: T;
         private _factory: (component: uc.uvis.Component) => Rx.IObservable<T>;
+        private _internal: boolean;
 
-        constructor(name: string, factory: (component: uc.uvis.Component) => Rx.IObservable<T>, initialValue?: T) {
+        constructor(name: string, factory: (component: uc.uvis.Component) => Rx.IObservable<T>, initialValue?: T, internal?: boolean) {
             this._name = name;
             this._initialValue = initialValue;
             this._factory = factory;
+            this._internal = internal || false;
         }
 
         get name() {
@@ -61,6 +70,10 @@ export module uvis {
 
         get initialValue(): T {
             return this._initialValue;
+        }
+
+        get internal(): boolean {
+            return this._internal;
         }
 
         create(component?: uc.uvis.Component): Rx.ConnectableObservable<T> {
@@ -90,10 +103,12 @@ export module uvis {
         private _name: string;
         private _sharedObservable: Rx.IObservable<T>;
         private _initialValue;
+        private _internal: boolean;
 
-        constructor(name: string, factory: () => Rx.IObservable<T>, initialValue?: T) {
+        constructor(name: string, factory: () => Rx.IObservable<T>, initialValue?: T, internal?: boolean) {
             this._name = name;
             this._initialValue = initialValue;
+            this._internal = internal || false;
 
             // We use the factory function to create a single shared observable.
             // We add replay to create a observable, which will push the 
@@ -119,6 +134,10 @@ export module uvis {
 
         get initialValue(): T {
             return this._initialValue;
+        }
+
+        get internal(): boolean {
+            return this._internal;
         }
 
         create(): Rx.IObservable<T> {

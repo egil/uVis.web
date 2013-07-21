@@ -3,6 +3,7 @@
 
 import ud = require('util/Dictionary');
 import uc = require('uvis/Component');
+import uhc = require('uvis/components/HTMLComponent');
 import ub = require('uvis/Bundle');
 import pt = require('uvis/PropertyTemplate');
 
@@ -20,6 +21,7 @@ export module uvis {
         private _state = TemplateState.INACTIVE;
         private _name: string;
         private _type: string;
+        private _subtype: string;
         private _parent: Template;
         private _children: ud.Dictionary<Template>;
         private _rowCount: Rx.IObservable<number>;
@@ -33,8 +35,15 @@ export module uvis {
 
         constructor(name: string, type: string, parent?: Template, rows?: Rx.IObservable<any>) {
             this._name = name;
-            this._type = type;
+            this._type = type;            
             this._parent = parent;
+
+            // Extract subtype and type. type#subtype
+            var typeSplitter = /([a-zA-Z]+)\x23([a-zA-Z]+)/.exec(type);
+            if (typeSplitter !== null) {
+                this._type = typeSplitter[1];
+                this._subtype = typeSplitter[2];
+            }
 
             // Register as child template with parent
             if (parent !== undefined) {
@@ -82,10 +91,16 @@ export module uvis {
                             return data;
                         }
                     });
-                });
-
+                }, undefined, true /* internal */);           
             // ... and add it to the properties dictionary.
             this.properties.add(rowPropertyTemplate.name, rowPropertyTemplate);
+
+            
+            // Create the special 'id' property
+            this.properties.add('id', new pt.uvis.ComputedPropertyTemplate<string>('id', c => {
+                var bi = c.bundle.parent === undefined ? 0 : c.bundle.parent.index;
+                return Rx.Observable.returnValue(this.name + '-' + bi + '-' + c.index);
+            }));
         }
 
         get state(): TemplateState {
@@ -110,6 +125,10 @@ export module uvis {
 
         get type(): string {
             return this._type;
+        }
+
+        get subtype(): string {
+            return this._subtype;
         }
 
         get rows(): Rx.IObservable<any> {
@@ -279,7 +298,6 @@ export module uvis {
             } else if (orgLength < count) {
                 // Otherwise we add additional components to the bundle
                 for (var index = orgLength; index < count; index++) {
-                    // TODO: Create component based on this.type                    
                     var component = Template.componentFactory(this.type, this, bundle, index, bundle.parent);
                     bundle.add(component);
                     this._nextComponent(component);
@@ -289,7 +307,9 @@ export module uvis {
 
         private static componentFactory(type: string, source: Template, bundle: ub.uvis.Bundle, index: number, parent?: uc.uvis.Component): uc.uvis.Component {
             // TODO: download the source code for the type and instantiate it.
-            return new uc.uvis.Component(source, bundle, index, parent);
+            // For now, we just create an HTML component.
+            var res = new uhc.uvis.component.HTMLComponent(source, bundle, index, parent);
+            return <uc.uvis.Component>res;
         }
     }
 }

@@ -180,6 +180,13 @@
     <Content Include="src\uvis\Component.min.js">
       <DependentUpon>Component.ts</DependentUpon>
     </Content>
+    <TypeScriptCompile Include="src\uvis\components\HTMLComponent.ts" />
+    <Content Include="src\uvis\components\HTMLComponent.js">
+      <DependentUpon>HTMLComponent.ts</DependentUpon>
+    </Content>
+    <Content Include="src\uvis\components\HTMLComponent.min.js">
+      <DependentUpon>HTMLComponent.ts</DependentUpon>
+    </Content>
     <Content Include="src\uvis\data\IDataSource.js">
       <DependentUpon>IDataSource.ts</DependentUpon>
     </Content>
@@ -271,6 +278,9 @@
     </Content>
     <Content Include="src\uvis\Bundle.js.map">
       <DependentUpon>Bundle.ts</DependentUpon>
+    </Content>
+    <Content Include="src\uvis\components\HTMLComponent.js.map">
+      <DependentUpon>HTMLComponent.ts</DependentUpon>
     </Content>
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>

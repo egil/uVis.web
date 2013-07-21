@@ -5,7 +5,7 @@ import dict = require('util/Dictionary');
 import ut = require('uvis/Template');
 import uc = require('uvis/Component');
 import ub = require('uvis/Bundle');
-import pt = require('uvis/PropertyTemplate');
+import up = require('uvis/PropertyTemplate');
 
 export module uvis.spec {
     describe('Component.', () => {
@@ -25,7 +25,7 @@ export module uvis.spec {
             expect(c2.index).toBe(2);
             expect(c2.bundle).toBe(b);
         });
-        
+
         it('Should find the form component in the instance data tree on ctor', () => {
             var t = new ut.uvis.Template('ut', 'html', undefined, Rx.Observable.empty());
             var b = new ub.uvis.Bundle(t);
@@ -48,12 +48,12 @@ export module uvis.spec {
                 var t2 = new ut.uvis.Template('t2', 'html', undefined, Rx.Observable.empty());
                 var b = new ub.uvis.Bundle(t1);
                 var c1 = new uc.uvis.Component(t1, b, 0);
-                
+
                 var expected = c1.createBundle(t2);
                 var actual = c1.bundles.get(t2.name);
 
                 expect(actual).toBe(expected);
-            });            
+            });
 
             it('should throw if creating bundle for template that already has a bundle', () => {
                 var t1 = new ut.uvis.Template('t1', 'html', undefined, Rx.Observable.empty());
@@ -64,43 +64,136 @@ export module uvis.spec {
                 expect(c1.createBundle.bind(c1, t2)).toThrow();
             });
         });
-       
-        xdescribe('Dispose.', () => {
-            
-            //it('should remove itself from templates who have bundles in it and dipose of children', () => {
-            //    var pct = new ut.uvis.Template('pct', 'html', undefined, Rx.Observable.empty());
-            //    var ct1 = new ut.uvis.Template('ct1', 'html', pct, Rx.Observable.empty());
-            //    var ct2 = new ut.uvis.Template('ct2', 'html', pct, Rx.Observable.empty());
 
-            //    var b = new ub.uvis.Bundle(pct);
-            //    var c1 = new uc.uvis.Component(pct, b, 0);
-            //    var c2 = new uc.uvis.Component(pct, b, 1);
+        describe('Visual tree', () => {
 
-            //    c1.createBundle(ct1);
-            //    c2.createBundle(ct1);
+            it('Should use the form as canvas if canvas is not specified.', () => {
+                var elm = document.createDocumentFragment();
+                var canvasSource = new Rx.Subject();
+                var canvas: uc.uvis.ICanvas = {
+                    addVisualComponent: (vc) => {
+                        elm.appendChild(vc);
+                    },
+                    removeVisualComponent: (vc) => {
+                        elm.removeChild(vc);
+                    }
+                };
+                var form = new ut.uvis.Template('form', 'html#div');
+                var t1 = new ut.uvis.Template('t1', 'html#p', form, Rx.Observable.returnValue(4));
 
-            //    c2.dispose();
+                // Add the outer canvas to the form.
+                form.properties.add('canvas', new up.uvis.SharedComputedPropertyTemplate('canvas', () => {
+                    return canvasSource;
+                }, undefined, true));
 
-            //    expect(ct1.bundles.length).toBe(1);
-            //    expect(ct1.bundles[0]).toBe(c1);
+                t1.initialize();
+
+                runs(() => {
+                    
+                    canvasSource.onNext(canvas);
+                });
+
+                waitsFor(() => elm.childNodes.length === 1, 'Did not add form to document fragment.', 20);
+                waitsFor(() => elm.firstChild.childNodes.length === 4, 'Did not add p to div.', 20);
+            });
+
+            it('Should use specified canvas', () => {
+                var elm = document.createDocumentFragment();
+                var canvasSource = new Rx.Subject();
+                var canvas: uc.uvis.ICanvas = {
+                    addVisualComponent: (vc) => {
+                        elm.appendChild(vc);
+                    },
+                    removeVisualComponent: (vc) => {
+                        elm.removeChild(vc);
+                    }
+                };
+                var form = new ut.uvis.Template('form', 'html#div');
+                var t1 = new ut.uvis.Template('t1', 'html#p', form, Rx.Observable.returnValue(4));
+                var t2 = new ut.uvis.Template('t2', 'html#div', form);
+
+                // Add the outer canvas to the form.
+                form.properties.add('canvas', new up.uvis.SharedComputedPropertyTemplate('canvas', () => {
+                    return canvasSource;
+                }, undefined, true));
+
+                // Add the canvas to the t1, make it use t2 as canvas.
+                t1.properties.add('canvas', new up.uvis.ComputedPropertyTemplate('canvas', (c) => {
+                    return c.form.get('t2', 0).select(c => c.canvas).switchLatest();
+                }, undefined, true));
+
+                runs(() => {
+                    form.initialize();
+                    t1.initialize();
+                    t2.initialize();
+
+                    canvasSource.onNext(canvas);
+                });
+
+                waitsFor(() => elm.childNodes.length === 1, 'Did not add form to document fragment.', 20);
+                waitsFor(() => elm.firstChild.childNodes.length === 1, 'Did not add t2 to form.', 20);
+                waitsFor(() => elm.firstChild.firstChild.childNodes.length === 4, 'Did not add t1 to t2.', 20);
+            });
+
+            it('Should allow the canvas to be changed', () => {
+                var elm = document.createDocumentFragment();
+                var canvasSource = new Rx.Subject();
+                var switcher = new Rx.Subject();
+                var canvas: uc.uvis.ICanvas = {
+                    addVisualComponent: (vc) => {
+                        elm.appendChild(vc);
+                    },
+                    removeVisualComponent: (vc) => {
+                        elm.removeChild(vc);
+                    }
+                };
+                var form = new ut.uvis.Template('form', 'html#div');
+                var t1 = new ut.uvis.Template('t1', 'html#p', form, Rx.Observable.returnValue(4));
+                var t2 = new ut.uvis.Template('t2', 'html#div', form);
+                var t3 = new ut.uvis.Template('t3', 'html#header', form);
+
+                // Add the outer canvas to the form.
+                form.properties.add('canvas', new up.uvis.SharedComputedPropertyTemplate('canvas', () => {
+                    return canvasSource;
+                }, undefined, true));
+
+                // Add the canvas to the t1, make it dependent on 'switcher'.
+                t1.properties.add('canvas', new up.uvis.ComputedPropertyTemplate('canvas', (c) => {
+                    return switcher.switchLatest();
+                }, undefined, true));
+
+                runs(() => {
+                    form.initialize();
+                    t1.initialize();
+                    t2.initialize();
+                    t3.initialize();
+                    canvasSource.onNext(canvas);
+
+                });
+
+                waitsFor(() => elm.childNodes.length === 1, 'Did not add form to document fragment.', 20);
+                waitsFor(() => elm.firstChild.childNodes.length === 2, 'Did not add t2 to form.', 20);
+
+                runs(() => {
+                    expect(t2.existingComponents[0].visualComponent.childNodes.length).toBe(0);
+                    expect(t3.existingComponents[0].visualComponent.childNodes.length).toBe(0);            
+                    switcher.onNext(t3.existingComponents[0].canvas);
+                });
+
+                waitsFor(() => t3.existingComponents[0].visualComponent.childNodes.length === 4, 'Did not add t1 to t3', 20);
                 
-            //    c1.dispose();
+                runs(() => {
+                    expect(t2.existingComponents[0].visualComponent.childNodes.length).toBe(0);
+                    switcher.onNext(t2.existingComponents[0].canvas);
+                });
 
-            //    expect(ct1.bundles.length).toBe(0);                
-            //});
+                waitsFor(() => t2.existingComponents[0].visualComponent.childNodes.length === 4, 'Did not add t1 to t2', 20);
 
-            //it('should throw if component is not the last in the a bundles array.', () => {
-            //    var pct = new ut.uvis.Template('pct', 'html', undefined, Rx.Observable.empty());
-            //    var ct1 = new ut.uvis.Template('ct1', 'html', undefined, Rx.Observable.empty());
-            //    var ct2 = new ut.uvis.Template('ct2', 'html', undefined, Rx.Observable.empty());
-
-            //    var c1 = new uc.uvis.Component(pct, 0);
-            //    var c2 = new uc.uvis.Component(pct, 1);
-            //    c1.createBundle(ct1);
-            //    c2.createBundle(ct1);
-
-            //    expect(c1.dispose.bind(c1)).toThrow();
-            //});
+                runs(() => {
+                    expect(t3.existingComponents[0].visualComponent.childNodes.length).toBe(0);
+                });
+            });
         });
+
     });
 }
