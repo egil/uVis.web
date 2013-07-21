@@ -8,7 +8,7 @@ export module uvis {
 
     export interface ComponentProperty<T, O extends Rx.IObservable<T>> {
         property?: O;
-        subscription?: Rx._IDisposable;
+        //subscription?: Rx._IDisposable;
         creating: bool;
     }
 
@@ -17,21 +17,33 @@ export module uvis {
         private _index: number;
         private _parent: Component;
         private _form: Component;
+        private _canvas: Rx.ISubject<Component>;
         private _bundle: ub.uvis.Bundle;
         private _bundles: ud.Dictionary<ub.uvis.Bundle>;
         private _properties: ud.Dictionary<ComponentProperty<any, Rx.IObservable<any>>> = new ud.Dictionary<ComponentProperty>();
+        private _subscriptions: Rx.CompositeDisposable;
 
         constructor(template: ut.uvis.Template, bundle: ub.uvis.Bundle, index: number, parent?: Component) {
             this._template = template;
             this._bundle = bundle;
             this._index = index;
             this._parent = parent;
+            this._subscriptions = new Rx.CompositeDisposable();
 
             // Run up the instance data tree to find the root component, i.e. the form.
             this._form = parent === undefined ? this : parent;
             while (this._form.parent !== undefined) {
                 this._form = this._form.parent;
             }
+
+            // Set up subscription to canvas component.
+            // If there is no explicit canvas defined via a property,
+            // we use the form component as the canvas.
+            var canvasObservable = this.template.properties.contains('canvas') ?
+                this.property<Component>('canvas') :
+                this.form.canvas;
+
+            this._subscriptions.add(canvasObservable.subscribe(onCanvasNext, onCanvasError, onCanvasCompleted));
         }
 
         /**
@@ -69,6 +81,9 @@ export module uvis {
             return this._form;
         }
 
+        get canvas(): Rx.ISubject<Component> {
+            return this._canvas;
+        }
 
         /**
          * Get the bundles the component is the parent of.
@@ -164,14 +179,16 @@ export module uvis {
                 // If it is a ComputedObservable, we must 
                 // connect it to its underlying sequence.
                 if (propTpl instanceof pt.uvis.ComputedPropertyTemplate) {
-                    cp.subscription = (<Rx.ConnectableObservable>cp.property).connect();
+                    //cp.subscription = (<Rx.ConnectableObservable>cp.property).connect();
+                    this._subscriptions.add((<Rx.ConnectableObservable>cp.property).connect());
                 }
 
                 // If this is a PropertyTemplate, we know that we are handed
                 // an subject, so we store a reference to its dispose method 
                 // for later use when cleaning up.
                 if (propTpl instanceof pt.uvis.PropertyTemplate) {
-                    cp.subscription = { dispose: (<Rx.ISubject>cp.property).dispose };
+                    //cp.subscription = { dispose: (<Rx.ISubject>cp.property).dispose };
+                    this._subscriptions.add(<Rx.ISubject>cp.property);
                 }
 
                 cp.creating = false;
@@ -198,19 +215,22 @@ export module uvis {
 
             return bundle;
         }
-
+        
         /**
          * Dispose of this component.
          */
         dispose(removeFromBundle: boolean = true) {
+            // Unsubscribe from all observable subscriptions
+            this._subscriptions.dispose();
+            
             // Unsubscribe from properties
-            this._properties.forEach((name, cp) => {
-                if (cp.subscription !== undefined) {
-                    cp.subscription.dispose();
-                }
-            });
+            //this._properties.forEach((name, cp) => {
+            //    if (cp.subscription !== undefined) {
+            //        cp.subscription.dispose();
+            //    }
+            //});
 
-            // Make sure there are no references left
+            // Make sure there are no property references left
             this._properties.removeAll();
 
             // Dispose of my child components
@@ -237,10 +257,20 @@ export module uvis {
             this._bundle = null;
             this._bundles = null;
             this._properties = null;
+            this._subscriptions = null;
         }
     }
 }
 
+/**
+ * Multi purpose function that will retrive either:
+ * 
+ *  - Bundle: get(bundleName: string) 
+ *  - Component in a specific bundle: get(bundleName: string, index: number)
+ *  - Property on a component in a specific bundle: get(bundleName: string, index: number, propertyName: string)
+ * 
+ * This is a custom extensions to Rx for uVis.
+ */
 Rx.Observable.prototype.get = function (bundle: string, index: number, name?: string) {
     return name === undefined ?
         this.select(component => component.get(bundle, index)) :

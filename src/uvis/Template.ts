@@ -87,7 +87,7 @@ export module uvis {
             // ... and add it to the properties dictionary.
             this.properties.add(rowPropertyTemplate.name, rowPropertyTemplate);
         }
-        
+
         get state(): TemplateState {
             return this._state;
         }
@@ -197,9 +197,9 @@ export module uvis {
 
                         this.updateComponentCountInBundle(this._lastRowCount, bundle);
                     }, observer.onError.bind(observer), () => {
-                        parentCompleted = true;
-                        nextTick(setCompletedState);
-                    }));
+                            parentCompleted = true;
+                            nextTick(setCompletedState);
+                        }));
                 } else {
                     // If there are no parent, create a default bundle
                     // to hold this templates components. This template
@@ -214,9 +214,9 @@ export module uvis {
                     this._lastRowCount = newCount;
                     this.updateComponentCount(newCount);
                 }, observer.onError.bind(observer), () => {
-                    rowCountCompleted = true;
-                    nextTick(setCompletedState);
-                }));
+                        rowCountCompleted = true;
+                        nextTick(setCompletedState);
+                    }));
 
                 // Set state to active once we finished subscribing to our sources
                 this._state = TemplateState.ACTIVE;
@@ -280,11 +280,16 @@ export module uvis {
                 // Otherwise we add additional components to the bundle
                 for (var index = orgLength; index < count; index++) {
                     // TODO: Create component based on this.type                    
-                    var component = new uc.uvis.Component(this, bundle, index, bundle.parent);
+                    var component = Template.componentFactory(this.type, this, bundle, index, bundle.parent);
                     bundle.add(component);
                     this._nextComponent(component);
                 }
             }
+        }
+
+        private static componentFactory(type: string, source: Template, bundle: ub.uvis.Bundle, index: number, parent?: uc.uvis.Component): uc.uvis.Component {
+            // TODO: download the source code for the type and instantiate it.
+            return new uc.uvis.Component(source, bundle, index, parent);
         }
     }
 }
