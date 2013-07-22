@@ -125,11 +125,11 @@ export module uvis {
         /**
          * Multi purpose function that will retrive either:
          * 
-         *  - Bundle: get(bundleName: string) 
-         *  - Component in a specific bundle: get(bundleName: string, index: number)
-         *  - Property on a component in a specific bundle: get(bundleName: string, index: number, propertyName: string)
+         *  - Component 0 in a specific bundle: get(bundleName: string) 
+         *  - Component N in a specific bundle: get(bundleName: string, index: number)
+         *  - Property on a component N in a specific bundle: get(bundleName: string, index: number, propertyName: string)
          *
-         * It will create bundles and components first if they do not exist.
+         * It will create bundles, components and properties first if they do not exist.
          */
         get<T>(bundleName: string, index: number = 0, propertyName?: string): Rx.IObservable<T> {
             var bundle = this.bundles.get(bundleName);
@@ -155,18 +155,10 @@ export module uvis {
                 return Rx.Observable.throwException('A cyclic dependency with template name "' + bundleName + '" was found.');
             }
 
-            //// If the property name is specifed, but index is omitted,
-            //// we set index to its default value of 0.
-            //if (index === undefined && propertyName !== undefined) {
-            //    index = 0;
-            //}
-
-            //if (index !== undefined) {
-                // Select the component from the bundle that matches
-                // the index. If a component at 'index' is replaced later,
-                // the replaced component will be pushed to subscribers.
-                res = bundle.components.where(c=> c.index === index);
-            //}
+            // Select the component from the bundle that matches
+            // the index. If a component at 'index' is replaced later,
+            // the replaced component will be pushed to subscribers.
+            res = bundle.components.where(c=> c.index === index);
 
             // If the user requested a property, we modify the observable result
             // to produce that instead.
@@ -243,7 +235,7 @@ export module uvis {
             return bundle;
         }
 
-        //#region Canvas / Visual Component method
+        //#region Canvas / Visual tree methods
 
         createVisualComponent(): any {
             throw new Error('createVisualComponent(): Abstract method. Implementors must override.');
@@ -260,8 +252,6 @@ export module uvis {
         setVisualComponentProperty(name: string, value?: any) {
             throw new Error('setVisualComponentProperty(): Abstract method. Implementors must override.');
         }
-
-        //#endregion
 
         private onNextCanvas<T>(canvas: ICanvas) {
             // If the visual component does not exist yet, create it.
@@ -306,6 +296,8 @@ export module uvis {
             // Save canvas for later
             this._currentCanvas = canvas;
         }
+
+        //#endregion
 
         /**
          * Dispose of this component.

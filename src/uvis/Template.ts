@@ -14,7 +14,8 @@ export module uvis {
     export enum TemplateState {
         INACTIVE,
         ACTIVE,
-        COMPLETED
+        COMPLETED,
+        DISPOSED
     }
 
     export class Template {
@@ -25,13 +26,11 @@ export module uvis {
         private _parent: Template;
         private _children: ud.Dictionary<Template>;
         private _rowCount: Rx.IObservable<number>;
-        private _lastRowCount: number = 0;
         private _properties: ud.Dictionary<pt.uvis.IPropertyTemplate<any, Rx.IObservable<any>>> = new ud.Dictionary<pt.uvis.IPropertyTemplate>();
         private _rows: Rx.IObservable<any>;
         private _bundles = new Array<ub.uvis.Bundle>();
         private _componentFactory: Rx.ConnectableObservable<uc.uvis.Component>;
         private _componentFactoryConnection: Rx._IDisposable;
-        private _nextComponent: (component: uc.uvis.Component) => void;
 
         constructor(name: string, type: string, parent?: Template, rows?: Rx.IObservable<any>) {
             this._name = name;
@@ -176,37 +175,54 @@ export module uvis {
             return this.bundles[0].components.where(c=> c.index === index);
         }
 
-        initialize(force = false) {
-            if (this.state !== TemplateState.INACTIVE && force) {
-                // TODO: reset component, reinitialize...
+        initialize() {
+            if (this.state !== TemplateState.INACTIVE) {
+                throw new Error('Template already initialized.');
             }
 
             this._componentFactory = Rx.Observable.createWithDisposable(observer => {
-                var group = new Rx.CompositeDisposable();
+                var disposables = new Rx.CompositeDisposable();
+                var latestRowCount = 0;
                 var parentCompleted = false;
                 var rowCountCompleted = false;
+
+                // Internal function that keeps track of the state the of the subscriptions.
                 var setCompletedState = () => {
                     if (rowCountCompleted && (parentCompleted || this.parent.state === TemplateState.COMPLETED)) {
                         this._state = TemplateState.COMPLETED;
                         observer.onCompleted();
 
-                        // mark all bundles as complete as well
+                        // Mark all bundles as complete as well
                         this.bundles.forEach(b => b.markCompleted());
                     }
                 };
 
-                // Create the function that takes new components
-                // and pushes them to the observer.
-                this._nextComponent = (component) => {
-                    observer.onNext(component);
-                };
+                // Internal function that will update the number of components in a bundle.
+                var updateComponentCountInBundle = (count: number, bundle: ub.uvis.Bundle) => {
+                    var orgLength = bundle.count;
+
+                    // If count is lower then current number (length),
+                    // we remove the extraneous components and dispose of them.
+                    if (orgLength > count) {
+                        while (bundle.count > count) {
+                            bundle.remove();
+                        }
+                    } else if (orgLength < count) {
+                        // Otherwise we add additional components to the bundle
+                        for (var index = orgLength; index < count; index++) {
+                            var component = Template.componentFactory(this.type, this, bundle, index, bundle.parent);
+                            bundle.add(component);
+
+                            // Send the newly created to observer
+                            observer.onNext(component);
+                        }
+                    }
+                }
 
                 // Subscribe to parent's component stream, if there is a parent.
-                // Create bundles based on parents components
+                // Creates bundles based on parents components.
                 if (this.parent !== undefined) {
-                    group.add(this.parent.components.subscribe(component => {
-                        // Add components to bundle
-
+                    disposables.add(this.parent.components.subscribe(component => {                        
                         // Create a bundle for this component, if it does
                         // not already have one.
                         var bundle = component.bundles.get(this.name);
@@ -214,37 +230,49 @@ export module uvis {
                             bundle = component.createBundle(this);
                         }
 
-                        this.updateComponentCountInBundle(this._lastRowCount, bundle);
+                        // Add components to the bundle
+                        updateComponentCountInBundle(latestRowCount, bundle);
+
                     }, observer.onError.bind(observer), () => {
-                            parentCompleted = true;
-                            nextTick(setCompletedState);
-                        }));
+                        // Note that parent template observable is completed.
+                        parentCompleted = true;
+                        nextTick(setCompletedState);
+                    }));
                 } else {
                     // If there are no parent, create a default bundle
                     // to hold this templates components. This template
                     // is a 'form' since it is at the top of the template data tree.
                     this.bundles[0] = new ub.uvis.Bundle(this);
-
                     parentCompleted = true;
                 }
 
                 // Subscribe to rowCount observable.
-                group.add(this.rowCount.subscribe(newCount => {
-                    this._lastRowCount = newCount;
-                    this.updateComponentCount(newCount);
+                disposables.add(this.rowCount.subscribe(count => {
+                    // Update the number of components in each bundle
+                    latestRowCount = count;
+                    this.bundles.forEach(bundle => { updateComponentCountInBundle(latestRowCount, bundle); });
+
                 }, observer.onError.bind(observer), () => {
-                        rowCountCompleted = true;
-                        nextTick(setCompletedState);
-                    }));
+                    // Note that rowCount observable is completed.
+                    rowCountCompleted = true;
+                    nextTick(setCompletedState);
+                }));
 
                 // Set state to active once we finished subscribing to our sources
                 this._state = TemplateState.ACTIVE;
 
-                return group;
+                return disposables;
             }).publish();
 
             // Then we use the conenct method start creating components.
             this._componentFactoryConnection = this._componentFactory.connect();
+        }
+        
+        private static componentFactory(type: string, source: Template, bundle: ub.uvis.Bundle, index: number, parent?: uc.uvis.Component): uc.uvis.Component {
+            // TODO: download the source code for the type and instantiate it.
+            // For now, we just create an HTML component.
+            var res = new uhc.uvis.component.HTMLComponent(source, bundle, index, parent);
+            return <uc.uvis.Component>res;
         }
 
         dispose() {
@@ -276,40 +304,7 @@ export module uvis {
             this._componentFactory = null;
             this._componentFactoryConnection = null;
 
-            this._state = TemplateState.INACTIVE;
-        }
-
-        // This is triggered when the rowCount observable produces a new 'count'
-        private updateComponentCount(count: number) {
-            this.bundles.forEach(bundle => {
-                this.updateComponentCountInBundle(count, bundle);
-            });
-        }
-
-        private updateComponentCountInBundle(count: number, bundle: ub.uvis.Bundle) {
-            var orgLength = bundle.count;
-
-            // If count is lower then current number (length),
-            // we remove the extraneous components and dispose of them.
-            if (orgLength > count) {
-                while (bundle.count > count) {
-                    bundle.remove();
-                }
-            } else if (orgLength < count) {
-                // Otherwise we add additional components to the bundle
-                for (var index = orgLength; index < count; index++) {
-                    var component = Template.componentFactory(this.type, this, bundle, index, bundle.parent);
-                    bundle.add(component);
-                    this._nextComponent(component);
-                }
-            }
-        }
-
-        private static componentFactory(type: string, source: Template, bundle: ub.uvis.Bundle, index: number, parent?: uc.uvis.Component): uc.uvis.Component {
-            // TODO: download the source code for the type and instantiate it.
-            // For now, we just create an HTML component.
-            var res = new uhc.uvis.component.HTMLComponent(source, bundle, index, parent);
-            return <uc.uvis.Component>res;
+            this._state = TemplateState.DISPOSED;
         }
     }
 }

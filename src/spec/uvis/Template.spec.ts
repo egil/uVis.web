@@ -99,11 +99,11 @@ export module uvis.spec {
                 expect(c.state).toBe(ut.uvis.TemplateState.ACTIVE);
             });
 
-            it('Should be marked as INACTIVE once disposed.', () => {
+            it('Should be marked as DISPOSED once disposed.', () => {
                 var t1 = new ut.uvis.Template('t1', 'html', undefined, new Rx.Subject());
                 t1.initialize();
                 t1.dispose();
-                expect(t1.state).toBe(ut.uvis.TemplateState.INACTIVE);
+                expect(t1.state).toBe(ut.uvis.TemplateState.DISPOSED);
             });
 
             it('Should be marked as completed once all templates above it in the template data tree is completed.', () => {

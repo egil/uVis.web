@@ -65,7 +65,7 @@ export module uvis.spec {
             });
         });
 
-        describe('Visual tree', () => {
+        describe('Visual tree.', () => {
 
             it('Should use the form as canvas if canvas is not specified.', () => {
                 var elm = document.createDocumentFragment();
@@ -125,7 +125,7 @@ export module uvis.spec {
                 runs(() => {
                     form.initialize();
                     t1.initialize();
-                    t2.initialize();
+                    //t2.initialize();
 
                     canvasSource.onNext(canvas);
                 });
