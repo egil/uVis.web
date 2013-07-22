@@ -6,7 +6,7 @@ import uc = require('uvis/Component');
 
 export module uvis {
 
-    export interface IPropertyTemplate<T, O extends Rx.IObservable<T>> {
+    export interface ITemplateProperty<T, O extends Rx.IObservable<T>> {
         name: string;
         create(component?: uc.uvis.Component): Rx.IObservable<T>;
         initialValue: T;
@@ -14,7 +14,7 @@ export module uvis {
         dispose();
     }
 
-    export class PropertyTemplate<T> implements IPropertyTemplate<T, Rx.ISubject<T>> {
+    export class TemplateProperty<T> implements ITemplateProperty<T, Rx.ISubject<T>> {
         private _name: string;
         private _initialValue: T;
         private _internal: boolean;
@@ -51,7 +51,7 @@ export module uvis {
         dispose() { }
     }
 
-    export class ComputedPropertyTemplate<T> implements IPropertyTemplate<T, Rx.IObservable<T>> {
+    export class ComputedTemplateProperty<T> implements ITemplateProperty<T, Rx.IObservable<T>> {
         private _name: string;
         private _initialValue: T;
         private _factory: (component: uc.uvis.Component) => Rx.IObservable<T>;
@@ -99,7 +99,7 @@ export module uvis {
         dispose() { }
     }
 
-    export class SharedComputedPropertyTemplate<T> implements IPropertyTemplate<T, Rx.IObservable<T>>  {
+    export class SharedComputedTemplateProperty<T> implements ITemplateProperty<T, Rx.IObservable<T>>  {
         private _name: string;
         private _sharedObservable: Rx.IObservable<T>;
         private _initialValue;

@@ -5,7 +5,7 @@ import dict = require('util/Dictionary');
 import ut = require('uvis/Template');
 import uc = require('uvis/Component');
 import ub = require('uvis/Bundle');
-import up = require('uvis/PropertyTemplate');
+import up = require('uvis/TemplateProperty');
 
 export module uvis.spec {
     describe('Component.', () => {
@@ -82,7 +82,7 @@ export module uvis.spec {
                 var t1 = new ut.uvis.Template('t1', 'html#p', form, Rx.Observable.returnValue(4));
 
                 // Add the outer canvas to the form.
-                form.properties.add('canvas', new up.uvis.SharedComputedPropertyTemplate('canvas', () => {
+                form.properties.add('canvas', new up.uvis.SharedComputedTemplateProperty('canvas', () => {
                     return canvasSource;
                 }, undefined, true));
 
@@ -113,12 +113,12 @@ export module uvis.spec {
                 var t2 = new ut.uvis.Template('t2', 'html#div', form);
 
                 // Add the outer canvas to the form.
-                form.properties.add('canvas', new up.uvis.SharedComputedPropertyTemplate('canvas', () => {
+                form.properties.add('canvas', new up.uvis.SharedComputedTemplateProperty('canvas', () => {
                     return canvasSource;
                 }, undefined, true));
 
                 // Add the canvas to the t1, make it use t2 as canvas.
-                t1.properties.add('canvas', new up.uvis.ComputedPropertyTemplate('canvas', (c) => {
+                t1.properties.add('canvas', new up.uvis.ComputedTemplateProperty('canvas', (c) => {
                     return c.form.get('t2', 0).select(c => c.canvas).switchLatest();
                 }, undefined, true));
 
@@ -153,12 +153,12 @@ export module uvis.spec {
                 var t3 = new ut.uvis.Template('t3', 'html#header', form);
 
                 // Add the outer canvas to the form.
-                form.properties.add('canvas', new up.uvis.SharedComputedPropertyTemplate('canvas', () => {
+                form.properties.add('canvas', new up.uvis.SharedComputedTemplateProperty('canvas', () => {
                     return canvasSource;
                 }, undefined, true));
 
                 // Add the canvas to the t1, make it dependent on 'switcher'.
-                t1.properties.add('canvas', new up.uvis.ComputedPropertyTemplate('canvas', (c) => {
+                t1.properties.add('canvas', new up.uvis.ComputedTemplateProperty('canvas', (c) => {
                     return switcher.switchLatest();
                 }, undefined, true));
 

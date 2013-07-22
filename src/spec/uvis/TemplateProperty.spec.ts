@@ -4,7 +4,7 @@
 import dict = require('util/Dictionary');
 import ut = require('uvis/Template');
 import uc = require('uvis/Component');
-import pt = require('uvis/PropertyTemplate');
+import pt = require('uvis/TemplateProperty');
 import ub = require('uvis/Bundle');
 
 export module uvis.spec {
@@ -22,15 +22,15 @@ export module uvis.spec {
         }, er => { console.log(er); }, done);
     }
 
-    describe('PropertyTemplate.', () => {
+    describe('TemplateProperty.', () => {
 
-        //#region PropertyTemplate class
+        //#region TemplateProperty class
 
-        describe('PropertyTemplate class.', () => {
+        describe('TemplateProperty class.', () => {
             it('Should set ctor arguments correctly.', () => {
-                var p1 = new pt.uvis.PropertyTemplate<number>('top', 42);
-                var p2 = new pt.uvis.PropertyTemplate<number>('bottom');
-                var p3 = new pt.uvis.PropertyTemplate<number>('bottom', 42, true);
+                var p1 = new pt.uvis.TemplateProperty<number>('top', 42);
+                var p2 = new pt.uvis.TemplateProperty<number>('bottom');
+                var p3 = new pt.uvis.TemplateProperty<number>('bottom', 42, true);
                 expect(p1.name).toBe('top');
                 expect(p1.initialValue).toBe(42);
                 expect(p1.internal).toBeFalsy();
@@ -43,8 +43,8 @@ export module uvis.spec {
             });
 
             it('Should return an ISubject', () => {
-                var p1 = new pt.uvis.PropertyTemplate<number>('top', 42);
-                var p2 = new pt.uvis.PropertyTemplate<number>('bottom');
+                var p1 = new pt.uvis.TemplateProperty<number>('top', 42);
+                var p2 = new pt.uvis.TemplateProperty<number>('bottom');
 
                 expect(p1.create() instanceof Rx.BehaviorSubject).toBeTruthy();
                 expect(p2.create() instanceof Rx.ReplaySubject).toBeTruthy();
@@ -53,7 +53,7 @@ export module uvis.spec {
             it('Should allow multiple observers per observable', () => {
                 var actual1 = [];
                 var actual2 = [];
-                var p2 = new pt.uvis.PropertyTemplate<number>('bottom');
+                var p2 = new pt.uvis.TemplateProperty<number>('bottom');
                 var obs = p2.create();
 
                 runs(() => {
@@ -79,7 +79,7 @@ export module uvis.spec {
             it('Should allow multiple observers per observable (initialValue)', () => {
                 var actual1 = [];
                 var actual2 = [];
-                var p1 = new pt.uvis.PropertyTemplate<number>('top', 42);
+                var p1 = new pt.uvis.TemplateProperty<number>('top', 42);
                 var obs = p1.create();
 
                 runs(() => {
@@ -101,9 +101,9 @@ export module uvis.spec {
 
         //#endregion
         
-        //#region ComputedPropertyTemplate
+        //#region ComputedTemplateProperty
 
-        describe('ComputedPropertyTemplate.', () => {
+        describe('ComputedTemplateProperty.', () => {
             var template = new ut.uvis.Template('t', 'html', undefined, Rx.Observable.empty());
             var bundle = new ub.uvis.Bundle(template);
 
@@ -111,7 +111,7 @@ export module uvis.spec {
                 var actual = [];
                 var done = false;
                 var component = new uc.uvis.Component(template, bundle, 42);
-                var p1 = new pt.uvis.ComputedPropertyTemplate<number>('align', (c) => Rx.Observable.returnValue(c.index));
+                var p1 = new pt.uvis.ComputedTemplateProperty<number>('align', (c) => Rx.Observable.returnValue(c.index));
                 var obs = p1.create(component);
 
                 runs(() => {
@@ -129,7 +129,7 @@ export module uvis.spec {
             });
 
             it('Should set ctor arguments correctly (with initialValue).', () => {
-                var p1 = new pt.uvis.ComputedPropertyTemplate<number>('align', (c) => Rx.Observable.empty(), 1);
+                var p1 = new pt.uvis.ComputedTemplateProperty<number>('align', (c) => Rx.Observable.empty(), 1);
 
                 runs(() => {
                     expect(p1.initialValue).toBe(1);
@@ -139,7 +139,7 @@ export module uvis.spec {
             });
 
             it('Should set ctor arguments correctly (with initialValue, internal).', () => {
-                var p1 = new pt.uvis.ComputedPropertyTemplate<number>('align', (c) => Rx.Observable.empty(), 1, true);
+                var p1 = new pt.uvis.ComputedTemplateProperty<number>('align', (c) => Rx.Observable.empty(), 1, true);
 
                 runs(() => {
                     expect(p1.initialValue).toBe(1);
@@ -155,7 +155,7 @@ export module uvis.spec {
                 var done2 = false;
                 var c1 = new uc.uvis.Component(template, bundle, 1);
                 var c2 = new uc.uvis.Component(template, bundle, 2);
-                var p1 = new pt.uvis.ComputedPropertyTemplate<number>('align', (c) => Rx.Observable.returnValue(c.index));
+                var p1 = new pt.uvis.ComputedTemplateProperty<number>('align', (c) => Rx.Observable.returnValue(c.index));
                 var obs = p1.create(c1);
                 obs.connect();
 
@@ -180,7 +180,7 @@ export module uvis.spec {
             it('Should create observable uses default value if source does not produce a value.', () => {
                 var actual = [];
                 var component = new uc.uvis.Component(template, bundle, 1);
-                var p1 = new pt.uvis.ComputedPropertyTemplate<number>('align', (c) => Rx.Observable.never(), 42);
+                var p1 = new pt.uvis.ComputedTemplateProperty<number>('align', (c) => Rx.Observable.never(), 42);
                 var obs = p1.create(component);
                 obs.connect();
 
@@ -202,7 +202,7 @@ export module uvis.spec {
                 var done1 = false;
                 var done2 = false;
                 var component = new uc.uvis.Component(template, bundle, 1);
-                var p1 = new pt.uvis.ComputedPropertyTemplate<number>('align', (c) => Rx.Observable.returnValue(c.index).doAction(() => { prodCount++; }));
+                var p1 = new pt.uvis.ComputedTemplateProperty<number>('align', (c) => Rx.Observable.returnValue(c.index).doAction(() => { prodCount++; }));
                 var obs = p1.create(component);
                 obs.connect();
 
@@ -234,7 +234,7 @@ export module uvis.spec {
                 var component = new uc.uvis.Component(template, bundle, 1);
                 var source = new Rx.Subject<number>();
                 var produceTracker = source.doAction(() => { prodCount++; });
-                var p1 = new pt.uvis.ComputedPropertyTemplate<number>('align', (c) => produceTracker);
+                var p1 = new pt.uvis.ComputedTemplateProperty<number>('align', (c) => produceTracker);
 
                 var obs = p1.create(component);
                 obs.connect();
@@ -268,7 +268,7 @@ export module uvis.spec {
                 var done1 = false;
                 var done2 = false;
                 var component = new uc.uvis.Component(template, bundle, 42);
-                var p1 = new pt.uvis.ComputedPropertyTemplate<number>('align', (c) => Rx.Observable.returnValue(c.index).doAction(() => { prodCount++; }), 1);
+                var p1 = new pt.uvis.ComputedTemplateProperty<number>('align', (c) => Rx.Observable.returnValue(c.index).doAction(() => { prodCount++; }), 1);
 
                 var obs = p1.create(component);
                 obs.connect();
@@ -301,7 +301,7 @@ export module uvis.spec {
                 var component = new uc.uvis.Component(template, bundle, 1);
                 var source = new Rx.Subject<number>();
                 var produceTracker = source.doAction(() => { prodCount++; });
-                var p1 = new pt.uvis.ComputedPropertyTemplate<number>('align', (c) => produceTracker, 1);
+                var p1 = new pt.uvis.ComputedTemplateProperty<number>('align', (c) => produceTracker, 1);
 
                 var obs = p1.create(component);
                 obs.connect();
@@ -332,13 +332,13 @@ export module uvis.spec {
 
         //#endregion
 
-        //#region SharedComputedPropertyTemplate
+        //#region SharedComputedTemplateProperty
 
-        describe('SharedComputedPropertyTemplate.', () => {
+        describe('SharedComputedTemplateProperty.', () => {
             it('Should set ctor arguments correctly.', () => {
                 var actual = [];
                 var done = false;
-                var p1 = new pt.uvis.SharedComputedPropertyTemplate<number>('text', () => Rx.Observable.returnValue<number>(42));
+                var p1 = new pt.uvis.SharedComputedTemplateProperty<number>('text', () => Rx.Observable.returnValue<number>(42));
                 
                 sub(p1.create(), actual, () => { done = true; });
                 
@@ -354,7 +354,7 @@ export module uvis.spec {
             });
 
             it('Should set ctor arguments correctly (with initialValue).', () => {
-                var p1 = new pt.uvis.SharedComputedPropertyTemplate<number>('texty', () => Rx.Observable.empty(), 1);
+                var p1 = new pt.uvis.SharedComputedTemplateProperty<number>('texty', () => Rx.Observable.empty(), 1);
 
                 runs(() => {
                     expect(p1.name).toBe('texty');
@@ -364,7 +364,7 @@ export module uvis.spec {
             });
 
             it('Should set ctor arguments correctly (with initialValue).', () => {
-                var p1 = new pt.uvis.SharedComputedPropertyTemplate<number>('texty', () => Rx.Observable.empty(), 1, true);
+                var p1 = new pt.uvis.SharedComputedTemplateProperty<number>('texty', () => Rx.Observable.empty(), 1, true);
 
                 runs(() => {
                     expect(p1.name).toBe('texty');
@@ -378,7 +378,7 @@ export module uvis.spec {
                 var source = new Rx.Subject<number>();
                 var actual = [];
                 var done = false;
-                var p1 = new pt.uvis.SharedComputedPropertyTemplate<number>('text', () => source, 1);
+                var p1 = new pt.uvis.SharedComputedTemplateProperty<number>('text', () => source, 1);
 
                 runs(() => {
                     sub(p1.create(), actual, () => { done = true; });
@@ -397,7 +397,7 @@ export module uvis.spec {
                 var source = Rx.Observable.empty();
                 var actual = [];
                 var done = false;
-                var p1 = new pt.uvis.SharedComputedPropertyTemplate<number>('text', () => source, 1);
+                var p1 = new pt.uvis.SharedComputedTemplateProperty<number>('text', () => source, 1);
 
                 runs(() => {
                     sub(p1.create(), actual, () => { done = true; });
@@ -421,7 +421,7 @@ export module uvis.spec {
                 var done2 = false;
 
                 var produceTracker = source.doAction(() => { prodCount++; });
-                var p1 = new pt.uvis.SharedComputedPropertyTemplate<number>('text', () => produceTracker);
+                var p1 = new pt.uvis.SharedComputedTemplateProperty<number>('text', () => produceTracker);
                 
                 runs(() => {
                     var sub1 = sub(p1.create(), actual1);
@@ -459,7 +459,7 @@ export module uvis.spec {
                 var done2 = false;
 
                 var produceTracker = source.doAction(() => { prodCount++; });
-                var p1 = new pt.uvis.SharedComputedPropertyTemplate<number>('text', () => produceTracker);
+                var p1 = new pt.uvis.SharedComputedTemplateProperty<number>('text', () => produceTracker);
 
                 runs(() => {
                     var sub1 = sub(p1.create(), actual1, () => { done1 = true; });
@@ -491,7 +491,7 @@ export module uvis.spec {
                 var source = new Rx.Subject<number>();
 
                 var produceTracker = source.doAction(() => { prodCount++; });
-                var p1 = new pt.uvis.SharedComputedPropertyTemplate<number>('text', () => produceTracker, 1);
+                var p1 = new pt.uvis.SharedComputedTemplateProperty<number>('text', () => produceTracker, 1);
                 
                 runs(() => {
                     var sub1 = sub(p1.create(), actual1);
@@ -527,7 +527,7 @@ export module uvis.spec {
                 var done2 = false;
 
                 var produceTracker = source.doAction(() => { prodCount++; });
-                var p1 = new pt.uvis.SharedComputedPropertyTemplate<number>('text', () => produceTracker, 1);
+                var p1 = new pt.uvis.SharedComputedTemplateProperty<number>('text', () => produceTracker, 1);
 
                 runs(() => {
                     var sub1 = sub(p1.create(), actual1, () => { done1 = true; });

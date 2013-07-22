@@ -1,7 +1,7 @@
 /// <reference path="../.typings/rx.js.d.ts" />
 import ud = require('util/Dictionary');
 import ut = require('uvis/Template');
-import pt = require('uvis/PropertyTemplate');
+import pt = require('uvis/TemplateProperty');
 import ub = require('uvis/Bundle');
 
 export module uvis {
@@ -197,15 +197,15 @@ export module uvis {
 
                 // If it is a ComputedObservable, we must 
                 // connect it to its underlying sequence.
-                if (propTpl instanceof pt.uvis.ComputedPropertyTemplate) {
+                if (propTpl instanceof pt.uvis.ComputedTemplateProperty) {
                     //cp.subscription = (<Rx.ConnectableObservable>cp.property).connect();
                     this._subscriptions.add((<Rx.ConnectableObservable>cp.property).connect());
                 }
 
-                // If this is a PropertyTemplate, we know that we are handed
+                // If this is a TemplateProperty, we know that we are handed
                 // an subject, so we store a reference to its dispose method 
                 // for later use when cleaning up.
-                if (propTpl instanceof pt.uvis.PropertyTemplate) {
+                if (propTpl instanceof pt.uvis.TemplateProperty) {
                     //cp.subscription = { dispose: (<Rx.ISubject>cp.property).dispose };
                     this._subscriptions.add(<Rx.ISubject>cp.property);
                 }

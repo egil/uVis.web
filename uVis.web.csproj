@@ -146,20 +146,19 @@
     <Content Include="src\spec\uvis\Component.spec.min.js">
       <DependentUpon>Component.spec.ts</DependentUpon>
     </Content>
-    <TypeScriptCompile Include="src\uvis\Property.ts" />
     <TypeScriptCompile Include="src\uvis\data\IDataSource.ts" />
-    <TypeScriptCompile Include="src\spec\uvis\PropertyTemplate.spec.ts" />
-    <Content Include="src\spec\uvis\PropertyTemplate.spec.js">
-      <DependentUpon>PropertyTemplate.spec.ts</DependentUpon>
-    </Content>
-    <Content Include="src\spec\uvis\PropertyTemplate.spec.min.js">
-      <DependentUpon>PropertyTemplate.spec.ts</DependentUpon>
-    </Content>
+    <TypeScriptCompile Include="src\spec\uvis\TemplateProperty.spec.ts" />
     <Content Include="src\spec\uvis\Template.spec.js">
       <DependentUpon>Template.spec.ts</DependentUpon>
     </Content>
     <Content Include="src\spec\uvis\Template.spec.min.js">
       <DependentUpon>Template.spec.ts</DependentUpon>
+    </Content>
+    <Content Include="src\spec\uvis\TemplateProperty.spec.js">
+      <DependentUpon>TemplateProperty.spec.ts</DependentUpon>
+    </Content>
+    <Content Include="src\spec\uvis\TemplateProperty.spec.min.js">
+      <DependentUpon>TemplateProperty.spec.ts</DependentUpon>
     </Content>
     <Content Include="src\uvis\App.js">
       <DependentUpon>App.ts</DependentUpon>
@@ -193,30 +192,24 @@
     <Content Include="src\uvis\data\IDataSource.min.js">
       <DependentUpon>IDataSource.ts</DependentUpon>
     </Content>
-    <Content Include="src\uvis\Property.js">
-      <DependentUpon>Property.ts</DependentUpon>
-    </Content>
-    <Content Include="src\uvis\Property.min.js">
-      <DependentUpon>Property.ts</DependentUpon>
-    </Content>
     <Content Include="src\util\Dictionary.js">
       <DependentUpon>Dictionary.ts</DependentUpon>
     </Content>
     <Content Include="src\util\Dictionary.min.js">
       <DependentUpon>Dictionary.ts</DependentUpon>
     </Content>
-    <TypeScriptCompile Include="src\uvis\PropertyTemplate.ts" />
-    <Content Include="src\uvis\PropertyTemplate.js">
-      <DependentUpon>PropertyTemplate.ts</DependentUpon>
-    </Content>
-    <Content Include="src\uvis\PropertyTemplate.min.js">
-      <DependentUpon>PropertyTemplate.ts</DependentUpon>
-    </Content>
+    <TypeScriptCompile Include="src\uvis\TemplateProperty.ts" />
     <Content Include="src\uvis\Template.js">
       <DependentUpon>Template.ts</DependentUpon>
     </Content>
     <Content Include="src\uvis\Template.min.js">
       <DependentUpon>Template.ts</DependentUpon>
+    </Content>
+    <Content Include="src\uvis\TemplateProperty.js">
+      <DependentUpon>TemplateProperty.ts</DependentUpon>
+    </Content>
+    <Content Include="src\uvis\TemplateProperty.min.js">
+      <DependentUpon>TemplateProperty.ts</DependentUpon>
     </Content>
     <Content Include="Web.config" />
     <Content Include="src\util\Dictionary.js.map">
@@ -230,9 +223,6 @@
     </Content>
     <Content Include="apps\patient-demo\patient-data.json" />
     <None Include="apps\patient-demo\patient-definition.json" />
-    <Content Include="src\uvis\Property.js.map">
-      <DependentUpon>Property.ts</DependentUpon>
-    </Content>
     <Content Include="src\spec\data\DataSource.spec.js.map">
       <DependentUpon>DataSource.spec.ts</DependentUpon>
     </Content>
@@ -257,8 +247,8 @@
     <Content Include="src\spec\uvis\Template.spec.js.map">
       <DependentUpon>Template.spec.ts</DependentUpon>
     </Content>
-    <Content Include="src\spec\uvis\PropertyTemplate.spec.js.map">
-      <DependentUpon>PropertyTemplate.spec.ts</DependentUpon>
+    <Content Include="src\spec\uvis\TemplateProperty.spec.js.map">
+      <DependentUpon>TemplateProperty.spec.ts</DependentUpon>
     </Content>
     <None Include="src\spec\uvis\testdefs\t1.json" />
     <Content Include="src\uvis\data\IDataSource.js.map">
@@ -273,14 +263,14 @@
     <Content Include="src\uvis\Template.js.map">
       <DependentUpon>Template.ts</DependentUpon>
     </Content>
-    <Content Include="src\uvis\PropertyTemplate.js.map">
-      <DependentUpon>PropertyTemplate.ts</DependentUpon>
-    </Content>
     <Content Include="src\uvis\Bundle.js.map">
       <DependentUpon>Bundle.ts</DependentUpon>
     </Content>
     <Content Include="src\uvis\components\HTMLComponent.js.map">
       <DependentUpon>HTMLComponent.ts</DependentUpon>
+    </Content>
+    <Content Include="src\uvis\TemplateProperty.js.map">
+      <DependentUpon>TemplateProperty.ts</DependentUpon>
     </Content>
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>

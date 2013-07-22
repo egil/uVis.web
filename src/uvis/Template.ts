@@ -5,7 +5,7 @@ import ud = require('util/Dictionary');
 import uc = require('uvis/Component');
 import uhc = require('uvis/components/HTMLComponent');
 import ub = require('uvis/Bundle');
-import pt = require('uvis/PropertyTemplate');
+import pt = require('uvis/TemplateProperty');
 
 export module uvis {
 
@@ -26,7 +26,7 @@ export module uvis {
         private _parent: Template;
         private _children: ud.Dictionary<Template>;
         private _rowCount: Rx.IObservable<number>;
-        private _properties: ud.Dictionary<pt.uvis.IPropertyTemplate<any, Rx.IObservable<any>>> = new ud.Dictionary<pt.uvis.IPropertyTemplate>();
+        private _properties: ud.Dictionary<pt.uvis.ITemplateProperty<any, Rx.IObservable<any>>> = new ud.Dictionary<pt.uvis.ITemplateProperty>();
         private _rows: Rx.IObservable<any>;
         private _bundles = new Array<ub.uvis.Bundle>();
         private _componentFactory: Rx.ConnectableObservable<uc.uvis.Component>;
@@ -78,7 +78,7 @@ export module uvis {
             // Create the special 'row' property for component instances.
             // It makes the data element associated with their index
             // available to them.
-            var rowPropertyTemplate = new pt.uvis.ComputedPropertyTemplate('row',
+            var rowTemplateProperty = new pt.uvis.ComputedTemplateProperty('row',
                 (component: uc.uvis.Component) => {
                     // If 'rows' produces an array, 'row' selects the
                     // component.index element in the array.
@@ -92,11 +92,11 @@ export module uvis {
                     });
                 }, undefined, true /* internal */);           
             // ... and add it to the properties dictionary.
-            this.properties.add(rowPropertyTemplate.name, rowPropertyTemplate);
+            this.properties.add(rowTemplateProperty.name, rowTemplateProperty);
 
             
             // Create the special 'id' property
-            this.properties.add('id', new pt.uvis.ComputedPropertyTemplate<string>('id', c => {
+            this.properties.add('id', new pt.uvis.ComputedTemplateProperty<string>('id', c => {
                 var bi = c.bundle.parent === undefined ? 0 : c.bundle.parent.index;
                 return Rx.Observable.returnValue(this.name + '-' + bi + '-' + c.index);
             }));
@@ -138,7 +138,7 @@ export module uvis {
             return this._rowCount;
         }
 
-        get properties(): ud.Dictionary<pt.uvis.IPropertyTemplate<T, Rx.IObservable<T>>> {
+        get properties(): ud.Dictionary<pt.uvis.ITemplateProperty<T, Rx.IObservable<T>>> {
             return this._properties;
         }
 

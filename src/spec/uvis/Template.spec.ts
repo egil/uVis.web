@@ -5,7 +5,7 @@
 import ud = require('util/Dictionary');
 import ut = require('uvis/Template');
 import uc = require('uvis/Component');
-import pt = require('uvis/PropertyTemplate');
+import pt = require('uvis/TemplateProperty');
 
 export module uvis.spec {
 
@@ -460,7 +460,7 @@ export module uvis.spec {
                     var t12 = new ut.uvis.Template('t12', 'html', form, Rx.Observable.returnValue(4));
 
                     // Property on t12 that t11 row can depend on
-                    t12.properties.add('text', new pt.uvis.ComputedPropertyTemplate('text', (c) => {
+                    t12.properties.add('text', new pt.uvis.ComputedTemplateProperty('text', (c) => {
                         return Rx.Observable.returnValue(5 * c.index);
                     }));
 
@@ -495,7 +495,7 @@ export module uvis.spec {
                     var t11 = new ut.uvis.Template('t11', 'html', form, t11row);
 
                     // Property on t12 that t11 row can depend on
-                    t11.properties.add('text', new pt.uvis.ComputedPropertyTemplate('text', (c) => {
+                    t11.properties.add('text', new pt.uvis.ComputedTemplateProperty('text', (c) => {
                         return Rx.Observable.returnValue(5 * c.index);
                     }));
 
@@ -506,7 +506,7 @@ export module uvis.spec {
                     var t12 = new ut.uvis.Template('t12', 'html', form, t12row);
 
                     // Property on t12 that t11 row can depend on
-                    t12.properties.add('text', new pt.uvis.ComputedPropertyTemplate('text', (c) => {
+                    t12.properties.add('text', new pt.uvis.ComputedTemplateProperty('text', (c) => {
                         return Rx.Observable.returnValue(5 * c.index);
                     }));
 
@@ -533,7 +533,7 @@ export module uvis.spec {
                 var t1 = new ut.uvis.Template('t1', 'html', undefined, rows);
 
                 // create a text property and add it to the properties dictionary
-                t1.properties.add('text', new pt.uvis.ComputedPropertyTemplate('text', (c) => {
+                t1.properties.add('text', new pt.uvis.ComputedTemplateProperty('text', (c) => {
                     return Rx.Observable.returnValue('My index is ' + c.index);
                 }));
 
@@ -566,7 +566,7 @@ export module uvis.spec {
                 var t1 = new ut.uvis.Template('parent', 'html', undefined, rows);
 
                 // create a text property and add it to the properties dictionary
-                t1.properties.add('text', new pt.uvis.ComputedPropertyTemplate('text', (c) => {
+                t1.properties.add('text', new pt.uvis.ComputedTemplateProperty('text', (c) => {
                     //return Rx.Observable.returnValue('My index is ' + c.index);
                     return c.property('row').select(n => 'Data is ' + n);
                 }));
