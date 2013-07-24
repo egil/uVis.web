@@ -29,8 +29,8 @@ export module uvis {
         private _properties: ud.Dictionary<pt.uvis.ITemplateProperty<any, Rx.IObservable<any>>> = new ud.Dictionary<pt.uvis.ITemplateProperty>();
         private _rows: Rx.IObservable<any>;
         private _bundles = new Array<ub.uvis.Bundle>();
-        private _componentFactory: Rx.ConnectableObservable<uc.uvis.Component>;
-        private _componentFactoryConnection: Rx._IDisposable;
+        private _componentFactoryObservable: Rx.ConnectableObservable<uc.uvis.Component>;
+        private _componentFactoryObservableConnection: Rx._IDisposable;
 
         constructor(name: string, type: string, parent?: Template, rows?: Rx.IObservable<any>) {
             this._name = name;
@@ -96,6 +96,7 @@ export module uvis {
 
             
             // Create the special 'id' property
+            // TODO: Duplicated id's are possible...
             this.properties.add('id', new pt.uvis.ComputedTemplateProperty<string>('id', c => {
                 var bi = c.bundle.parent === undefined ? 0 : c.bundle.parent.index;
                 return Rx.Observable.returnValue(this.name + '-' + bi + '-' + c.index);
@@ -153,7 +154,7 @@ export module uvis {
                 this.initialize();
             }
 
-            return this._componentFactory.startWith.apply(this._componentFactory, this.existingComponents);
+            return this._componentFactoryObservable.startWith.apply(this._componentFactoryObservable, this.existingComponents);
         }
 
         get existingComponents(): uc.uvis.Component[] {
@@ -180,13 +181,13 @@ export module uvis {
                 throw new Error('Template already initialized.');
             }
 
-            this._componentFactory = Rx.Observable.createWithDisposable(observer => {
+            this._componentFactoryObservable = Rx.Observable.createWithDisposable(observer => {
                 var disposables = new Rx.CompositeDisposable();
                 var latestRowCount = 0;
                 var parentCompleted = false;
                 var rowCountCompleted = false;
 
-                // Internal function that keeps track of the state the of the subscriptions.
+                // Internal function that keeps track of the state of the subscriptions.
                 var setCompletedState = () => {
                     if (rowCountCompleted && (parentCompleted || this.parent.state === TemplateState.COMPLETED)) {
                         this._state = TemplateState.COMPLETED;
@@ -199,17 +200,17 @@ export module uvis {
 
                 // Internal function that will update the number of components in a bundle.
                 var updateComponentCountInBundle = (count: number, bundle: ub.uvis.Bundle) => {
-                    var orgLength = bundle.count;
+                    var orgCount = bundle.count;
 
-                    // If count is lower then current number (length),
+                    // If count is lower than current number (orgCount),
                     // we remove the extraneous components and dispose of them.
-                    if (orgLength > count) {
+                    if (orgCount > count) {
                         while (bundle.count > count) {
                             bundle.remove();
                         }
-                    } else if (orgLength < count) {
+                    } else if (orgCount < count) {
                         // Otherwise we add additional components to the bundle
-                        for (var index = orgLength; index < count; index++) {
+                        for (var index = orgCount; index < count; index++) {
                             var component = Template.componentFactory(this.type, this, bundle, index, bundle.parent);
                             bundle.add(component);
 
@@ -219,8 +220,8 @@ export module uvis {
                     }
                 }
 
-                // Subscribe to parent's component stream, if there is a parent.
-                // Creates bundles based on parents components.
+                // Subscribe to parent's components observable, if there is a parent.
+                // Creates bundles based on parent's components.
                 if (this.parent !== undefined) {
                     disposables.add(this.parent.components.subscribe(component => {                        
                         // Create a bundle for this component, if it does
@@ -234,7 +235,7 @@ export module uvis {
                         updateComponentCountInBundle(latestRowCount, bundle);
 
                     }, observer.onError.bind(observer), () => {
-                        // Note that parent template observable is completed.
+                        // Mark the parent template observable as completed.
                         parentCompleted = true;
                         nextTick(setCompletedState);
                     }));
@@ -265,7 +266,7 @@ export module uvis {
             }).publish();
 
             // Then we use the conenct method start creating components.
-            this._componentFactoryConnection = this._componentFactory.connect();
+            this._componentFactoryObservableConnection = this._componentFactoryObservable.connect();
         }
         
         private static componentFactory(type: string, source: Template, bundle: ub.uvis.Bundle, index: number, parent?: uc.uvis.Component): uc.uvis.Component {
@@ -277,8 +278,8 @@ export module uvis {
 
         dispose() {
             // End subscription to rows
-            if (this._componentFactoryConnection !== undefined) {
-                this._componentFactoryConnection.dispose();
+            if (this._componentFactoryObservableConnection !== undefined) {
+                this._componentFactoryObservableConnection.dispose();
             }
 
             // Dispose all components
@@ -301,8 +302,8 @@ export module uvis {
             this._children = null;
             this._properties = null;
             this._rows = null;
-            this._componentFactory = null;
-            this._componentFactoryConnection = null;
+            this._componentFactoryObservable = null;
+            this._componentFactoryObservableConnection = null;
 
             this._state = TemplateState.DISPOSED;
         }

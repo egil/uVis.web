@@ -21,6 +21,13 @@
     <UpgradeBackupLocation />
   </PropertyGroup>
   <ItemGroup>
+    <TypeScriptCompile Include="example.ts" />
+    <Content Include="example.js">
+      <DependentUpon>example.ts</DependentUpon>
+    </Content>
+    <Content Include="example.min.js">
+      <DependentUpon>example.ts</DependentUpon>
+    </Content>
     <Content Include="perf-test.html" />
     <Content Include="perf-test-baseline.html" />
     <Content Include="bootstrap.min.css" />
@@ -44,6 +51,9 @@
     <Content Include="src\libs\nextTick.js" />
     <Content Include="apps\lifeline-demo\lifeline-definition.json" />
     <Content Include="apps\perf-test\perf-test.json" />
+    <Content Include="example.js.map">
+      <DependentUpon>example.ts</DependentUpon>
+    </Content>
     <None Include="src\libs\rx\rx-vsdoc.js" />
     <None Include="src\libs\rx\rx.aggregates-vsdoc.js" />
     <Content Include="src\libs\rx\rx.aggregates.js" />
