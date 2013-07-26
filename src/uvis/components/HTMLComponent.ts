@@ -1,7 +1,7 @@
 /// <reference path="../../.typings/rx.js.binding.d.ts" />
 /// <reference path="../../.typings/rx.js.d.ts" />
 
-import uc = require('uvis/Component');
+import uc = require('../uvis/Component');
 
 export module uvis.component {
     export class HTMLComponent extends uc.uvis.Component {

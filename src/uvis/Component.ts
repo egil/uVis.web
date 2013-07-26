@@ -1,3 +1,4 @@
+/// <reference path="../.typings/rx.js.uvis.d.ts" />
 /// <reference path="../.typings/rx.js.d.ts" />
 import ud = require('util/Dictionary');
 import ut = require('uvis/Template');
@@ -28,6 +29,8 @@ export module uvis {
         private _bundles: ud.Dictionary<ub.uvis.Bundle>;
         private _properties: ud.Dictionary<ComponentProperty<any, Rx.IObservable<any>>> = new ud.Dictionary<ComponentProperty>();
         private _subscriptions: Rx.CompositeDisposable;
+
+        static unfulfilledRequest = false;
 
         constructor(template: ut.uvis.Template, bundle: ub.uvis.Bundle, index: number, parent?: Component) {
             this._template = template;
@@ -103,7 +106,7 @@ export module uvis {
         get canvas(): Rx.IObservable<ICanvas> {
             if (this._canvasSource === undefined) {
                 this._canvasSource = new Rx.ReplaySubject<ICanvas>(1);
-                
+
                 if (this._currentCanvas !== undefined) {
                     this._canvasSource.onNext(this);
                 }
@@ -123,17 +126,22 @@ export module uvis {
         }
 
         /**
-         * Multi purpose function that will retrive either:
+         * Function that will return an specific component in a specific bundle.
          * 
          *  - Component 0 in a specific bundle: get(bundleName: string) 
          *  - Component N in a specific bundle: get(bundleName: string, index: number)
-         *  - Property on a component N in a specific bundle: get(bundleName: string, index: number, propertyName: string)
-         *
-         * It will create bundles, components and properties first if they do not exist.
          */
-        get<T>(bundleName: string, index: number = 0, propertyName?: string): Rx.IObservable<T> {
+        get(bundleName: string, index: number = 0): Rx.IObservable<Component> {
+            var res: Rx.IObservable<Component>;
             var bundle = this.bundles.get(bundleName);
-            var res: Rx.IObservable<T>;
+            
+            //if (Component.unfulfilledRequest) {
+            //    console.warn('UF REQUEST: ' + this.template.name + '[' + this.index + '] ==> ' + bundleName + '[' + index + ']');
+            //    return Rx.Observable.throwException('A cyclic dependency with template name "' + bundleName + '" was found.');
+            //} else {
+            //    Component.unfulfilledRequest = true;
+                console.log('REQUEST: ' + this.template.name + '[' + this.index + '] ==> ' + bundleName + '[' + index + ']');
+            //}
 
             // Try to create bundle if it does not exist
             if (bundle === undefined) {
@@ -151,20 +159,37 @@ export module uvis {
                 template.initialize();
 
                 res = bundle.components;
-            } else if (bundle.template.state === ut.uvis.TemplateState.INACTIVE) {
-                return Rx.Observable.throwException('A cyclic dependency with template name "' + bundleName + '" was found.');
             }
+            
+            if (bundle.visited) {
+                console.warn('ALREADY VISITED: ' + this.template.name + '[' + this.index + '] ==> ' + bundleName + '[' + index + ']');
+            } else {
+                bundle.updated = false;
+                bundle.visited = true;
+            }
+
+            //// Check for cyclic dependencies
+            //if (bundle !== undefined && bundle.template.state === ut.uvis.TemplateState.INACTIVE) {
+            //    return Rx.Observable.throwException('A cyclic dependency with template name "' + bundleName + '" was found.');               
+            //}
+
+            //console.log('template visited: ' + bundle.template.visited);
 
             // Select the component from the bundle that matches
             // the index. If a component at 'index' is replaced later,
             // the replaced component will be pushed to subscribers.
-            res = bundle.components.where(c=> c.index === index);
+            res = bundle.components.where(c=> c.index === index).doAction(x=> {
+                Component.unfulfilledRequest = false;
+                bundle.updated = true;
+                bundle.visited = false;
+                console.log('FOUND: ' + this.template.name + '[' + this.index + '] ==> ' + bundleName + '[' + index + ']');
+            });
 
-            // If the user requested a property, we modify the observable result
-            // to produce that instead.
-            if (propertyName !== undefined) {
-                res = (<Rx.IObservable<Component>>res).select(c => c.property(propertyName)).switchLatest();
-            }
+            //// If the user requested a property, we modify the observable result
+            //// to produce that instead.
+            //if (propertyName !== undefined) {
+            //    res = res.property(propertyName);
+            //}
 
             return res;
         }
@@ -305,7 +330,7 @@ export module uvis {
         dispose(removeFromBundle: boolean = true) {
             // Unsubscribe from all observable subscriptions
             this._subscriptions.dispose();
-            
+
             // Make sure there are no property references left
             this._properties.removeAll();
 
@@ -349,19 +374,8 @@ export module uvis {
     }
 }
 
-/**
- * Multi purpose function that will retrive either:
- * 
- *  - Bundle: get(bundleName: string) 
- *  - Component in a specific bundle: get(bundleName: string, index: number)
- *  - Property on a component in a specific bundle: get(bundleName: string, index: number, propertyName: string)
- * 
- * This is a custom extensions to Rx for uVis.
- */
-Rx.Observable.prototype.get = function (bundle: string, index: number, name?: string) {
-    return name === undefined ?
-        this.select(component => component.get(bundle, index)) :
-        this.select(component => component.get(bundle, index, name)).switchLatest();
+Rx.Observable.prototype.get = function (bundle: string, index: number = 0) {
+    return this.select(component => component.get(bundle, index));
 };
 
 Rx.Observable.prototype.property = function (name: string) {

@@ -104,5 +104,8 @@ export module uvis {
             this._subject = null;
             this._template = null;
         }
+
+        visited = false;
+        updated = false;
     }
 }

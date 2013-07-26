@@ -13,29 +13,33 @@ export module uvis {
 
     export enum TemplateState {
         INACTIVE,
+        READY,
         ACTIVE,
         COMPLETED,
         DISPOSED
     }
 
     export class Template {
-        private _state = TemplateState.INACTIVE;
+        private _state : TemplateState;
         private _name: string;
         private _type: string;
         private _subtype: string;
         private _parent: Template;
-        private _children: ud.Dictionary<Template>;
-        private _rowCount: Rx.IObservable<number>;
-        private _properties: ud.Dictionary<pt.uvis.ITemplateProperty<any, Rx.IObservable<any>>> = new ud.Dictionary<pt.uvis.ITemplateProperty>();
+        private _rowsFactory: (t?: Template) => Rx.IObservable<Rx.IObservable<any>>;
         private _rows: Rx.IObservable<any>;
+        private _rowCount: Rx.IObservable<number>;
+        private _children: ud.Dictionary<Template>;
         private _bundles = new Array<ub.uvis.Bundle>();
-        private _componentFactoryObservable: Rx.ConnectableObservable<uc.uvis.Component>;
-        private _componentFactoryObservableConnection: Rx._IDisposable;
+        private _properties: ud.Dictionary<pt.uvis.ITemplateProperty<any, Rx.IObservable<any>>> = new ud.Dictionary<pt.uvis.ITemplateProperty>();
+        private _components: Rx.ConnectableObservable<uc.uvis.Component>;
+        private _componentsConnection: Rx._IDisposable;
 
-        constructor(name: string, type: string, parent?: Template, rows?: Rx.IObservable<any>) {
+        constructor(name: string, type: string, parent?: Template, rowsFactory?: (template?: Template) => Rx.IObservable<any>) {
+            this._state = TemplateState.INACTIVE;
             this._name = name;
-            this._type = type;            
+            this._type = type;
             this._parent = parent;
+            this._rowsFactory = rowsFactory;                
 
             // Extract subtype and type. type#subtype
             var typeSplitter = /([a-zA-Z]+)\x23([a-zA-Z]+)/.exec(type);
@@ -50,30 +54,12 @@ export module uvis {
             }
 
             // Make sure we have a data source for this template
-            if (parent === undefined && rows === undefined) {
+            if (parent === undefined && this._rowsFactory === undefined) {
                 // If there are no parent and no data source, this is a form template.
                 // Then we default to creating one component.
-                this._rows = rows = Rx.Observable.returnValue(1);
-            } else {
-                // Wrap the rows observable in a publish + refcount
-                this._rows = rows === undefined ? parent.rows : rows.replay(null, 1).refCount();
-            }
-
-            // Create rowCount observable, that extends the rows observable and
-            // determines how many components should be created.
-            this._rowCount = rows === undefined ? parent.rowCount : this._rows.select(result => {
-                // If it is an array, produe as many as there
-                // are elements in the array.               
-                if (Array.isArray(result))
-                    return result.length;
-                // If it is a number, produce the amount the
-                // number indicates
-                else if (typeof result === 'number')
-                    return result;
-                // Last option, we produce a single component.
-                else
-                    return 1;
-            });
+                this._rows = Rx.Observable.returnValue(1);
+                this._state = TemplateState.READY;
+            }            
 
             // Create the special 'row' property for component instances.
             // It makes the data element associated with their index
@@ -90,11 +76,11 @@ export module uvis {
                             return data;
                         }
                     });
-                }, undefined, true /* internal */);           
+                }, undefined, true /* internal */);
             // ... and add it to the properties dictionary.
             this.properties.add(rowTemplateProperty.name, rowTemplateProperty);
 
-            
+
             // Create the special 'id' property
             // TODO: Duplicated id's are possible...
             this.properties.add('id', new pt.uvis.ComputedTemplateProperty<string>('id', c => {
@@ -104,6 +90,14 @@ export module uvis {
         }
 
         get state(): TemplateState {
+            // If we are using the parent row, and the parent row is READY,
+            // but this template has not yet been initialized, we return READY.
+            if (this._rowsFactory === undefined &&
+                this._state === TemplateState.INACTIVE &&
+                this.parent !== undefined &&
+                this.parent.state > TemplateState.INACTIVE) {
+                return TemplateState.READY;
+            }
             return this._state;
         }
 
@@ -132,10 +126,43 @@ export module uvis {
         }
 
         get rows(): Rx.IObservable<any> {
+            // Return rows if already INACTIVE or if using parent rows
+            if (this._rows !== undefined) return this._rows;
+            if (this._rowsFactory === undefined) return this.parent.rows;
+            
+            // Otherwise we try to create the rows
+            //this._rows = this._rowsFactory(this)..doAction((rows) => {
+            //    // Mark the template as ready when we have the first rows observable
+            //    this._state = TemplateState.READY;
+            //}).switchLatest().replay(null, 1).refCount();
+
+            this._rows = Rx.Observable.defer(() => {
+                this.visisted = true;
+                return this._rowsFactory(this).doAction(x => {
+                    console.log(x);
+                });
+            }).replay(null, 1).refCount();
+
             return this._rows;
         }
 
         get rowCount(): Rx.IObservable<number> {
+            if (this._rowCount !== undefined) return this._rowCount;
+            
+            // Create rowCount observable that extends the rows observable.
+            if (this._rowsFactory === undefined && this.parent !== undefined) {
+                this._rowCount = this.parent.rowCount;
+            } else {            
+                this._rowCount = this.rows.select(result => {
+                    // If it is an array, produce as many components as there are elements in the array.               
+                    if (Array.isArray(result)) return result.length;
+                    // If it is a number, produce as many components as the amount the number indicates.
+                    else if (typeof result === 'number') return result;
+                    // Anything else, we produce a single component.
+                    else return 1;
+                });
+            }
+
             return this._rowCount;
         }
 
@@ -150,11 +177,11 @@ export module uvis {
         get components(): Rx.IObservable<uc.uvis.Component> {
             // If the template has not been initialized,
             // we do so now, so it starts producing components.
-            if (this.state === TemplateState.INACTIVE) {
+            if (this._components === undefined) {
                 this.initialize();
             }
 
-            return this._componentFactoryObservable.startWith.apply(this._componentFactoryObservable, this.existingComponents);
+            return this._components.startWith.apply(this._components, this.existingComponents);
         }
 
         get existingComponents(): uc.uvis.Component[] {
@@ -164,24 +191,35 @@ export module uvis {
         }
 
         /**
-         * Selects a single component from the first bundle. 
-         * Use this method to select a form component in a instance data tree.
-         * This method is only usedful when called on a form template 
-         * that creates the form components.
+         * Retrive the root component of an instance data tree.
          */
-        getForm(index: number = 0): Rx.IObservable<uc.uvis.Component> {
-            if (this.state === TemplateState.INACTIVE) {
-                this.initialize();
+        getTree(index: number = 0): Rx.IObservable<uc.uvis.Component> {
+            // First we find the form/root of the template data tree
+            var templateTreeForm = this;
+            while (templateTreeForm.parent !== undefined) {
+                templateTreeForm = templateTreeForm.parent;
             }
-            return this.bundles[0].components.where(c=> c.index === index);
+
+            // And make sure the form is initialized
+            if (templateTreeForm.state === TemplateState.INACTIVE) {
+                templateTreeForm.initialize();
+            }
+
+            // We know that the form will only have one bundle,
+            // so we select it and returns its components filtered to
+            // the index we want, e..g the branch of the instance data tree we want.
+            return templateTreeForm.bundles[0].components.where(c=> c.index === index);
         }
 
+
         initialize() {
-            if (this.state !== TemplateState.INACTIVE) {
-                throw new Error('Template already initialized.');
+            if (this._components !== undefined) {
+                //throw new Error('Template already initialized.');
+                console.warn('Template "' + this.name + '" already initialized.')
+                return;
             }
 
-            this._componentFactoryObservable = Rx.Observable.createWithDisposable(observer => {
+            this._components = Rx.Observable.createWithDisposable(observer => {
                 var disposables = new Rx.CompositeDisposable();
                 var latestRowCount = 0;
                 var parentCompleted = false;
@@ -202,6 +240,9 @@ export module uvis {
                 var updateComponentCountInBundle = (count: number, bundle: ub.uvis.Bundle) => {
                     var orgCount = bundle.count;
 
+                    // Set state to ACTIVE, indicates this template has produced at least one component.
+                    if (count > 0) this._state = TemplateState.ACTIVE;
+
                     // If count is lower than current number (orgCount),
                     // we remove the extraneous components and dispose of them.
                     if (orgCount > count) {
@@ -214,7 +255,7 @@ export module uvis {
                             var component = Template.componentFactory(this.type, this, bundle, index, bundle.parent);
                             bundle.add(component);
 
-                            // Send the newly created to observer
+                            // Send the newly INACTIVE to observer
                             observer.onNext(component);
                         }
                     }
@@ -223,7 +264,7 @@ export module uvis {
                 // Subscribe to parent's components observable, if there is a parent.
                 // Creates bundles based on parent's components.
                 if (this.parent !== undefined) {
-                    disposables.add(this.parent.components.subscribe(component => {                        
+                    disposables.add(this.parent.components.subscribe(component => {
                         // Create a bundle for this component, if it does
                         // not already have one.
                         var bundle = component.bundles.get(this.name);
@@ -260,15 +301,15 @@ export module uvis {
                 }));
 
                 // Set state to active once we finished subscribing to our sources
-                this._state = TemplateState.ACTIVE;
+                //this._state = TemplateState.ACTIVE;
 
                 return disposables;
             }).publish();
 
             // Then we use the conenct method start creating components.
-            this._componentFactoryObservableConnection = this._componentFactoryObservable.connect();
+            this._componentsConnection = this._components.connect();
         }
-        
+
         private static componentFactory(type: string, source: Template, bundle: ub.uvis.Bundle, index: number, parent?: uc.uvis.Component): uc.uvis.Component {
             // TODO: download the source code for the type and instantiate it.
             // For now, we just create an HTML component.
@@ -278,8 +319,8 @@ export module uvis {
 
         dispose() {
             // End subscription to rows
-            if (this._componentFactoryObservableConnection !== undefined) {
-                this._componentFactoryObservableConnection.dispose();
+            if (this._componentsConnection !== undefined) {
+                this._componentsConnection.dispose();
             }
 
             // Dispose all components
@@ -302,10 +343,13 @@ export module uvis {
             this._children = null;
             this._properties = null;
             this._rows = null;
-            this._componentFactoryObservable = null;
-            this._componentFactoryObservableConnection = null;
+            this._components = null;
+            this._componentsConnection = null;
 
             this._state = TemplateState.DISPOSED;
         }
+
+        visited = false;
+        updated = false;
     }
 }

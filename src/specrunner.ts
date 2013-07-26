@@ -18,8 +18,9 @@ require.config({
     }
 });
 
-require(['nextTick', 'shims', 'spec/util/Dictionary.spec',
-    'spec/uvis/App.spec', 'spec/uvis/Template.spec', 'spec/uvis/Component.spec', 'spec/uvis/TemplateProperty.spec'], () => {
+//require(['nextTick', 'shims', 'spec/util/Dictionary.spec',
+//    'spec/uvis/App.spec', 'spec/uvis/Template.spec', 'spec/uvis/Component.spec', 'spec/uvis/TemplateProperty.spec'], () => {
+require(['nextTick', 'shims', 'spec/util/Dictionary.spec', 'spec/uvis/Template.spec'], () => {
     // execute jasmine
     var jasmineEnv = jasmine.getEnv();
     jasmineEnv.execute();
