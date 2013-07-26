@@ -5,6 +5,7 @@ import ud = require('util/Dictionary');
 import ut = require('uvis/Template');
 import pt = require('uvis/TemplateProperty');
 import ub = require('uvis/Bundle');
+import ucr = require('uvis/ComponentRequest');
 
 export module uvis {
 
@@ -17,20 +18,7 @@ export module uvis {
         addVisualComponent(vc);
         removeVisualComponent(vc);
     }
-
-    export interface Request {
-        bundle: string;
-        index?: number;
-        component?: Component;
-    }
-
-    export interface RequestInfo {
-        current: Request;
-        history: string[];
-        source?: ut.uvis.Template;
-        templateHistory?: string[];
-    }
-
+    
     export class Component implements ICanvas {
         private _template: ut.uvis.Template;
         private _index: number;
@@ -138,60 +126,8 @@ export module uvis {
             }
             return this._bundles;
         }
-
-        /**
-         * Function that will return an specific component in a specific bundle.
-         */
-        //get(info: RequestInfo): Rx.IObservable<RequestInfo> {
-        //    var res: Rx.IObservable<RequestInfo>;
-        //    var bundle = this.bundles.get(info.current.bundle);
-
-        //    info.current.index = info.current.index || 0;
-
-        //    //console.log(info);
-
-        //    // Try to create bundle if it does not exist
-        //    if (bundle === undefined) {
-        //        var template = this.template.children.get(info.current.bundle);
-
-        //        // If there is no template by the requested name,
-        //        // we return an error message
-        //        if (template === undefined) {
-        //            return Rx.Observable.throwException('There is no such template that can create the requested bundle. Bundle name = ' + info.current.bundle);
-        //        }
-
-        //        // Create the bundle and initialize template to get the bundle filled with components.
-        //        // Assert that template is not initialize, otherwise the bundle should exist already.
-        //        bundle = this.createBundle(template);
-        //        template.initialize();
-        //    }
-
-        //    // Check for cyclic dependency between templates
-        //    var cyclicDependency = bundle.template.activeRequests.some((hist) => {
-        //        return hist[0] === info.current.bundle && info.history[0] === hist[hist.length - 1];
-        //    });
-
-        //    if (cyclicDependency) {
-        //        console.error('Cyclic dependency between template "' + bundle.template.name + '" and "' + info.history[0] + '"');
-        //        return Rx.Observable.throwException('Cyclic dependency between template "' + bundle.template.name + '" and "' + info.history[0] + '"');
-        //    }
-
-        //    // Select the component from the bundle that matches
-        //    // the index. If a component at 'index' is replaced later,
-        //    // the replaced component will be pushed to subscribers.
-        //    res = bundle.components
-        //        .where(component => component.index === info.current.index)
-        //        .select(component => {
-        //            // Once we have a match, we update the request object
-        //            info.current.component = component;
-        //            info.history.push(info.current.bundle);
-        //            return info;
-        //        });
-
-        //    return res;
-        //}
-
-        get(request: ComponentRequest): Rx.IObservable<ComponentRequest> {
+        
+        get(request: ucr.uvis.ComponentRequest): Rx.IObservable<ucr.uvis.ComponentRequest> {
             var bundle = this.bundles.get(request.bundle);
 
             // Try to create bundle if it does not exist
@@ -211,11 +147,11 @@ export module uvis {
             }
 
             // Check for cyclic dependency between templates
-            var cyclicDependency = bundle.template.activeRequests.some((hist) => {
+            var foundCyclicDependency = bundle.template.activeRequests.some((hist) => {
                 return hist[0] === request.bundle && request.history[0] === hist[hist.length - 1];
             });
 
-            if (cyclicDependency) {
+            if (foundCyclicDependency) {
                 console.error('Cyclic dependency between template "' + bundle.template.name + '" and "' + request.history[0] + '"');
                 return Rx.Observable.throwException('Cyclic dependency between template "' + bundle.template.name + '" and "' + request.history[0] + '"');
             }
@@ -407,110 +343,4 @@ export module uvis {
             this._visualComponent = null;
         }
     }
-
-    export class ComponentRequest {
-        private _bundle: string;
-        private _index: number;
-        private _templateHistory: string[] = [];
-        private _localHistory: string[] = [];
-        private _latest: Component;
-        private _source: ut.uvis.Template;
-
-        constructor(source: ut.uvis.Template, treeRoot: Component,index: number) {
-            this._source = source;
-            this._latest = treeRoot;
-
-            // Register in template
-            this._source.activeRequests.push(this._templateHistory);
-
-            // Add initial history
-            this._templateHistory.push(source.name);
-            this._localHistory.push(source.name);
-
-            // Add tree root to history, if source is not the form.
-            if (treeRoot.template !== source) {
-                this._templateHistory.push(treeRoot.template.name);
-                this._localHistory.push(treeRoot.template.name);
-            }
-
-            this._index = index;
-        }
-
-        getNext(bundle: string, index: number): Rx.IObservable<ComponentRequest> {
-            this._bundle = bundle;
-            this._index = index;
-            this._templateHistory.push(bundle);
-            return this._latest.get(this);
-        }
-
-        get bundle(): string {
-            return this._bundle;
-        }
-
-        get index(): number {
-            return this._index;
-        }
-
-        get history(): string[] {
-            return this._localHistory;
-        }
-
-        get latest(): Component {
-            return this._latest;
-        }
-
-        set latest(component: Component) {
-            this._latest = component;
-            this._localHistory.push(this._bundle);
-        }
-
-        dispose() {
-            this._source.activeRequests.splice(this._source.activeRequests.indexOf(this._templateHistory), 1);
-            this._source = null;
-            this._templateHistory = null;
-            this._localHistory = null;
-            this._latest = null;
-        }
-    }
 }
-
-//Rx.Observable.prototype.getTracked = function (bundle: string, index: number = 0) {
-//    return this.select<RequestInfo>(info: RequestInfo => {
-//        component.get(bundle, index)
-//    });
-//};
-
-//Rx.Observable.prototype.get = function (bundle: string, index: number = 0): Rx.IObservable<uvis.RequestInfo> {
-//    return this.select((info: uvis.RequestInfo) => {
-//        var comp = info.current.component;
-//        info.templateHistory.push(bundle);
-//        info.current = { bundle: bundle, index: index };
-//        return comp.get(info);
-//    }).switchLatest();
-//    //return this.select(component => component.get(bundle, index));
-//};
-
-//Rx.Observable.prototype.property = function (name: string) {
-//    return this.select((info: uvis.RequestInfo) => {
-//        var comp = info.current.component;
-//        console.log(info.templateHistory);
-//        info.source.activeRequests.splice(info.source.activeRequests.indexOf(info.templateHistory), 1);
-//        return comp.property('text');
-//    }).switchLatest();
-//    //return this.select(component => component.property(name)).switchLatest();
-//};
-
-
-Rx.Observable.prototype.get = function (bundle: string, index: number = 0): Rx.IObservable<uvis.ComponentRequest> {
-    return this.select((request: uvis.ComponentRequest) => {
-        return request.getNext(bundle, index);
-    }).switchLatest();
-};
-
-Rx.Observable.prototype.property = function (name: string) {
-    return this.select((request: uvis.ComponentRequest) => {
-        var finalComponent = request.latest;
-        request.dispose();
-        return finalComponent.property('text');
-    }).switchLatest();
-};

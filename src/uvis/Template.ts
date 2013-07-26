@@ -6,6 +6,7 @@ import uc = require('uvis/Component');
 import uhc = require('uvis/components/HTMLComponent');
 import ub = require('uvis/Bundle');
 import pt = require('uvis/TemplateProperty');
+import ucr = require('uvis/ComponentRequest');
 
 export module uvis {
 
@@ -203,7 +204,7 @@ export module uvis {
         /**
          * Get start walking the instance data tree from a specific index. Default is 0.
          */
-        walk(index: number = 0): Rx.IObservable<uc.uvis.ComponentRequest> {
+        walk(index: number = 0): Rx.IObservable<ucr.uvis.ComponentRequest> {
             // Make sure the form is initialized
             if (this.form.state === TemplateState.INACTIVE) {
                 this.form.initialize();
@@ -214,7 +215,7 @@ export module uvis {
             // the index we want, e.g. the branch of the instance data tree we want.
             return this.form.bundles[0].components
                 .where(component => component.index === index)
-                .select(component => new uc.uvis.ComponentRequest(this, component, index));
+                .select(component => new ucr.uvis.ComponentRequest(this, component, index));
         }
 
         initialize() {
