@@ -203,60 +203,24 @@ export module uvis {
         /**
          * Get start walking the instance data tree from a specific index. Default is 0.
          */
-        //walk(index: number = 0): Rx.IObservable<uc.uvis.RequestInfo> {
-        //    // The form is initialized
-        //    if (this.form.state === TemplateState.INACTIVE) {
-        //        this.form.initialize();
-        //    }
-
-        //    // We know that the form will only have one bundle,
-        //    // so we select it and returns its components filtered to
-        //    // the index we want, e..g the branch of the instance data tree we want.
-        //    return this.form.bundles[0].components
-        //        .where(component => component .index === index)
-        //        .select(component => {
-        //        var requestHistory = [this.name];
-        //        if (this.form !== this) requestHistory.push(this.form.name);
-
-        //        var activeRequestHistory = [this.name];
-        //        if (this.form !== this) activeRequestHistory.push(this.form.name);
-
-        //        this.activeRequests.push(activeRequestHistory);
-
-        //        return {
-        //            history: requestHistory,
-        //            source: this,
-        //            templateHistory: activeRequestHistory,
-        //            current: {
-        //                bundle: this.form.name,
-        //                index: index,
-        //                component: component 
-        //            }
-        //        };
-        //    });
-        //}
-
         walk(index: number = 0): Rx.IObservable<uc.uvis.ComponentRequest> {
-            // The form is initialized
+            // Make sure the form is initialized
             if (this.form.state === TemplateState.INACTIVE) {
                 this.form.initialize();
             }
 
             // We know that the form will only have one bundle,
             // so we select it and returns its components filtered to
-            // the index we want, e..g the branch of the instance data tree we want.
+            // the index we want, e.g. the branch of the instance data tree we want.
             return this.form.bundles[0].components
                 .where(component => component.index === index)
-                .select(component => {
-                    //var formName = this !== this.form ? this.form.name : undefined;
-                    return new uc.uvis.ComponentRequest(this, component, index);
-                });
+                .select(component => new uc.uvis.ComponentRequest(this, component, index));
         }
 
         initialize() {
             if (this._components !== undefined) {
                 //throw new Error('Template already initialized.');
-                //console.warn('Template "' + this.name + '" already initialized.')
+                console.warn('Template "' + this.name + '" already initialized.');
                 return;
             }
 
