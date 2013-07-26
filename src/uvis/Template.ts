@@ -25,6 +25,7 @@ export module uvis {
         private _type: string;
         private _subtype: string;
         private _parent: Template;
+        private _form: Template;
         private _rowsFactory: (t?: Template) => Rx.IObservable<Rx.IObservable<any>>;
         private _rows: Rx.IObservable<any>;
         private _rowCount: Rx.IObservable<number>;
@@ -47,6 +48,12 @@ export module uvis {
             if (typeSplitter !== null) {
                 this._type = typeSplitter[1];
                 this._subtype = typeSplitter[2];
+            }
+
+            // Find the template data tree form.
+            this._form = this;
+            while (this._form.parent !== undefined) {
+                this._form = this._form.parent;
             }
 
             // Register as child template with parent
@@ -108,6 +115,10 @@ export module uvis {
 
         get parent(): Template {
             return this._parent;
+        }
+
+        get form(): Template {
+            return this._form;
         }
 
         get children(): ud.Dictionary<Template> {
@@ -190,25 +201,57 @@ export module uvis {
         }
 
         /**
-         * Retrive the root component of an instance data tree.
+         * Get start walking the instance data tree from a specific index. Default is 0.
          */
-        getTree(index: number = 0): Rx.IObservable<uc.uvis.Component> {
-            // First we find the form/root of the template data tree
-            var templateTreeForm = this;
-            while (templateTreeForm.parent !== undefined) {
-                templateTreeForm = templateTreeForm.parent;
-            }
+        //walk(index: number = 0): Rx.IObservable<uc.uvis.RequestInfo> {
+        //    // The form is initialized
+        //    if (this.form.state === TemplateState.INACTIVE) {
+        //        this.form.initialize();
+        //    }
 
-            // And make sure the form is initialized
-            if (templateTreeForm.state === TemplateState.INACTIVE) {
-                templateTreeForm.initialize();
+        //    // We know that the form will only have one bundle,
+        //    // so we select it and returns its components filtered to
+        //    // the index we want, e..g the branch of the instance data tree we want.
+        //    return this.form.bundles[0].components
+        //        .where(component => component .index === index)
+        //        .select(component => {
+        //        var requestHistory = [this.name];
+        //        if (this.form !== this) requestHistory.push(this.form.name);
+
+        //        var activeRequestHistory = [this.name];
+        //        if (this.form !== this) activeRequestHistory.push(this.form.name);
+
+        //        this.activeRequests.push(activeRequestHistory);
+
+        //        return {
+        //            history: requestHistory,
+        //            source: this,
+        //            templateHistory: activeRequestHistory,
+        //            current: {
+        //                bundle: this.form.name,
+        //                index: index,
+        //                component: component 
+        //            }
+        //        };
+        //    });
+        //}
+
+        walk(index: number = 0): Rx.IObservable<uc.uvis.ComponentRequest> {
+            // The form is initialized
+            if (this.form.state === TemplateState.INACTIVE) {
+                this.form.initialize();
             }
 
             // We know that the form will only have one bundle,
             // so we select it and returns its components filtered to
             // the index we want, e..g the branch of the instance data tree we want.
-            return templateTreeForm.bundles[0].components.where(c=> c.index === index);
-        }                
+            return this.form.bundles[0].components
+                .where(component => component.index === index)
+                .select(component => {
+                    //var formName = this !== this.form ? this.form.name : undefined;
+                    return new uc.uvis.ComponentRequest(this, component, index);
+                });
+        }
 
         initialize() {
             if (this._components !== undefined) {
