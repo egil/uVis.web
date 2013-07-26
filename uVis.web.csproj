@@ -190,6 +190,10 @@
       <DependentUpon>Component.ts</DependentUpon>
     </Content>
     <TypeScriptCompile Include="src\uvis\components\HTMLComponent.ts" />
+    <TypeScriptCompile Include="src\uvis\ComponentRequest.ts" />
+    <Content Include="src\uvis\ComponentRequest.js">
+      <DependentUpon>ComponentRequest.ts</DependentUpon>
+    </Content>
     <Content Include="src\uvis\components\HTMLComponent.js">
       <DependentUpon>HTMLComponent.ts</DependentUpon>
     </Content>
@@ -354,7 +358,6 @@
       </FlavorProperties>
     </VisualStudio>
   </ProjectExtensions>
-  
   <!--<PropertyGroup Condition="'$(Configuration)' == 'Debug'">
     <TypeScriptTarget>ES5</TypeScriptTarget>
     <TypeScriptIncludeComments>true</TypeScriptIncludeComments>
@@ -368,7 +371,6 @@
     <TypeScriptModuleKind>AMD</TypeScriptModuleKind>
   </PropertyGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\TypeScript\Microsoft.TypeScript.targets" />-->
-
   <!--<PropertyGroup Condition="'$(Configuration)' == 'Debug'">
     <TypeScriptTarget>ES5</TypeScriptTarget>
     <TypeScriptIncludeComments>true</TypeScriptIncludeComments>
@@ -382,5 +384,4 @@
     <TypeScriptModuleKind>AMD</TypeScriptModuleKind>
   </PropertyGroup>
   <Import Project="$(VSToolsPath)\TypeScript\Microsoft.TypeScript.targets" />-->
-
 </Project>

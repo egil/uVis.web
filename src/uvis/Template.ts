@@ -14,7 +14,7 @@ export module uvis {
 
     export enum TemplateState {
         INACTIVE,
-        READY,
+        INITIALIZED,
         ACTIVE,
         COMPLETED,
         DISPOSED
@@ -63,31 +63,22 @@ export module uvis {
             }
 
             // Make sure we have a data source for this template
+            // If there are no parent and no data source, this is a form template. Then we default to creating one component.
             if (parent === undefined && this._rowsFactory === undefined) {
-                // If there are no parent and no data source, this is a form template.
-                // Then we default to creating one component.
                 this._rows = Rx.Observable.returnValue(1);
-                this._state = TemplateState.READY;
             }            
 
-            // Create the special 'row' property for component instances.
-            // It makes the data element associated with their index
-            // available to them.
-            var rowTemplateProperty = new pt.uvis.ComputedTemplateProperty('row',
-                (component: uc.uvis.Component) => {
-                    // If 'rows' produces an array, 'row' selects the
-                    // component.index element in the array.
-                    // Otherwise it returns the the data as is.
-                    return this.rows.select(data => {
-                        if (Array.isArray(data)) {
-                            return data[component.index];
-                        } else {
-                            return data;
-                        }
-                    });
-                }, undefined, true /* internal */);
-            // ... and add it to the properties dictionary.
-            this.properties.add(rowTemplateProperty.name, rowTemplateProperty);
+            // Create the special 'row' property for component instances. It makes the data element associated with their index available to them.
+            this.properties.add('row', new pt.uvis.ComputedTemplateProperty('row', (component: uc.uvis.Component) => {
+                // If 'rows' produces an array, 'row' selects the component.index element in the array. Otherwise it returns the the data as is.
+                return this.rows.select(data => {
+                    if (Array.isArray(data)) {
+                        return data[component.index];
+                    } else {
+                        return data;
+                    }
+                });
+            }, undefined, true /* internal */));
 
 
             // Create the special 'id' property
@@ -99,14 +90,6 @@ export module uvis {
         }
 
         get state(): TemplateState {
-            // If we are using the parent row, and the parent row is READY,
-            // but this template has not yet been initialized, we return READY.
-            if (this._rowsFactory === undefined &&
-                this._state === TemplateState.INACTIVE &&
-                this.parent !== undefined &&
-                this.parent.state > TemplateState.INACTIVE) {
-                return TemplateState.READY;
-            }
             return this._state;
         }
 
@@ -144,11 +127,7 @@ export module uvis {
             if (this._rowsFactory === undefined) return this.parent.rows;
             
             // Otherwise we try to create the rows
-            this._rows = Rx.Observable.defer(() => {
-                var res = this._rowsFactory(this);
-                this._state = TemplateState.READY;
-                return res;
-            }).replay(null, 1).refCount();
+            this._rows = this._rowsFactory(this).replay(null, 1).refCount();
             
             return this._rows;
         }
@@ -219,11 +198,7 @@ export module uvis {
         }
 
         initialize() {
-            if (this._components !== undefined) {
-                //throw new Error('Template already initialized.');
-                console.warn('Template "' + this.name + '" already initialized.');
-                return;
-            }
+            if (this._components !== undefined) return;
 
             this._components = Rx.Observable.createWithDisposable(observer => {
                 var disposables = new Rx.CompositeDisposable();
@@ -305,15 +280,13 @@ export module uvis {
                     rowCountCompleted = true;
                     nextTick(setCompletedState);
                 }));
-
-                // Set state to active once we finished subscribing to our sources
-                //this._state = TemplateState.ACTIVE;
-
+                
                 return disposables;
             }).publish();
 
             // Then we use the conenct method start creating components.
             this._componentsConnection = this._components.connect();
+            this._state = TemplateState.INITIALIZED;
         }
 
         private static componentFactory(type: string, source: Template, bundle: ub.uvis.Bundle, index: number, parent?: uc.uvis.Component): uc.uvis.Component {

@@ -64,7 +64,7 @@ export module uvis.spec {
             waitsFor(() => done || hasErr, 't3.rows did not complete.', 20);
 
             runs(() => {
-                expect(t3.state).toBe(ut.uvis.TemplateState.READY);
+                expect(t3.state).toBe(ut.uvis.TemplateState.INACTIVE);
                 expect(actual).toBe(t3.name);
                 expect(hasErr).toBeUndefined();
             });
@@ -82,7 +82,7 @@ export module uvis.spec {
             waitsFor(() => done || hasErr, 't2.rowCount did not complete.', 20);
 
             runs(() => {
-                expect(t2.state).toBe(ut.uvis.TemplateState.READY);
+                expect(t2.state).toBe(ut.uvis.TemplateState.INACTIVE);
                 expect(actual).toBe(42);
                 expect(hasErr).toBeUndefined();
             });
@@ -100,32 +100,21 @@ export module uvis.spec {
                 expect(t3.state).toBe(ut.uvis.TemplateState.INACTIVE);
             });
 
-            it('Should be READY when row is ready to be subscribed to', () => {
-                var done, hasErr, actual;
-                var t1 = new ut.uvis.Template('t1', 'html#div');
+            it('Should be INITIALIZED after initilized() has been called', () => {
+                var t1 = new ut.uvis.Template('t1', 'html#div', undefined, () => Rx.Observable.never());
                 var t2 = new ut.uvis.Template('t2', 'html#div', t1, () => Rx.Observable.empty());
                 var t3 = new ut.uvis.Template('t3', 'html#div', t2);
 
-                // Switches to ready right away because it has default row via constructor
-                expect(t1.state).toBe(ut.uvis.TemplateState.READY);
-
-                runs(() => {
-                    t2.rows.subscribe(res => actual = res, err => hasErr = err, () => done = true);
-                });
-
-                waitsFor(() => done || hasErr, 't2.rows did get rows observable.', 20);
-
-                runs(() => {
-                    expect(t2.state).toBe(ut.uvis.TemplateState.READY);
-                    expect(t3.state).toBe(ut.uvis.TemplateState.READY);
-                    expect(hasErr).toBeUndefined();
-                });
+                t1.initialize();
+                expect(t1.state).toBe(ut.uvis.TemplateState.INITIALIZED);
+                t2.components.subscribe();
+                expect(t2.state).toBe(ut.uvis.TemplateState.INITIALIZED);
+                t3.initialize();
+                expect(t3.state).toBe(ut.uvis.TemplateState.INITIALIZED);
             });
 
             it('Should be ACTIVE when one or more component has been produced', () => {
-                var done1, hasErr1, actual1 = [];
-                var done2, hasErr2, actual2 = [];
-                var done3, hasErr3, actual3 = [];
+                var done1, hasErr1, actual1 = [], done2, hasErr2, actual2 = [], done3, hasErr3, actual3 = [];
                 var rows = new Rx.Subject();
                 var t1 = new ut.uvis.Template('t1', 'html#div', undefined, () => rows);
                 var t2 = new ut.uvis.Template('t2', 'html#div', t1, () => rows);
@@ -148,9 +137,7 @@ export module uvis.spec {
             });
 
             it('Should stay ACTIVE as long as a parent template (any template higher in the tree) is not completed', () => {
-                var done1, hasErr1, actual1 = [];
-                var done2, hasErr2, actual2 = [];
-                var done3, hasErr3, actual3 = [];
+                var done1, hasErr1, actual1 = [], done2, hasErr2, actual2 = [] done3, hasErr3, actual3 = [];
                 var rows = new Rx.Subject();
                 var t1 = new ut.uvis.Template('t1', 'html#div', undefined, () => rows);
                 var t2 = new ut.uvis.Template('t2', 'html#div', t1, () => Rx.Observable.returnValue(1));
@@ -173,9 +160,7 @@ export module uvis.spec {
             });
 
             it('Should be COMPLETED when it and all of its parents are completed', () => {
-                var done1, hasErr1, actual1 = [];
-                var done2, hasErr2, actual2 = [];
-                var done3, hasErr3, actual3 = [];
+                var done1, hasErr1, actual1 = [], done2, hasErr2, actual2 = [], done3, hasErr3, actual3 = [];
                 var t1 = new ut.uvis.Template('t1', 'html#div');
                 var t2 = new ut.uvis.Template('t2', 'html#div', t1);
                 var t3 = new ut.uvis.Template('t3', 'html#div', t2);
