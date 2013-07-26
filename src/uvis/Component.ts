@@ -1,3 +1,4 @@
+/// <reference path="../.typings/rx.js.aggregates.d.ts" />
 /// <reference path="../.typings/rx.js.uvis.d.ts" />
 /// <reference path="../.typings/rx.js.d.ts" />
 import ud = require('util/Dictionary');
@@ -15,6 +16,17 @@ export module uvis {
     export interface ICanvas {
         addVisualComponent(vc);
         removeVisualComponent(vc);
+    }
+
+    export interface Request {
+        bundle: string;
+        index?: number;
+        component?: Component;
+    }
+
+    export interface RequestInfo {
+        current: Request;
+        history: string[];
     }
 
     export class Component implements ICanvas {
@@ -134,14 +146,8 @@ export module uvis {
         get(bundleName: string, index: number = 0): Rx.IObservable<Component> {
             var res: Rx.IObservable<Component>;
             var bundle = this.bundles.get(bundleName);
-            
-            //if (Component.unfulfilledRequest) {
-            //    console.warn('UF REQUEST: ' + this.template.name + '[' + this.index + '] ==> ' + bundleName + '[' + index + ']');
-            //    return Rx.Observable.throwException('A cyclic dependency with template name "' + bundleName + '" was found.');
-            //} else {
-            //    Component.unfulfilledRequest = true;
-                console.log('REQUEST: ' + this.template.name + '[' + this.index + '] ==> ' + bundleName + '[' + index + ']');
-            //}
+
+            console.log('REQUEST: ' + this.template.name + '[' + this.index + '] ==> ' + bundleName + '[' + index + ']');
 
             // Try to create bundle if it does not exist
             if (bundle === undefined) {
@@ -160,36 +166,59 @@ export module uvis {
 
                 res = bundle.components;
             }
-            
-            if (bundle.visited) {
-                console.warn('ALREADY VISITED: ' + this.template.name + '[' + this.index + '] ==> ' + bundleName + '[' + index + ']');
-            } else {
-                bundle.updated = false;
-                bundle.visited = true;
-            }
-
-            //// Check for cyclic dependencies
-            //if (bundle !== undefined && bundle.template.state === ut.uvis.TemplateState.INACTIVE) {
-            //    return Rx.Observable.throwException('A cyclic dependency with template name "' + bundleName + '" was found.');               
-            //}
-
-            //console.log('template visited: ' + bundle.template.visited);
 
             // Select the component from the bundle that matches
             // the index. If a component at 'index' is replaced later,
             // the replaced component will be pushed to subscribers.
-            res = bundle.components.where(c=> c.index === index).doAction(x=> {
-                Component.unfulfilledRequest = false;
-                bundle.updated = true;
-                bundle.visited = false;
+            res = bundle.components.where(component => component.index === index).doAction(() => {
                 console.log('FOUND: ' + this.template.name + '[' + this.index + '] ==> ' + bundleName + '[' + index + ']');
             });
 
-            //// If the user requested a property, we modify the observable result
-            //// to produce that instead.
-            //if (propertyName !== undefined) {
-            //    res = res.property(propertyName);
-            //}
+            return res;
+        }
+
+        getTracked(info: RequestInfo): Rx.IObservable<RequestInfo> {
+            var res: Rx.IObservable<RequestInfo>;
+            var bundle = this.bundles.get(info.current.bundle);
+
+            info.current.index = info.current.index || 0;
+
+            //console.log(info);
+
+            // Try to create bundle if it does not exist
+            if (bundle === undefined) {
+                var template = this.template.children.get(info.current.bundle);
+
+                // If there is no template by the requested name,
+                // we return an error message
+                if (template === undefined) {
+                    return Rx.Observable.throwException('There is no such template that can create the requested bundle. Bundle name = ' + info.current.bundle);
+                }
+
+                // Create the bundle and initialize template to get the bundle filled with components.
+                // Assert that template is not initialize, otherwise the bundle should exist already.
+                bundle = this.createBundle(template);
+                template.initialize();
+            }
+
+            // Check for cyclic dependency between templates
+            var cyclicDependency = bundle.template.activeRequests.some((hist) => {
+                return hist[0] === info.current.bundle && info.history[0] === hist[hist.length - 1];
+            });
+
+            if (cyclicDependency) {
+                console.error('Cyclic dependency between template "' + bundle.template.name + '" and "' + info.history[0] + '"');
+                return Rx.Observable.throwException('Cyclic dependency between template "' + bundle.template.name + '" and "' + info.history[0] + '"');
+            }
+
+            // Select the component from the bundle that matches
+            // the index. If a component at 'index' is replaced later,
+            // the replaced component will be pushed to subscribers.
+            res = bundle.components.where(component => component.index === info.current.index)
+                .select(component => {
+                info.current.component = component;
+                return info;
+            });
 
             return res;
         }
@@ -223,7 +252,6 @@ export module uvis {
                 // If it is a ComputedObservable, we must 
                 // connect it to its underlying sequence.
                 if (propTpl instanceof pt.uvis.ComputedTemplateProperty) {
-                    //cp.subscription = (<Rx.ConnectableObservable>cp.property).connect();
                     this._subscriptions.add((<Rx.ConnectableObservable>cp.property).connect());
                 }
 
@@ -231,7 +259,6 @@ export module uvis {
                 // an subject, so we store a reference to its dispose method 
                 // for later use when cleaning up.
                 if (propTpl instanceof pt.uvis.TemplateProperty) {
-                    //cp.subscription = { dispose: (<Rx.ISubject>cp.property).dispose };
                     this._subscriptions.add(<Rx.ISubject>cp.property);
                 }
 
@@ -373,6 +400,12 @@ export module uvis {
         }
     }
 }
+
+//Rx.Observable.prototype.getTracked = function (bundle: string, index: number = 0) {
+//    return this.select<RequestInfo>(info: RequestInfo => {
+//        component.get(bundle, index)
+//    });
+//};
 
 Rx.Observable.prototype.get = function (bundle: string, index: number = 0) {
     return this.select(component => component.get(bundle, index));

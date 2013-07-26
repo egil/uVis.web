@@ -33,6 +33,7 @@ export module uvis {
         private _properties: ud.Dictionary<pt.uvis.ITemplateProperty<any, Rx.IObservable<any>>> = new ud.Dictionary<pt.uvis.ITemplateProperty>();
         private _components: Rx.ConnectableObservable<uc.uvis.Component>;
         private _componentsConnection: Rx._IDisposable;
+        private _activeRequests: string[][] = [];
 
         constructor(name: string, type: string, parent?: Template, rowsFactory?: (template?: Template) => Rx.IObservable<any>) {
             this._state = TemplateState.INACTIVE;
@@ -131,19 +132,17 @@ export module uvis {
             if (this._rowsFactory === undefined) return this.parent.rows;
             
             // Otherwise we try to create the rows
-            //this._rows = this._rowsFactory(this)..doAction((rows) => {
-            //    // Mark the template as ready when we have the first rows observable
-            //    this._state = TemplateState.READY;
-            //}).switchLatest().replay(null, 1).refCount();
-
             this._rows = Rx.Observable.defer(() => {
-                this.visisted = true;
-                return this._rowsFactory(this).doAction(x => {
-                    console.log(x);
-                });
+                var res = this._rowsFactory(this);
+                this._state = TemplateState.READY;
+                return res;
             }).replay(null, 1).refCount();
-
+            
             return this._rows;
+        }
+
+        get activeRequests(): string[][]{
+            return this._activeRequests;
         }
 
         get rowCount(): Rx.IObservable<number> {
@@ -209,13 +208,12 @@ export module uvis {
             // so we select it and returns its components filtered to
             // the index we want, e..g the branch of the instance data tree we want.
             return templateTreeForm.bundles[0].components.where(c=> c.index === index);
-        }
-
+        }                
 
         initialize() {
             if (this._components !== undefined) {
                 //throw new Error('Template already initialized.');
-                console.warn('Template "' + this.name + '" already initialized.')
+                //console.warn('Template "' + this.name + '" already initialized.')
                 return;
             }
 
@@ -348,8 +346,5 @@ export module uvis {
 
             this._state = TemplateState.DISPOSED;
         }
-
-        visited = false;
-        updated = false;
     }
 }

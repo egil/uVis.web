@@ -32,199 +32,199 @@ export module uvis.spec {
 
     describe('Template.', () => {
 
-        //it('Should set ctor arguments correctly', () => {
-        //    var done, hasErr, actual;
-        //    var t1 = new ut.uvis.Template('t1', 'html#div');
-        //    var t2 = new ut.uvis.Template('t2', 'html#p', t1);
-        //    var t3 = new ut.uvis.Template('t3', 'html#p', t1, (t?) => Rx.Observable.returnValue(t.name));
+        it('Should set ctor arguments correctly', () => {
+            var done, hasErr, actual;
+            var t1 = new ut.uvis.Template('t1', 'html#div');
+            var t2 = new ut.uvis.Template('t2', 'html#p', t1);
+            var t3 = new ut.uvis.Template('t3', 'html#p', t1, (t?) => Rx.Observable.returnValue(t.name));
 
-        //    expect(t1.name).toBe('t1');
-        //    expect(t1.type).toBe('html');
-        //    expect(t1.subtype).toBe('div');
-        //    expect(t1.parent).toBeUndefined();
-        //    expect(t1.rows).toBeDefined();
-        //    expect(t1.children.contains(t2.name)).toBeTruthy();
-        //    expect(t1.children.contains(t3.name)).toBeTruthy();
+            expect(t1.name).toBe('t1');
+            expect(t1.type).toBe('html');
+            expect(t1.subtype).toBe('div');
+            expect(t1.parent).toBeUndefined();
+            expect(t1.rows).toBeDefined();
+            expect(t1.children.contains(t2.name)).toBeTruthy();
+            expect(t1.children.contains(t3.name)).toBeTruthy();
 
-        //    expect(t2.name).toBe('t2');
-        //    expect(t2.type).toBe('html');
-        //    expect(t2.subtype).toBe('p');
-        //    expect(t2.parent).toBe(t1);
-        //    expect(t2.rows).toBe(t1.rows);
+            expect(t2.name).toBe('t2');
+            expect(t2.type).toBe('html');
+            expect(t2.subtype).toBe('p');
+            expect(t2.parent).toBe(t1);
+            expect(t2.rows).toBe(t1.rows);
 
-        //    expect(t3.name).toBe('t3');
-        //    expect(t3.type).toBe('html');
-        //    expect(t3.subtype).toBe('p');
-        //    expect(t3.parent).toBe(t1);
+            expect(t3.name).toBe('t3');
+            expect(t3.type).toBe('html');
+            expect(t3.subtype).toBe('p');
+            expect(t3.parent).toBe(t1);
 
-        //    runs(() => {
-        //        t3.rows.subscribe(res => actual = res, err => hasErr = err, () => done = true);
-        //    });            
+            runs(() => {
+                t3.rows.subscribe(res => actual = res, err => hasErr = err, () => done = true);
+            });
 
-        //    waitsFor(() => done || hasErr, 't3.rows did not complete.', 20);
+            waitsFor(() => done || hasErr, 't3.rows did not complete.', 20);
 
-        //    runs(() => {
-        //        expect(t3.state).toBe(ut.uvis.TemplateState.READY);
-        //        expect(actual).toBe(t3.name);
-        //        expect(hasErr).toBeUndefined();
-        //    });
-        //});
+            runs(() => {
+                expect(t3.state).toBe(ut.uvis.TemplateState.READY);
+                expect(actual).toBe(t3.name);
+                expect(hasErr).toBeUndefined();
+            });
+        });
 
-        //it('Should correctly extract rowCount', () => {
-        //    var done, hasErr, actual;
-        //    var t1 = new ut.uvis.Template('t1', 'html#div');
-        //    var t2 = new ut.uvis.Template('t2', 'html#p', t1, () => Rx.Observable.returnValue(42));
+        it('Should correctly extract rowCount', () => {
+            var done, hasErr, actual;
+            var t1 = new ut.uvis.Template('t1', 'html#div');
+            var t2 = new ut.uvis.Template('t2', 'html#p', t1, () => Rx.Observable.returnValue(42));
 
-        //    runs(() => {
-        //        t2.rowCount.subscribe(res => actual = res, err => hasErr = err, () => done = true);
-        //    });
+            runs(() => {
+                t2.rowCount.subscribe(res => actual = res, err => hasErr = err, () => done = true);
+            });
 
-        //    waitsFor(() => done || hasErr, 't2.rowCount did not complete.', 20);
+            waitsFor(() => done || hasErr, 't2.rowCount did not complete.', 20);
 
-        //    runs(() => {
-        //        expect(t2.state).toBe(ut.uvis.TemplateState.READY);
-        //        expect(actual).toBe(42);
-        //        expect(hasErr).toBeUndefined();
-        //    });
-        //});
+            runs(() => {
+                expect(t2.state).toBe(ut.uvis.TemplateState.READY);
+                expect(actual).toBe(42);
+                expect(hasErr).toBeUndefined();
+            });
+        });
 
-        ////#region State
+        //#region State
 
-        //describe('State', () => {
-        //    it('Should be INACTIVE after instantiation when rowFactory is present on template or parent template', () => {
-        //        var t1 = new ut.uvis.Template('t1', 'html#div', undefined, () => Rx.Observable.empty());
-        //        var t2 = new ut.uvis.Template('t2', 'html#div', t1, () => Rx.Observable.empty());
-        //        var t3 = new ut.uvis.Template('t3', 'html#div', t2);
-        //        expect(t1.state).toBe(ut.uvis.TemplateState.INACTIVE);
-        //        expect(t2.state).toBe(ut.uvis.TemplateState.INACTIVE);
-        //        expect(t3.state).toBe(ut.uvis.TemplateState.INACTIVE);
-        //    });
+        describe('State', () => {
+            it('Should be INACTIVE after instantiation when rowFactory is present on template or parent template', () => {
+                var t1 = new ut.uvis.Template('t1', 'html#div', undefined, () => Rx.Observable.empty());
+                var t2 = new ut.uvis.Template('t2', 'html#div', t1, () => Rx.Observable.empty());
+                var t3 = new ut.uvis.Template('t3', 'html#div', t2);
+                expect(t1.state).toBe(ut.uvis.TemplateState.INACTIVE);
+                expect(t2.state).toBe(ut.uvis.TemplateState.INACTIVE);
+                expect(t3.state).toBe(ut.uvis.TemplateState.INACTIVE);
+            });
 
-        //    it('Should be READY when row is ready to be subscribed to', () => {
-        //        var done, hasErr, actual;
-        //        var t1 = new ut.uvis.Template('t1', 'html#div');
-        //        var t2 = new ut.uvis.Template('t2', 'html#div', t1, () => Rx.Observable.empty());
-        //        var t3 = new ut.uvis.Template('t3', 'html#div', t2);
+            it('Should be READY when row is ready to be subscribed to', () => {
+                var done, hasErr, actual;
+                var t1 = new ut.uvis.Template('t1', 'html#div');
+                var t2 = new ut.uvis.Template('t2', 'html#div', t1, () => Rx.Observable.empty());
+                var t3 = new ut.uvis.Template('t3', 'html#div', t2);
 
-        //        // Switches to ready right away because it has default row via constructor
-        //        expect(t1.state).toBe(ut.uvis.TemplateState.READY);
+                // Switches to ready right away because it has default row via constructor
+                expect(t1.state).toBe(ut.uvis.TemplateState.READY);
 
-        //        runs(() => {
-        //            t2.rows.subscribe(res => actual = res, err => hasErr = err, () => done = true);
-        //        });
+                runs(() => {
+                    t2.rows.subscribe(res => actual = res, err => hasErr = err, () => done = true);
+                });
 
-        //        waitsFor(() => done || hasErr, 't2.rows did get rows observable.', 20);
+                waitsFor(() => done || hasErr, 't2.rows did get rows observable.', 20);
 
-        //        runs(() => {
-        //            expect(t2.state).toBe(ut.uvis.TemplateState.READY);
-        //            expect(t3.state).toBe(ut.uvis.TemplateState.READY);
-        //            expect(hasErr).toBeUndefined();
-        //        });
-        //    });
+                runs(() => {
+                    expect(t2.state).toBe(ut.uvis.TemplateState.READY);
+                    expect(t3.state).toBe(ut.uvis.TemplateState.READY);
+                    expect(hasErr).toBeUndefined();
+                });
+            });
 
-        //    it('Should be ACTIVE when one or more component has been produced', () => {
-        //        var done1, hasErr1, actual1 = [];
-        //        var done2, hasErr2, actual2 = [];
-        //        var done3, hasErr3, actual3 = [];
-        //        var rows = new Rx.Subject();
-        //        var t1 = new ut.uvis.Template('t1', 'html#div', undefined, () => rows);
-        //        var t2 = new ut.uvis.Template('t2', 'html#div', t1, () => rows);
-        //        var t3 = new ut.uvis.Template('t3', 'html#div', t2);
+            it('Should be ACTIVE when one or more component has been produced', () => {
+                var done1, hasErr1, actual1 = [];
+                var done2, hasErr2, actual2 = [];
+                var done3, hasErr3, actual3 = [];
+                var rows = new Rx.Subject();
+                var t1 = new ut.uvis.Template('t1', 'html#div', undefined, () => rows);
+                var t2 = new ut.uvis.Template('t2', 'html#div', t1, () => rows);
+                var t3 = new ut.uvis.Template('t3', 'html#div', t2);
 
-        //        runs(() => {
-        //            t1.components.subscribe(c => actual1.push(c), err => hasErr1 = err, () => done1 = true);
-        //            t2.components.subscribe(c => actual2.push(c), err => hasErr2 = err, () => done2 = true);
-        //            t3.components.subscribe(c => actual3.push(c), err => hasErr3 = err, () => done3 = true);
-        //            rows.onNext(1);
-        //        });
+                runs(() => {
+                    t1.components.subscribe(c => actual1.push(c), err => hasErr1 = err, () => done1 = true);
+                    t2.components.subscribe(c => actual2.push(c), err => hasErr2 = err, () => done2 = true);
+                    t3.components.subscribe(c => actual3.push(c), err => hasErr3 = err, () => done3 = true);
+                    rows.onNext(1);
+                });
 
-        //        waitsFor(() => t1.state === ut.uvis.TemplateState.ACTIVE || hasErr1, 't1 did not go active.', 20);
-        //        waitsFor(() => t2.state === ut.uvis.TemplateState.ACTIVE || hasErr2, 't2 did not go active.', 20);
-        //        waitsFor(() => t3.state === ut.uvis.TemplateState.ACTIVE || hasErr3, 't3 did not go active.', 20);
+                waitsFor(() => t1.state === ut.uvis.TemplateState.ACTIVE || hasErr1, 't1 did not go active.', 20);
+                waitsFor(() => t2.state === ut.uvis.TemplateState.ACTIVE || hasErr2, 't2 did not go active.', 20);
+                waitsFor(() => t3.state === ut.uvis.TemplateState.ACTIVE || hasErr3, 't3 did not go active.', 20);
 
-        //        runs(() => {
-        //            expect(hasErr1 || hasErr2 || hasErr3).toBeUndefined();
-        //        });
-        //    });
+                runs(() => {
+                    expect(hasErr1 || hasErr2 || hasErr3).toBeUndefined();
+                });
+            });
 
-        //    it('Should stay ACTIVE as long as a parent template (any template higher in the tree) is not completed', () => {
-        //        var done1, hasErr1, actual1 = [];
-        //        var done2, hasErr2, actual2 = [];
-        //        var done3, hasErr3, actual3 = [];
-        //        var rows = new Rx.Subject();
-        //        var t1 = new ut.uvis.Template('t1', 'html#div', undefined, () => rows);
-        //        var t2 = new ut.uvis.Template('t2', 'html#div', t1, () => Rx.Observable.returnValue(1));
-        //        var t3 = new ut.uvis.Template('t3', 'html#div', t2);
+            it('Should stay ACTIVE as long as a parent template (any template higher in the tree) is not completed', () => {
+                var done1, hasErr1, actual1 = [];
+                var done2, hasErr2, actual2 = [];
+                var done3, hasErr3, actual3 = [];
+                var rows = new Rx.Subject();
+                var t1 = new ut.uvis.Template('t1', 'html#div', undefined, () => rows);
+                var t2 = new ut.uvis.Template('t2', 'html#div', t1, () => Rx.Observable.returnValue(1));
+                var t3 = new ut.uvis.Template('t3', 'html#div', t2);
 
-        //        runs(() => {
-        //            t1.components.subscribe(c => actual1.push(c), err => hasErr1 = err, () => done1 = true);
-        //            t2.components.subscribe(c => actual2.push(c), err => hasErr2 = err, () => done2 = true);
-        //            t3.components.subscribe(c => actual3.push(c), err => hasErr3 = err, () => done3 = true);
-        //            rows.onNext(1);
-        //        });
+                runs(() => {
+                    t1.components.subscribe(c => actual1.push(c), err => hasErr1 = err, () => done1 = true);
+                    t2.components.subscribe(c => actual2.push(c), err => hasErr2 = err, () => done2 = true);
+                    t3.components.subscribe(c => actual3.push(c), err => hasErr3 = err, () => done3 = true);
+                    rows.onNext(1);
+                });
 
-        //        waitsFor(() => t1.state === ut.uvis.TemplateState.ACTIVE || hasErr1, 't1 did not be active.', 20);
-        //        waitsFor(() => t2.state === ut.uvis.TemplateState.ACTIVE || hasErr2, 't2 did not be active.', 20);
-        //        waitsFor(() => t3.state === ut.uvis.TemplateState.ACTIVE || hasErr3, 't3 did not be active.', 20);
+                waitsFor(() => t1.state === ut.uvis.TemplateState.ACTIVE || hasErr1, 't1 did not be active.', 20);
+                waitsFor(() => t2.state === ut.uvis.TemplateState.ACTIVE || hasErr2, 't2 did not be active.', 20);
+                waitsFor(() => t3.state === ut.uvis.TemplateState.ACTIVE || hasErr3, 't3 did not be active.', 20);
 
-        //        runs(() => {
-        //            expect(hasErr1 || hasErr2 || hasErr3).toBeUndefined();
-        //        });
-        //    });
+                runs(() => {
+                    expect(hasErr1 || hasErr2 || hasErr3).toBeUndefined();
+                });
+            });
 
-        //    it('Should be COMPLETED when it and all of its parents are completed', () => {
-        //        var done1, hasErr1, actual1 = [];
-        //        var done2, hasErr2, actual2 = [];
-        //        var done3, hasErr3, actual3 = [];
-        //        var t1 = new ut.uvis.Template('t1', 'html#div');
-        //        var t2 = new ut.uvis.Template('t2', 'html#div', t1);
-        //        var t3 = new ut.uvis.Template('t3', 'html#div', t2);
+            it('Should be COMPLETED when it and all of its parents are completed', () => {
+                var done1, hasErr1, actual1 = [];
+                var done2, hasErr2, actual2 = [];
+                var done3, hasErr3, actual3 = [];
+                var t1 = new ut.uvis.Template('t1', 'html#div');
+                var t2 = new ut.uvis.Template('t2', 'html#div', t1);
+                var t3 = new ut.uvis.Template('t3', 'html#div', t2);
 
-        //        runs(() => {
-        //            t1.components.subscribe(c => actual1.push(c), err => hasErr1 = err, () => done1 = true);
-        //            t2.components.subscribe(c => actual2.push(c), err => hasErr2 = err, () => done2 = true);
-        //            t3.components.subscribe(c => actual3.push(c), err => hasErr3 = err, () => done3 = true);
-        //        });
+                runs(() => {
+                    t1.components.subscribe(c => actual1.push(c), err => hasErr1 = err, () => done1 = true);
+                    t2.components.subscribe(c => actual2.push(c), err => hasErr2 = err, () => done2 = true);
+                    t3.components.subscribe(c => actual3.push(c), err => hasErr3 = err, () => done3 = true);
+                });
 
-        //        waitsFor(() => t1.state === ut.uvis.TemplateState.COMPLETED || hasErr1, 't1 did not complete.', 20);
-        //        waitsFor(() => t2.state === ut.uvis.TemplateState.COMPLETED || hasErr2, 't2 did not complete.', 20);
-        //        waitsFor(() => t3.state === ut.uvis.TemplateState.COMPLETED || hasErr3, 't3 did not complete.', 20);
+                waitsFor(() => t1.state === ut.uvis.TemplateState.COMPLETED || hasErr1, 't1 did not complete.', 20);
+                waitsFor(() => t2.state === ut.uvis.TemplateState.COMPLETED || hasErr2, 't2 did not complete.', 20);
+                waitsFor(() => t3.state === ut.uvis.TemplateState.COMPLETED || hasErr3, 't3 did not complete.', 20);
 
-        //        runs(() => {
-        //            expect(hasErr1 || hasErr2 || hasErr3).toBeUndefined();
-        //        });
-        //    });
+                runs(() => {
+                    expect(hasErr1 || hasErr2 || hasErr3).toBeUndefined();
+                });
+            });
 
-        //    it('Should be DISPOSED when it disposed directly or by a parent', () => {
-        //        var done1, hasErr1, actual1 = [];
-        //        var done2, hasErr2, actual2 = [];
-        //        var done3, hasErr3, actual3 = [];
-        //        var t1 = new ut.uvis.Template('t1', 'html#div');
-        //        var t2 = new ut.uvis.Template('t2', 'html#div', t1);
-        //        var t3 = new ut.uvis.Template('t3', 'html#div', t2);
+            it('Should be DISPOSED when it disposed directly or by a parent', () => {
+                var done1, hasErr1, actual1 = [];
+                var done2, hasErr2, actual2 = [];
+                var done3, hasErr3, actual3 = [];
+                var t1 = new ut.uvis.Template('t1', 'html#div');
+                var t2 = new ut.uvis.Template('t2', 'html#div', t1);
+                var t3 = new ut.uvis.Template('t3', 'html#div', t2);
 
-        //        runs(() => {
-        //            t1.components.subscribe(c => actual1.push(c), err => hasErr1 = err, () => done1 = true);
-        //            t2.components.subscribe(c => actual2.push(c), err => hasErr2 = err, () => done2 = true);
-        //            t3.components.subscribe(c => actual3.push(c), err => hasErr3 = err, () => done3 = true);
-        //        });
+                runs(() => {
+                    t1.components.subscribe(c => actual1.push(c), err => hasErr1 = err, () => done1 = true);
+                    t2.components.subscribe(c => actual2.push(c), err => hasErr2 = err, () => done2 = true);
+                    t3.components.subscribe(c => actual3.push(c), err => hasErr3 = err, () => done3 = true);
+                });
 
-        //        waitsFor(() => t1.state === ut.uvis.TemplateState.COMPLETED || hasErr1, 't1 did not complete.', 20);
-        //        waitsFor(() => t2.state === ut.uvis.TemplateState.COMPLETED || hasErr2, 't2 did not complete.', 20);
-        //        waitsFor(() => t3.state === ut.uvis.TemplateState.COMPLETED || hasErr3, 't3 did not complete.', 20);
+                waitsFor(() => t1.state === ut.uvis.TemplateState.COMPLETED || hasErr1, 't1 did not complete.', 20);
+                waitsFor(() => t2.state === ut.uvis.TemplateState.COMPLETED || hasErr2, 't2 did not complete.', 20);
+                waitsFor(() => t3.state === ut.uvis.TemplateState.COMPLETED || hasErr3, 't3 did not complete.', 20);
 
-        //        runs(() => {
-        //            expect(hasErr1 || hasErr2 || hasErr3).toBeUndefined();
-        //            t1.dispose();
-        //            expect(t1.state).toBe(ut.uvis.TemplateState.DISPOSED);
-        //            expect(t2.state).toBe(ut.uvis.TemplateState.DISPOSED);
-        //            expect(t3.state).toBe(ut.uvis.TemplateState.DISPOSED);
-        //        });
-        //    });
+                runs(() => {
+                    expect(hasErr1 || hasErr2 || hasErr3).toBeUndefined();
+                    t1.dispose();
+                    expect(t1.state).toBe(ut.uvis.TemplateState.DISPOSED);
+                    expect(t2.state).toBe(ut.uvis.TemplateState.DISPOSED);
+                    expect(t3.state).toBe(ut.uvis.TemplateState.DISPOSED);
+                });
+            });
 
-        //});
+        });
 
-        ////#endregion State
+        //#endregion State
 
         //#region Cross dependency
 
@@ -267,12 +267,14 @@ export module uvis.spec {
                 });
             });
 
+            
+
             it('Should be possible for a template to depend on multiple other template\'s components', () => {
                 var donea, hasErra, actuala = [], doneb, hasErrb, actualb = [], donec, hasErrc, actualc = [], doned, hasErrd, actuald = [], donee, hasErre, actuale = [];
                 var a = new ut.uvis.Template('a', 'html#div');
                 var b = new ut.uvis.Template('b', 'html#div', a, (t?) => {
-                        var d0text = t.getTree().get('c').get('d').property('text');
-                        var e2text = t.getTree().get('c').get('e', 2).property('text');
+                    var d0text = t.getTree().get('c').get('d').property('text');
+                    var e2text = t.getTree().get('c').get('e', 2).property('text');
                         return d0text.combineLatest(e2text, (d0, e2) => d0 + e2)
                 });
                 var c = new ut.uvis.Template('c', 'html#div', a);
@@ -299,7 +301,7 @@ export module uvis.spec {
                     eRows.onNext(3);
                     eTextProp.onNext(2);
                 });
-                
+
                 waitsFor(() => a.state === ut.uvis.TemplateState.COMPLETED || hasErra, 'a did not complete.', 20);
                 waitsFor(() => b.state === ut.uvis.TemplateState.ACTIVE || hasErrb, 'b did go active.', 20);
                 waitsFor(() => c.state === ut.uvis.TemplateState.COMPLETED || hasErrc, 'c did not complete.', 20);
@@ -313,7 +315,7 @@ export module uvis.spec {
                     expect(actualc.length).toBe(1);
                     expect(actuald.length).toBe(1);
                     expect(actuale.length).toBe(3);
-                    
+
                     eTextProp.onNext(13);
                 });
 
@@ -330,7 +332,7 @@ export module uvis.spec {
                 runs(() => {
                     expect(hasErra || hasErrb || hasErrc || hasErrd || hasErre).toBeUndefined();
                 });
-            });
+            });            
 
             it('Should be possible for a two template to depend on another template\'s components at the same time', () => {
                 var donea, hasErra, actuala = [], doneb, hasErrb, actualb = [], donec, hasErrc, actualc = [], doned, hasErrd, actuald = [], donee, hasErre, actuale = [];
@@ -379,6 +381,8 @@ export module uvis.spec {
                 });
             });
 
+
+
             it('Should detect cyclic dependency between templates', () => {
                 var donea, hasErra, actuala = [], doneb, hasErrb, actualb = [], donec, hasErrc, actualc = [], doned, hasErrd, actuald = [];
                 var a = new ut.uvis.Template('a', 'html#div');
@@ -412,17 +416,399 @@ export module uvis.spec {
                     expect(hasErra || hasErrc).toBeUndefined();
                 });
             });
+
+            describe('Tracked dependencies', () => {
+
+                it('Should be possible for a template to depend on another template\'s components (tracked)', () => {
+                    var donea, hasErra, actuala = [], doneb, hasErrb, actualb = [], donec, hasErrc, actualc = [], doned, hasErrd, actuald = [];
+                    var rowsc = new Rx.Subject();
+                    var rowsd = new Rx.Subject();
+                    var a = new ut.uvis.Template('a', 'html#div');
+                    var b = new ut.uvis.Template('b', 'html#div', a, (t?) => {
+                        //var res = t.getTree().get('c').get('d').property('text');
+                        var rh1;
+                        var res = t.getTree()
+                            .select(comp => {
+                                rh1 = ['b', 'a', 'c'];
+                                t.activeRequests.push(rh1);
+                                return comp.getTracked({
+                                    current: { bundle: 'c' },
+                                    history: ['b', 'a']
+                                });
+                            }).switchLatest().select((info: uc.uvis.RequestInfo) => {
+                                var comp = info.current.component;
+                                info.history.push(info.current.bundle);
+                                rh1.push('d');
+                                info.current = { bundle: 'd' };
+                                return comp.getTracked(info);
+                            }).switchLatest().select((info: uc.uvis.RequestInfo) => {
+                                var comp = info.current.component;
+                                info.history.push(info.current.bundle);
+                                console.log(rh1);
+                                rh1 = [];
+                                t.activeRequests.splice(t.activeRequests.indexOf(rh1), 1);
+                                //console.log(info);
+                                return comp.property('text');
+                            }).switchLatest();
+
+                        return res;
+                    });
+                    var c = new ut.uvis.Template('c', 'html#div', a, () => rowsc);
+                    var d = new ut.uvis.Template('d', 'html#div', c, () => rowsd);
+
+                    // Add property to d
+                    d.properties.add('text', new pt.uvis.ComputedTemplateProperty('text', (c) => {
+                        return Rx.Observable.returnValue(5);
+                    }));
+
+                    runs(() => {
+                        a.components.subscribe(c => actuala.push(c), err => hasErra = err, () => donea = true);
+                        b.components.subscribe(c => actualb.push(c), err => hasErrb = err, () => doneb = true);
+                        c.components.subscribe(c => actualc.push(c), err => hasErrc = err, () => donec = true);
+                        d.components.subscribe(c => actuald.push(c), err => hasErrd = err, () => doned = true);
+
+                        rowsc.onNext(1);
+                        rowsd.onNext(1);
+                    });
+
+                    waitsFor(() => a.state === ut.uvis.TemplateState.COMPLETED || hasErra, 'a did not complete.', 20);
+                    waitsFor(() => b.state === ut.uvis.TemplateState.ACTIVE || hasErrb, 'b did not complete.', 20);
+                    waitsFor(() => c.state === ut.uvis.TemplateState.ACTIVE || hasErrc, 'c did not complete.', 20);
+                    waitsFor(() => d.state === ut.uvis.TemplateState.ACTIVE || hasErrd, 'd did not complete.', 20);
+
+                    runs(() => {
+                        expect(hasErra || hasErrb || hasErrc || hasErrd).toBeUndefined();
+                        expect(actuala.length).toBe(1);
+                        expect(actualb.length).toBe(5);
+                        expect(actualc.length).toBe(1);
+                        expect(actuald.length).toBe(1);
+                    });
+                });
+
+                it('Should be possible for a template to depend on multiple other template\'s components (tracked)', () => {
+                    var donea, hasErra, actuala = [], doneb, hasErrb, actualb = [], donec, hasErrc, actualc = [], doned, hasErrd, actuald = [], donee, hasErre, actuale = [];
+                    var a = new ut.uvis.Template('a', 'html#div');
+                    var b = new ut.uvis.Template('b', 'html#div', a, (t?) => {
+                        //var d0text = t.getTree().get('c').get('d').property('text');
+                        var rh1;
+                        var d0text = t.getTree()
+                            .select(comp => {
+                                rh1 = ['b', 'a', 'c'];
+                                t.activeRequests.push(rh1);
+                                return comp.getTracked({
+                                    current: { bundle: 'c' },
+                                    history: ['b', 'a']
+                                });
+                            }).switchLatest().select((info: uc.uvis.RequestInfo) => {
+                                var comp = info.current.component;
+                                info.history.push(info.current.bundle);
+                                rh1.push('d');
+                                info.current = { bundle: 'd' };
+                                return comp.getTracked(info);
+                            }).switchLatest().select((info: uc.uvis.RequestInfo) => {
+                                var comp = info.current.component;
+                                info.history.push(info.current.bundle);
+                                console.log(rh1);
+                                rh1 = [];
+                                t.activeRequests.splice(t.activeRequests.indexOf(rh1), 1);
+                                //console.log(info);
+                                return comp.property('text');
+                            }).switchLatest();
+                        
+                        var rh2;
+                        //var e2text = t.getTree().get('c').get('e', 2).property('text');
+                        var e2text = t.getTree()
+                            .select(comp => {
+                                rh2 = ['b', 'a', 'c'];
+                                t.activeRequests.push(rh2);
+                                return comp.getTracked({
+                                    current: { bundle: 'c' },
+                                    history: ['b', 'a']
+                                });
+                            }).switchLatest().select((info) => {
+                                var comp = info.current.component;
+                                info.history.push(info.current.bundle);
+                                rh2.push('e');
+                                info.current = { bundle: 'e', index: 2 };
+                                return comp.getTracked(info);
+                            }).switchLatest().select((info: uc.uvis.RequestInfo) => {
+                                var comp = info.current.component;
+                                info.history.push(info.current.bundle);
+                                console.log(rh2);
+                                rh2 = [];
+                                t.activeRequests.splice(t.activeRequests.indexOf(rh2), 1);
+                                //console.log(info);
+                                return comp.property('text');
+                            }).switchLatest();
+
+                        return d0text.combineLatest(e2text, (d0, e2) => {
+                            return d0 + e2;
+                        });
+                    });
+                    var cRows = new Rx.Subject();
+                    var c = new ut.uvis.Template('c', 'html#div', a, () => cRows);
+                    var d = new ut.uvis.Template('d', 'html#div', c);
+                    var eRows = new Rx.Subject();
+                    var e = new ut.uvis.Template('e', 'html#div', c, () => eRows);
+
+                    // Add property to d
+                    d.properties.add('text', new pt.uvis.ComputedTemplateProperty('text', (c) => {
+                        return Rx.Observable.returnValue(1);
+                    }));
+
+                    // Add property to e
+                    var eTextProp = new Rx.ReplaySubject(1);
+                    e.properties.add('text', new pt.uvis.ComputedTemplateProperty('text', (c) => eTextProp));
+
+                    runs(() => {
+                        a.components.subscribe(c => actuala.push(c), err => hasErra = err, () => donea = true);
+                        b.components.subscribe(c => actualb.push(c), err => hasErrb = err, () => doneb = true);
+                        c.components.subscribe(c => actualc.push(c), err => hasErrc = err, () => donec = true);
+                        d.components.subscribe(c => actuald.push(c), err => hasErrd = err, () => doned = true);
+                        e.components.subscribe(c => actuale.push(c), err => hasErre = err, () => donee = true);
+
+                        eRows.onNext(3);
+                        eTextProp.onNext(2);
+                        cRows.onNext(1);
+                    });
+
+                    waitsFor(() => a.state === ut.uvis.TemplateState.COMPLETED || hasErra, 'a did not complete.', 20);
+                    waitsFor(() => c.state === ut.uvis.TemplateState.ACTIVE || hasErrc, 'c did go active.', 20);
+                    waitsFor(() => d.state === ut.uvis.TemplateState.ACTIVE|| hasErrd, 'd did not complete.', 20);                   
+                    waitsFor(() => b.state === ut.uvis.TemplateState.ACTIVE || hasErrb, 'b did go active.', 20);
+                    waitsFor(() => e.state === ut.uvis.TemplateState.ACTIVE || hasErrb, 'e did go active.', 20);
+
+                    runs(() => {
+                        expect(hasErra || hasErrb || hasErrc || hasErrd || hasErre).toBeUndefined();
+                        expect(actuala.length).toBe(1);
+                        expect(actualb.length).toBe(3);
+                        expect(actualc.length).toBe(1);
+                        expect(actuald.length).toBe(1);
+                        expect(actuale.length).toBe(3);
+
+                        eTextProp.onNext(13);
+                    });
+
+                    waitsFor(() => b.existingComponents.length === 14 || hasErrb, 'b did not create 14 components.', 20);
+
+                    runs(() => {
+                        eTextProp.onCompleted();
+                        eRows.onCompleted();
+                        cRows.onCompleted();
+                    });
+
+                    waitsFor(() => b.state === ut.uvis.TemplateState.COMPLETED || hasErrb, 'b did not complete.', 20);
+                    waitsFor(() => e.state === ut.uvis.TemplateState.COMPLETED || hasErrb, 'e did not complete.', 20);
+
+                    runs(() => {
+                        expect(hasErra || hasErrb || hasErrc || hasErrd || hasErre).toBeUndefined();
+                    });
+                });
+
+                it('Should be possible for a two template to depend on another template\'s components at the same time (tracked)', () => {
+                    var donea, hasErra, actuala = [], doneb, hasErrb, actualb = [], donec, hasErrc, actualc = [], doned, hasErrd, actuald = [], donee, hasErre, actuale = [];
+                    var rowsd = new Rx.Subject();
+                    var rowse = new Rx.Subject();
+                    var a = new ut.uvis.Template('a', 'html#div');
+                    var b = new ut.uvis.Template('b', 'html#div', a, (t?) => {
+                        //var res = t.getTree().get('c').get('d').property('text'));
+                        var rh1;
+                        var res = t.getTree()
+                            .select(comp => {
+                                rh1 = ['b', 'a', 'c'];
+                                t.activeRequests.push(rh1);
+                                return comp.getTracked({
+                                    current: { bundle: 'c' },
+                                    history: ['b', 'a']
+                                });
+                            }).switchLatest().select((info: uc.uvis.RequestInfo) => {
+                                var comp = info.current.component;
+                                info.history.push(info.current.bundle);                                
+                                info.current = { bundle: 'd' };
+                                rh1.push('d');
+                                return comp.getTracked(info);
+                            }).switchLatest().select((info: uc.uvis.RequestInfo) => {
+                                var comp = info.current.component;
+                                info.history.push(info.current.bundle);
+                                console.log(rh1);
+                                rh1 = [];
+                                t.activeRequests.splice(t.activeRequests.indexOf(rh1), 1);
+                                //console.log(info);
+                                return comp.property('text');
+                            }).switchLatest();
+
+                        return res;
+                    });
+                    var c = new ut.uvis.Template('c', 'html#div', a, (t?) => {
+                        //var res = t.getTree().get('e').property('text'));
+                        var rh1;
+                        var res = t.getTree()
+                            .select(comp => {
+                                rh1 = ['c', 'a', 'e'];
+                                t.activeRequests.push(rh1);
+                                return comp.getTracked({
+                                    current: { bundle: 'e' },
+                                    history: ['c', 'a']
+                                });
+                            }).switchLatest().select((info: uc.uvis.RequestInfo) => {
+                                var comp = info.current.component;
+                                info.history.push(info.current.bundle);                                
+                                console.log(rh1);
+                                rh1 = [];
+                                t.activeRequests.splice(t.activeRequests.indexOf(rh1), 1);
+                                //console.log(info);                                
+                                return comp.property('text');
+                            }).switchLatest();
+
+                        return res;
+                    });
+                    var d = new ut.uvis.Template('d', 'html#div', c, () => rowsd);
+                    var e = new ut.uvis.Template('e', 'html#div', a, () => rowsd);
+
+                    // Add property to d
+                    d.properties.add('text', new pt.uvis.ComputedTemplateProperty('text', (c) => {
+                        return Rx.Observable.returnValue(5);
+                    }));
+
+                    // Add property to e
+                    e.properties.add('text', new pt.uvis.ComputedTemplateProperty('text', (c) => {
+                        return Rx.Observable.returnValue(5);
+                    }));
+
+                    runs(() => {
+                        a.components.subscribe(c => actuala.push(c), err => hasErra = err, () => donea = true);
+                        b.components.subscribe(c => actualb.push(c), err => hasErrb = err, () => doneb = true);
+                        c.components.subscribe(c => actualc.push(c), err => hasErrc = err, () => donec = true);
+                        d.components.subscribe(c => actuald.push(c), err => hasErrd = err, () => doned = true);
+                        e.components.subscribe(c => actuale.push(c), err => hasErre = err, () => donee = true);
+
+                        rowsd.onNext(1);
+                        rowse.onNext(1);
+                    });
+
+                    waitsFor(() => a.state === ut.uvis.TemplateState.COMPLETED || hasErra, 'a did not complete.', 20);
+                    waitsFor(() => b.state === ut.uvis.TemplateState.ACTIVE || hasErrb, 'b did not complete.', 20);
+                    waitsFor(() => c.state === ut.uvis.TemplateState.ACTIVE || hasErrc, 'c did not complete.', 20);
+                    waitsFor(() => d.state === ut.uvis.TemplateState.ACTIVE || hasErrd, 'd did not complete.', 20);
+                    waitsFor(() => e.state === ut.uvis.TemplateState.ACTIVE || hasErrd, 'e did not complete.', 20);
+
+                    runs(() => {
+                        expect(hasErra || hasErrb || hasErrc || hasErrd).toBeUndefined();
+                        expect(actuala.length).toBe(1);
+                        expect(actualb.length).toBe(5);
+                        expect(actualc.length).toBe(5);
+                        expect(actuald.length).toBe(5);
+                        expect(actuale.length).toBe(1);
+                    });
+                });
+
+                it('Should detect cyclic dependency between templates (tracked)', () => {
+                    var donea, hasErra, actuala = [], doneb, hasErrb, actualb = [], donec, hasErrc, actualc = [], doned, hasErrd, actuald = [];
+                    var a = new ut.uvis.Template('a', 'html#div');
+                    var b = new ut.uvis.Template('b', 'html#div', a, (t?) => {
+                        //, (t?) => t.getTree().get('c').get('d').property('text'));
+                        var rh1;
+                        var res = t.getTree()
+                            .select(comp => {
+                                rh1 = ['b', 'a', 'c'];
+                                t.activeRequests.push(rh1);
+                                return comp.getTracked({
+                                    current: { bundle: 'c' },
+                                    history: ['b', 'a']
+                                });
+                            }).switchLatest().select((info: uc.uvis.RequestInfo) => {
+                                var comp = info.current.component;
+                                info.history.push(info.current.bundle);
+                                rh1.push('d');
+                                info.current = { bundle: 'd' };
+                                return comp.getTracked(info);
+                            }).switchLatest().select((info: uc.uvis.RequestInfo) => {
+                                var comp = info.current.component;
+                                info.history.push(info.current.bundle);
+                                console.log(rh1);
+                                rh1 = [];
+                                t.activeRequests.splice(t.activeRequests.indexOf(rh1), 1);
+                                //console.log(info);
+                                return comp.property('text');
+                            }).switchLatest();
+
+                        return res;
+                    });
+                    var c = new ut.uvis.Template('c', 'html#div', a);
+                    var d = new ut.uvis.Template('d', 'html#div', c, (t?) => {
+                        //, (t?) => t.getTree().get('b').property('text'));
+                        var rh1;
+                        var res = t.getTree()
+                            .select(comp => {
+                                rh1 = ['d', 'a', 'b'];
+                                t.activeRequests.push(rh1);
+                                return comp.getTracked({
+                                    current: { bundle: 'b' },
+                                    history: ['d', 'a']
+                                });
+                            }).switchLatest().select((info: uc.uvis.RequestInfo) => {
+                                var comp = info.current.component;
+                                info.history.push(info.current.bundle);
+                                console.log(rh1);
+                                rh1 = [];
+                                t.activeRequests.splice(t.activeRequests.indexOf(rh1), 1);
+                                //console.log(info);
+                                return comp.property('text');
+                            }).switchLatest();
+
+                        return res;
+                    });
+
+                    // Add property to b
+                    b.properties.add('text', new pt.uvis.ComputedTemplateProperty('text', (c) => {
+                        return Rx.Observable.returnValue(1337);
+                    }));
+
+                    // Add property to d
+                    d.properties.add('text', new pt.uvis.ComputedTemplateProperty('text', (c) => {
+                        return Rx.Observable.returnValue(1337);
+                    }));
+
+                    runs(() => {
+                        a.components.subscribe(c => actuala.push(c), err => hasErra = err, () => donea = true);
+                        b.components.subscribe(c => actualb.push(c), err => hasErrb = err, () => doneb = true);
+                        c.components.subscribe(c => actualc.push(c), err => hasErrc = err, () => donec = true);
+                        d.components.subscribe(c => actuald.push(c), err => hasErrd = err, () => doned = true);
+                    });
+
+                    waitsFor(() => a.state === ut.uvis.TemplateState.COMPLETED || hasErra, 'a did not complete.', 20);
+                    waitsFor(() => hasErrb || hasErrd, 'b/d did not complete.', 20);
+                    waitsFor(() => c.state === ut.uvis.TemplateState.COMPLETED || hasErrc, 'c did not complete.', 20);
+                    //waitsFor(() => hasErrd, 'd did not complete.', 20);
+
+                    runs(() => {
+                        expect(hasErra || hasErrc).toBeUndefined();
+                        expect(hasErrb).toBe('Cyclic dependency between template "d" and "b"');
+                        expect(hasErrd).toBe('Cyclic dependency between template "b" and "d"');
+                    });
+                });
+            });
         });
-    
+
         //#endregion Cross dependency
+
+        //#region Instance Data Tree generation
+
+        describe('Instance data tree', () => {
+
+        
+        });
+
+        //#endregion Instance Data Tree generation
+
 
         //it('should create a single component if ctor is missing parent and rows', () => {
         //    var t1 = new ut.uvis.Template('t1', 'html');
-    
+
         //    runs(() => { t1.initialize(); });
 
         //    waitsFor(() => t1.state === ut.uvis.TemplateState.COMPLETED, 'T1 did not complete.', 20);
-    
+
         //    runs(() => { expect(t1.existingComponents.length).toBe(1); });
         //});
 
@@ -636,7 +1022,7 @@ export module uvis.spec {
         //                rows.onNext([{}, {}, {}]);
 
         //            });
-    
+
         //            waitsFor(() => t1.existingComponents.length === 3, 'T1 did not create 3 components', 20);
 
         //            runs(() => {
@@ -909,7 +1295,7 @@ export module uvis.spec {
         //            d.properties.add('text', new pt.uvis.ComputedTemplateProperty('text', (c) => {
         //                return Rx.Observable.returnValue(c.index);
         //            }));
-    
+
         //            runs(() => {
         //                sube(b.components, (err) => {
         //                    errorMessage = err;
@@ -979,7 +1365,7 @@ export module uvis.spec {
         //            //return Rx.Observable.returnValue('My index is ' + c.index);
         //            return c.property('row').select(n => 'Data is ' + n);
         //        }));
-    
+
         //        runs(() => {
         //            // get the text property from component 2 in bundle 1 (zero indexed).
         //            obs = t1.getInstanceDataTree(2).property('text');
