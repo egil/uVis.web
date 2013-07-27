@@ -148,7 +148,7 @@ export module uvis {
 
             // Check for cyclic dependency between templates
             var foundCyclicDependency = bundle.template.activeRequests.some(tplRequest => {
-                return tplRequest.source === request.target && request.source === tplRequest.target;
+                return tplRequest.source === request.target && tplRequest.target === request.source;
             });
 
             // If a cyclic dependency was found, write an error message to the consol 
