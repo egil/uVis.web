@@ -21,7 +21,7 @@ export module uvis {
     }
 
     export class Template {
-        private _state : TemplateState;
+        private _state: TemplateState;
         private _name: string;
         private _type: string;
         private _subtype: string;
@@ -35,14 +35,14 @@ export module uvis {
         private _properties: ud.Dictionary<pt.uvis.ITemplateProperty<any, Rx.IObservable<any>>> = new ud.Dictionary<pt.uvis.ITemplateProperty>();
         private _components: Rx.ConnectableObservable<uc.uvis.Component>;
         private _componentsConnection: Rx._IDisposable;
-        private _activeRequests: string[][] = [];
+        private _activeRequests = new Array<ucr.uvis.ComponentRequest>();
 
         constructor(name: string, type: string, parent?: Template, rowsFactory?: (template?: Template) => Rx.IObservable<any>) {
             this._state = TemplateState.INACTIVE;
             this._name = name;
             this._type = type;
             this._parent = parent;
-            this._rowsFactory = rowsFactory;                
+            this._rowsFactory = rowsFactory;
 
             // Extract subtype and type. type#subtype
             var typeSplitter = /([a-zA-Z]+)\x23([a-zA-Z]+)/.exec(type);
@@ -66,7 +66,7 @@ export module uvis {
             // If there are no parent and no data source, this is a form template. Then we default to creating one component.
             if (parent === undefined && this._rowsFactory === undefined) {
                 this._rows = Rx.Observable.returnValue(1);
-            }            
+            }
 
             // Create the special 'row' property for component instances. It makes the data element associated with their index available to them.
             this.properties.add('row', new pt.uvis.ComputedTemplateProperty('row', (component: uc.uvis.Component) => {
@@ -125,24 +125,24 @@ export module uvis {
             // Return rows if already INACTIVE or if using parent rows
             if (this._rows !== undefined) return this._rows;
             if (this._rowsFactory === undefined) return this.parent.rows;
-            
+
             // Otherwise we try to create the rows
             this._rows = this._rowsFactory(this).replay(null, 1).refCount();
-            
+
             return this._rows;
         }
 
-        get activeRequests(): string[][]{
+        get activeRequests(): ucr.uvis.ComponentRequest[] {
             return this._activeRequests;
         }
 
         get rowCount(): Rx.IObservable<number> {
             if (this._rowCount !== undefined) return this._rowCount;
-            
+
             // Create rowCount observable that extends the rows observable.
             if (this._rowsFactory === undefined && this.parent !== undefined) {
                 this._rowCount = this.parent.rowCount;
-            } else {            
+            } else {
                 this._rowCount = this.rows.select(result => {
                     // If it is an array, produce as many components as there are elements in the array.               
                     if (Array.isArray(result)) return result.length;
@@ -167,7 +167,7 @@ export module uvis {
         get components(): Rx.IObservable<uc.uvis.Component> {
             // If the template has not been initialized,
             // we do so now, so it starts producing components.
-            if (this._components === undefined) {
+            if (this.state === TemplateState.INACTIVE) {
                 this.initialize();
             }
 
@@ -242,9 +242,9 @@ export module uvis {
                     }
                 }
 
-                // Subscribe to parent's components observable, if there is a parent.
-                // Creates bundles based on parent's components.
-                if (this.parent !== undefined) {
+    // Subscribe to parent's components observable, if there is a parent.
+    // Creates bundles based on parent's components.
+    if (this.parent !== undefined) {
                     disposables.add(this.parent.components.subscribe(component => {
                         // Create a bundle for this component, if it does
                         // not already have one.
@@ -257,10 +257,10 @@ export module uvis {
                         updateComponentCountInBundle(latestRowCount, bundle);
 
                     }, observer.onError.bind(observer), () => {
-                        // Mark the parent template observable as completed.
-                        parentCompleted = true;
-                        nextTick(setCompletedState);
-                    }));
+                            // Mark the parent template observable as completed.
+                            parentCompleted = true;
+                            nextTick(setCompletedState);
+                        }));
                 } else {
                     // If there are no parent, create a default bundle
                     // to hold this templates components. This template
@@ -276,11 +276,11 @@ export module uvis {
                     this.bundles.forEach(bundle => { updateComponentCountInBundle(latestRowCount, bundle); });
 
                 }, observer.onError.bind(observer), () => {
-                    // Note that rowCount observable is completed.
-                    rowCountCompleted = true;
-                    nextTick(setCompletedState);
-                }));
-                
+                        // Note that rowCount observable is completed.
+                        rowCountCompleted = true;
+                        nextTick(setCompletedState);
+                    }));
+
                 return disposables;
             }).publish();
 

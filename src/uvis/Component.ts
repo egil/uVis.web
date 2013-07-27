@@ -128,16 +128,16 @@ export module uvis {
         }
 
         get(request: ucr.uvis.ComponentRequest): Rx.IObservable<ucr.uvis.ComponentRequest> {
-            var bundle = this.bundles.get(request.bundle);
+            var bundle = this.bundles.get(request.target);
 
             // Try to create bundle if it does not exist
             if (bundle === undefined) {
-                var template = this.template.children.get(request.bundle);
+                var template = this.template.children.get(request.target);
 
                 // If there is no template by the requested name,
                 // we return an error message
                 if (template === undefined) {
-                    return Rx.Observable.throwException('There is no such template that can create the requested bundle. Bundle name = ' + request.bundle);
+                    return Rx.Observable.throwException('There is no such template that can create the requested bundle. Bundle name = ' + request.target);
                 }
 
                 // Create the bundle and initialize template to get the bundle filled with components.
@@ -147,14 +147,14 @@ export module uvis {
             }
 
             // Check for cyclic dependency between templates
-            var foundCyclicDependency = bundle.template.activeRequests.some((hist) => {
-                return hist[0] === request.bundle && request.history[0] === hist[hist.length - 1];
+            var foundCyclicDependency = bundle.template.activeRequests.some(tplRequest => {
+                return tplRequest.source === request.target && request.source === tplRequest.target;
             });
 
             // If a cyclic dependency was found, write an error message to the consol 
             // and return an observable that sends an error message to observers.
             if (foundCyclicDependency) {
-                var err = 'Cyclic dependency between template "' + bundle.template.name + '" and "' + request.history[0] + '"';
+                var err = 'Cyclic dependency between template "' + bundle.template.name + '" and "' + request.source + '"';
                 console.error(err);
                 return Rx.Observable.throwException(err);
             }
