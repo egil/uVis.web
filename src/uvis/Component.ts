@@ -18,7 +18,7 @@ export module uvis {
         addVisualComponent(vc);
         removeVisualComponent(vc);
     }
-    
+
     export class Component implements ICanvas {
         private _template: ut.uvis.Template;
         private _index: number;
@@ -126,7 +126,7 @@ export module uvis {
             }
             return this._bundles;
         }
-        
+
         get(request: ucr.uvis.ComponentRequest): Rx.IObservable<ucr.uvis.ComponentRequest> {
             var bundle = this.bundles.get(request.bundle);
 
@@ -141,8 +141,8 @@ export module uvis {
                 }
 
                 // Create the bundle and initialize template to get the bundle filled with components.
-                // Assert that template is not initialize, otherwise the bundle should exist already.
                 bundle = this.createBundle(template);
+                // Make sure the template is initialized so we will not wait indefinitely for the component.
                 template.initialize();
             }
 
@@ -151,20 +151,21 @@ export module uvis {
                 return hist[0] === request.bundle && request.history[0] === hist[hist.length - 1];
             });
 
+            // If a cyclic dependency was found, write an error message to the consol 
+            // and return an observable that sends an error message to observers.
             if (foundCyclicDependency) {
-                console.error('Cyclic dependency between template "' + bundle.template.name + '" and "' + request.history[0] + '"');
-                return Rx.Observable.throwException('Cyclic dependency between template "' + bundle.template.name + '" and "' + request.history[0] + '"');
+                var err = 'Cyclic dependency between template "' + bundle.template.name + '" and "' + request.history[0] + '"';
+                console.error(err);
+                return Rx.Observable.throwException(err);
             }
 
-            // Select the component from the bundle that matches
-            // the index. If a component at 'index' is replaced later,
+            // Select the component from the bundle that matches the index. If a component at 'index' is replaced later,
             // the replaced component will be pushed to subscribers.
-            return bundle.components.where(component => component.index === request.index)
-                .select(component => {
-                    // Once we have a match, we update the request object
-                    request.latest = component;
-                    return request;
-                });
+            return bundle.components.where(component => component.index === request.index).select(component => {
+                // Once we have a match, we update the request object
+                request.latest = component;
+                return request;
+            });
         }
 
         property<T>(name: string): Rx.IObservable<T> {

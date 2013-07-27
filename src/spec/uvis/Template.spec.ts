@@ -137,7 +137,7 @@ export module uvis.spec {
             });
 
             it('Should stay ACTIVE as long as a parent template (any template higher in the tree) is not completed', () => {
-                var done1, hasErr1, actual1 = [], done2, hasErr2, actual2 = [] done3, hasErr3, actual3 = [];
+                var done1, hasErr1, actual1 = [], done2, hasErr2, actual2 = [], done3, hasErr3, actual3 = [];
                 var rows = new Rx.Subject();
                 var t1 = new ut.uvis.Template('t1', 'html#div', undefined, () => rows);
                 var t2 = new ut.uvis.Template('t2', 'html#div', t1, () => Rx.Observable.returnValue(1));
