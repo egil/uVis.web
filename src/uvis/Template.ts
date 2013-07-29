@@ -45,7 +45,7 @@ export module uvis {
             this._rowsFactory = rowsFactory;
 
             // Extract subtype and type. type#subtype
-            var typeSplitter = /([a-zA-Z]+)\x23([a-zA-Z]+)/.exec(type);
+            var typeSplitter = /([a-zA-Z]+)\x23([a-zA-Z0-9]+)/.exec(type);
             if (typeSplitter !== null) {
                 this._type = typeSplitter[1];
                 this._subtype = typeSplitter[2];

@@ -2,18 +2,8 @@
 <html lang="en" xmlns="http://www.w3.org/1999/xhtml">
 <head>
     <meta charset="utf-8" />
-    <title></title>
-
-    <link href="bootstrap.min.css" rel="stylesheet" />
-    <script src="src/libs/jquery-1.9.0.min.js"></script>
-    <script src="src/libs/rx/rx.js"></script>
-    <script src="src/libs/rx/rx.binding.js"></script>
-    <script src="src/libs/rx/rx.aggregates.js"></script>
-    <script src="src/libs/rx/rx.time.js"></script>
-    <script src="src/libs/rx/rx.coincidence.js"></script>      
-    <script src="src/libs/rx/rx.html.min.js"></script>
-    <script data-main="src/perf-test" type="text/javascript" src="src/libs/require.js"></script>
-    
+    <title>uVis.web: Dots demo</title>
+    <link href="/bootstrap.min.css" rel="stylesheet" />   
     <style type="text/css">
         body {
             margin: 20px;
@@ -23,17 +13,12 @@
             margin: 15px;
             text-align: center;
         }
-        .odd {
-            background-color:#8fdc6b;
-        }
-        .even {
-            background-color:#6b9bdc;
-        }
     </style>
 </head>
-    <body>
+<body>
+    <header>
         <fieldset class="form-inline">
-            <legend>Configure output</legend>
+            <legend>Dots demo</legend>
             <label for="count">Point count:</label> <input class="input-mini" type="number" id="count" value="1" min="0" max="100000" step="1" />
             <label for="size">Point size:</label>  <input class="input-mini" type="number" id="size" value="10" min="0" max="100" step="1" />
             <label for="color1">Point color 1:</label>  <input class="input-mini" type="color" id="color1" value="#ffff00" />
@@ -41,5 +26,15 @@
             <label for="color3">Point color 3:</label>  <input class="input-mini" type="color" id="color3" value="#ff0000" />
             <label for="color4">Point color 4:</label>  <input class="input-mini" type="color" id="color4" value="#00ff00" />
         </fieldset>
-    </body>
+    </header>
+        
+    <script src="/src/libs/jquery-1.9.0.min.js"></script>
+    <script src="/src/libs/rx/rx.js"></script>
+    <script src="/src/libs/rx/rx.binding.js"></script>
+    <script src="/src/libs/rx/rx.aggregates.js"></script>
+    <script src="/src/libs/rx/rx.time.js"></script>
+    <script src="/src/libs/rx/rx.coincidence.js"></script>      
+    <script src="/src/libs/rx/rx.html.min.js"></script>
+    <script data-main="/demos/dots/dots" type="text/javascript" src="/src/libs/require.js"></script>
+</body>
 </html>

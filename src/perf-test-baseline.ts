@@ -3,7 +3,7 @@
 
 $(function () {
     var start = new Date();
-    var count = 10000;
+    var count = 2000;
     var data = Rx.Observable.range(0, count);
     var fragment = document.createDocumentFragment();
     data.subscribe(function (i) {
@@ -18,7 +18,7 @@ $(function () {
     });
     var end = new Date();
 
-    console.log(end.getUTCMilliseconds() - start.getUTCMilliseconds());
+    console.log(end.getTime() - start.getTime());
     console.log(start);
     console.log(end);
 });

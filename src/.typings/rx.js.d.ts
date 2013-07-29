@@ -402,6 +402,8 @@ declare module Rx {
         merge<T>(scheduler: IScheduler, sources: IObservable<T>[]): IObservable<T>;
         onErrorResumeNext<T>(...sources: IObservable<T>[]): IObservable<T>;
         onErrorResumeNext<T>(sources: IObservable<T>[]): IObservable<T>;
+        fromEvent<T>(element, eventName): IObservable<T>;
+        getJSONPRequest<T>(url): IObservable<T>;
     }
 
     var Observable: Observable;

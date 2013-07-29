@@ -1,0 +1,39 @@
+﻿<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="utf-8" />
+    <title>uVis.web: Live Search demo</title>
+    <link href="/bootstrap.min.css" rel="stylesheet" />
+    <style type="text/css">
+        body {
+            margin: 20px auto;
+            width: 500px;
+        }
+
+        span {
+            display: inline-block;
+            margin: 15px;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <fieldset class="form-inline">
+            <legend>Live Search Demo</legend>
+            <input class="input-xxlarge" type="search" id="search" placeholder="Enter search term here . . ." />
+        </fieldset>
+
+    </header>
+    <div id="results"></div>
+
+    <script src="/src/libs/jquery-1.9.0.min.js"></script>
+    <script src="/src/libs/rx/rx.js"></script>
+    <script src="/src/libs/rx/rx.binding.js"></script>
+    <script src="/src/libs/rx/rx.aggregates.js"></script>
+    <script src="/src/libs/rx/rx.time.js"></script>
+    <script src="/src/libs/rx/rx.coincidence.js"></script>
+    <script src="/src/libs/rx/rx.html.min.js"></script>
+    <script data-main="/demos/live-search/live-search" type="text/javascript" src="/src/libs/require.js"></script>
+</body>
+</html>

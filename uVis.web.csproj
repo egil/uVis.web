@@ -22,6 +22,10 @@
   </PropertyGroup>
   <ItemGroup>
     <TypeScriptCompile Include="example.ts" />
+    <Content Include="demos\live-search\live-search.html" />
+    <Content Include="demos\live-search\live-search.ts" />
+    <Content Include="demos\dots\dots.html" />
+    <Content Include="demos\dots\dots.ts" />
     <Content Include="example.js">
       <DependentUpon>example.ts</DependentUpon>
     </Content>
