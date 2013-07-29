@@ -4,7 +4,7 @@
 import uc = require('uvis/Component');
 
 export module uvis.component {
-    export class HTMLComponent extends uc.uvis.Component {
+    export class HTMLComponent extends uc.uvis.Component implements uc.uvis.ICanvas {
 
         //#region Canvas / Visual Component method
 

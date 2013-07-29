@@ -250,6 +250,10 @@ export module uvis {
             throw new Error('setVisualComponentProperty(): Abstract method. Implementors must override.');
         }
 
+        attachVisualComponentEvent(name: string, callbackFn: Function): Rx._IDisposable {
+            throw new Error('attachVisualComponentEvent(): Abstract method. Implementors must override.');
+        }
+
         private onNextCanvas<T>(canvas: ICanvas) {
             // If the visual component does not exist yet, create it.
             if (this._visualComponent === undefined) {
@@ -260,13 +264,8 @@ export module uvis {
                     // Skip internal properties that are not used by visual component.
                     if (prop.internal) return;
 
-                    // Here we subscribe to each property, first retriving it
-                    // through the components property function, that will create
-                    // a property observable to us. Then we pass each value it
-                    // produces to the abstract method setVisualComponentProperty,
+                    // Here we subscribe to each property. When a property returns a value the abstract method setVisualComponentProperty,
                     // that will set the value of the actual visual component.
-                    // All subscribions are added to the subscriptions collection 
-                    // for each unsubscription/disposing later.
                     this._subscriptions.add(this.property(name).subscribe(
                         value => {
                             this.setVisualComponentProperty(name, value);
@@ -274,6 +273,14 @@ export module uvis {
                             console.error('Error with property observable (name = ' + name + '). ' + err);
                         }));
                 });
+
+                //// Subscribe to properties for visual component
+                //this.template.events.forEach((name) => {
+                //    // Here we attach the component events to the visual component.
+                //    // The attachVisualComponentEvent returns a disposable that 
+                //    // when triggered will detach the event from the visual component again.
+                //    this._subscriptions.add(this.attachVisualComponentEvent(name, this.events(name)));
+                //});
             }
 
             // If there is a current canvas, remove the visual component from it
@@ -281,11 +288,10 @@ export module uvis {
                 this._currentCanvas.removeVisualComponent(this._visualComponent);
             }
 
-            // If this component is a canvas, notify subscribers that they can
-            // add themselves to this components visual component.
+            // If this component is a canvas, notify subscribers that they can add themselves to this components visual component.
             if (this._canvasSource !== undefined) {
                 this._canvasSource.onNext(this)
-            }
+    }
 
             // Add it to new canvas
             canvas.addVisualComponent(this._visualComponent);
