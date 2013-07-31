@@ -35,7 +35,6 @@
     <Content Include="perf-test.html" />
     <Content Include="perf-test-baseline.html" />
     <Content Include="bootstrap.min.css" />
-    <Content Include="insert-vs-update-perf-test.js" />
     <Content Include="src\.typings\rx.js.uvis.d.ts" />
     <Content Include="src\.typings\jquery.d.ts" />
     <Content Include="src\.typings\rx.js.aggregates.d.ts" />
@@ -217,6 +216,10 @@
       <DependentUpon>Dictionary.ts</DependentUpon>
     </Content>
     <TypeScriptCompile Include="src\uvis\TemplateProperty.ts" />
+    <TypeScriptCompile Include="src\uvis\PropertySet.ts" />
+    <Content Include="src\uvis\PropertySet.js">
+      <DependentUpon>PropertySet.ts</DependentUpon>
+    </Content>
     <Content Include="src\uvis\Template.js">
       <DependentUpon>Template.ts</DependentUpon>
     </Content>
@@ -298,7 +301,6 @@
     </None>
     <TypeScriptCompile Include="src\spec\util\Dictionary.spec.ts" />
     <TypeScriptCompile Include="src\specrunner.ts" />
-    <Content Include="app.css" />
     <Content Include="index.html" />
     <Content Include="src\.typings\jasmine.d.ts" />
     <Content Include="src\libs\underscore-min.js" />

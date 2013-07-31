@@ -5,22 +5,17 @@ import ud = require('util/Dictionary');
 import ut = require('uvis/Template');
 import pt = require('uvis/TemplateProperty');
 import ub = require('uvis/Bundle');
+import ps = require('uvis/PropertySet');
 import ucr = require('uvis/ComponentRequest');
 
 export module uvis {
-
-    export interface ComponentProperty<T, O extends Rx.IObservable<T>> {
-        property?: O;
-        creating: bool;
-    }
 
     export interface ICanvas {
         addVisualComponent(vc);
         removeVisualComponent(vc);
     }
 
-    export class Component implements ICanvas {
-        private _template: ut.uvis.Template;
+    export class Component extends ps.uvis.PropertySet implements ICanvas {
         private _index: number;
         private _parent: Component;
         private _form: Component;
@@ -29,17 +24,12 @@ export module uvis {
         private _currentCanvas: ICanvas;
         private _bundle: ub.uvis.Bundle;
         private _bundles: ud.Dictionary<ub.uvis.Bundle>;
-        private _properties: ud.Dictionary<ComponentProperty<any, Rx.IObservable<any>>> = new ud.Dictionary<ComponentProperty>();
-        private _subscriptions: Rx.CompositeDisposable;
 
-        static unfulfilledRequest = false;
-
-        constructor(template: ut.uvis.Template, bundle: ub.uvis.Bundle, index: number, parent?: Component) {
-            this._template = template;
+        constructor(template: ut.uvis.Template, bundle: ub.uvis.Bundle, index: number, parent?: Component) {            
+            super(template);
             this._bundle = bundle;
             this._index = index;
             this._parent = parent;
-            this._subscriptions = new Rx.CompositeDisposable();
 
             // Run up the instance data tree to find the root component, i.e. the form.
             this._form = this;
@@ -54,16 +44,9 @@ export module uvis {
                 this.property<ICanvas>('canvas') :
                 this.form.canvas;
 
-            this._subscriptions.add(canvasObservable.subscribe(this.onNextCanvas.bind(this), error => {
+            this.subscriptions.add(canvasObservable.subscribe(this.onNextCanvas.bind(this), error => {
                 console.error('Error with canvas observable. ' + error);
             }));
-        }
-
-        /**
-         * Get the template that created the component.
-         */
-        get template(): ut.uvis.Template {
-            return this._template;
         }
 
         /**
@@ -167,54 +150,7 @@ export module uvis {
                 return request;
             });
         }
-
-        property<T>(name: string): Rx.IObservable<T> {
-            var cp = this._properties.get(name);
-
-            // If the property already exists, return it.
-            if (cp !== undefined && cp.property !== undefined) {
-                return cp.property;
-            }
-            // If we are already creating this property, return an error message
-            if (cp !== undefined && cp.creating) {
-                return Rx.Observable.throwException('Cyclic dependency detected for property "' + name + '" from template "' + this.template.name);
-            }
-
-            // Else we try to create the property
-            var propTpl = this.template.properties.get(name);
-
-            if (propTpl !== undefined) {
-
-                // Create ComponentProperty object, mark it as being created
-                cp = { creating: true };
-
-                // Add it to dictionary for reuse later
-                this._properties.add(propTpl.name, cp);
-
-                // Create property
-                cp.property = propTpl.create(this);
-
-                // If it is a ComputedObservable, we must 
-                // connect it to its underlying sequence.
-                if (propTpl instanceof pt.uvis.ComputedTemplateProperty) {
-                    this._subscriptions.add((<Rx.ConnectableObservable>cp.property).connect());
-                }
-
-                // If this is a TemplateProperty, we know that we are handed
-                // an subject, so we store a reference to its dispose method 
-                // for later use when cleaning up.
-                if (propTpl instanceof pt.uvis.TemplateProperty) {
-                    this._subscriptions.add(<Rx.ISubject>cp.property);
-                }
-
-                cp.creating = false;
-
-                return cp.property;
-            } else {
-                return Rx.Observable.throwException('Component property "' + name + '" was not found.');
-            }
-        }
-
+        
         createBundle(template: ut.uvis.Template): ub.uvis.Bundle {
             if (this.bundles.contains(template.name)) {
                 throw new Error('A bundle already exists for this template.');
@@ -266,7 +202,7 @@ export module uvis {
 
                     // Here we subscribe to each property. When a property returns a value the abstract method setVisualComponentProperty,
                     // that will set the value of the actual visual component.
-                    this._subscriptions.add(this.property(name).subscribe(
+                    this.subscriptions.add(this.property(name).subscribe(
                         value => {
                             this.setVisualComponentProperty(name, value);
                         }, (err) => {
@@ -291,7 +227,7 @@ export module uvis {
             // If this component is a canvas, notify subscribers that they can add themselves to this components visual component.
             if (this._canvasSource !== undefined) {
                 this._canvasSource.onNext(this)
-    }
+            }
 
             // Add it to new canvas
             canvas.addVisualComponent(this._visualComponent);
@@ -306,11 +242,7 @@ export module uvis {
          * Dispose of this component.
          */
         dispose(removeFromBundle: boolean = true) {
-            // Unsubscribe from all observable subscriptions
-            this._subscriptions.dispose();
-
-            // Make sure there are no property references left
-            this._properties.removeAll();
+            super.dispose();
 
             // Remove visual component from canvas
             if (this._currentCanvas !== undefined && this._visualComponent !== undefined) {
@@ -337,14 +269,11 @@ export module uvis {
             // Dispose of canvas subject.
             if (this._canvasSource !== undefined) this._canvasSource.dispose();
 
-            // Unreference template, parent, etc.
-            this._template = null;
+            // Unreference parent, etc.            
             this._parent = null;
             this._form = null;
             this._bundle = null;
             this._bundles = null;
-            this._properties = null;
-            this._subscriptions = null;
             this._canvasSource = null;
             this._currentCanvas = null;
             this._visualComponent = null;

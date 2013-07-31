@@ -24,40 +24,15 @@ require(['nextTick', 'shims', 'uvis/Template', 'uvis/TemplateProperty'], (nt, s,
         var start = new Date();
 
         // Data source
-        var count = Rx.Observable.fromEvent(document.getElementById('count'), 'change')
-            .select(e => parseInt(e.target.value, 10)).startWith(parseInt((<HTMLInputElement>document.getElementById('count')).value, 10))
-        var size = Rx.Observable.fromEvent(document.getElementById('size'), 'change')
-            .select(e => parseInt(e.target.value, 10))
-            .startWith(parseInt((<HTMLInputElement>document.getElementById('size')).value, 10))
-            .replay(null, 1).refCount();
-        var color1 = Rx.Observable.fromEvent(document.getElementById('color1'), 'change')
-            .select(e => e.target.value)
-            .startWith((<HTMLInputElement>document.getElementById('color1')).value)
-            .replay(null, 1).refCount();
-        var color2 = Rx.Observable.fromEvent(document.getElementById('color2'), 'change')
-            .select(e => e.target.value)
-            .startWith((<HTMLInputElement>document.getElementById('color2')).value)
-            .replay(null, 1).refCount();
-        var color3 = Rx.Observable.fromEvent(document.getElementById('color3'), 'change')
-            .select(e => e.target.value)
-            .startWith((<HTMLInputElement>document.getElementById('color3')).value)
-            .replay(null, 1).refCount();
-        var color4 = Rx.Observable.fromEvent(document.getElementById('color4'), 'change')
-            .select(e => e.target.value)
-            .startWith((<HTMLInputElement>document.getElementById('color4')).value)
-            .replay(null, 1).refCount();
+        //var count = 10000;
+        var data = new Rx.Subject();
 
         // ICanvas
         var canvasSource = new Rx.Subject();
         var fragment = document.createDocumentFragment();
         var canvas = {
-            addVisualComponent: (vc: HTMLElement) => {
-                fragment.appendChild(vc);
-            },
-
-            removeVisualComponent: (vc: HTMLElement) => {
-                fragment.removeChild(vc);
-            }
+            addVisualComponent: (vc: HTMLElement) => { fragment.appendChild(vc); },
+            removeVisualComponent: (vc: HTMLElement) => { fragment.removeChild(vc); }
         }
 
         var form = new ut.uvis.Template('form', 'html#div');
@@ -65,38 +40,69 @@ require(['nextTick', 'shims', 'uvis/Template', 'uvis/TemplateProperty'], (nt, s,
             return canvasSource;
         }, undefined, true));
 
-        var span = new ut.uvis.Template('span', 'html#span', form, () => count);
+        var span = new ut.uvis.Template('span', 'html#span', form, () => data);
+        span.properties.add('class', new up.uvis.ComputedTemplateProperty('class', (c) => {
+            return Rx.Observable.returnValue((c.index % 2 === 0 ? 'odd' : 'even'));
+
+        }));
         span.properties.add('title', new up.uvis.ComputedTemplateProperty('title', (c) => {
             return Rx.Observable.returnValue(c.index);
+
         }));
         span.properties.add('text', new up.uvis.ComputedTemplateProperty('text', (c) => {
             return Rx.Observable.returnValue(c.index);
+
         }));
-        span.properties.add('style', new up.uvis.ComputedTemplateProperty('style', (c) => {
-            return Rx.Observable.returnValue(c.index).select(i => {           
-                if (i % 4 === 0) return color4;
-                if (i % 3 === 0) return color3;
-                if (i % 2 === 0) return color2;
-                return color1;    
-            }).switchLatest().combineLatest(size, (color, size) => {
-                var x= size + c.index;
-                return 'height:' + x + 'px;width:' + x + 'px;border-radius:' + x +
-                    'px;background-color:' + color + ';line-height:' + x + 'px;' +
-                    'px;font-size:' + x / 2 + 'px;';
-            });
+
+        span.properties.add('data-title', new up.uvis.ComputedTemplateProperty('data-title', (c) => {
+            return Rx.Observable.returnValue(c.index);
+
         }));
+        span.properties.add('data-text', new up.uvis.ComputedTemplateProperty('data-text', (c) => {
+            return Rx.Observable.returnValue(c.index);
+
+        }));
+
+        //span.properties.add('data-title2', new up.uvis.ComputedTemplateProperty('data-title2', (c) => {
+        //    return Rx.Observable.returnValue(c.index);
+
+        //}));
+        //span.properties.add('data-text2', new up.uvis.ComputedTemplateProperty('data-text2', (c) => {
+        //    return Rx.Observable.returnValue(c.index);
+
+        //}));
 
         form.initialize();
         span.initialize();
 
+        //console.log('creating 1000');
+        //data.onNext(1000);
+        //console.log('creating 2000');
+        //data.onNext(2000);
+        //console.log('creating 3000');
+        //data.onNext(3000);
+        //console.log('creating 4000');
+        //data.onNext(4000);
+        //console.log('creating 5000');
+        //data.onNext(5000);
+        //console.log('creating 6000');
+        //data.onNext(6000);
+        //console.log('creating 7000');
+        //data.onNext(7000);
+        //console.log('creating 8000');
+        //data.onNext(8000);
+        //console.log('creating 9000');
+        //data.onNext(9000);
+        //console.log('creating 000');
+        data.onNext(1000);
+        
         canvasSource.onNext(canvas);
-
+        console.log('Number of child nodes: ' + fragment.childNodes.length);
         document.body.appendChild(fragment);
         var end = new Date();
 
         console.log(end.getTime() - start.getTime());
-        console.log(start);
-        console.log(end);
-
     });
 });
+
+    

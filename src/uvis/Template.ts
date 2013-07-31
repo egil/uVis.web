@@ -242,9 +242,9 @@ export module uvis {
                     }
                 }
 
-    // Subscribe to parent's components observable, if there is a parent.
-    // Creates bundles based on parent's components.
-    if (this.parent !== undefined) {
+                // Subscribe to parent's components observable, if there is a parent.
+                // Creates bundles based on parent's components.
+                if (this.parent !== undefined) {
                     disposables.add(this.parent.components.subscribe(component => {
                         // Create a bundle for this component, if it does
                         // not already have one.
@@ -315,6 +315,9 @@ export module uvis {
             // Dispose of all properties
             this.properties.forEach((_, prop) => prop.dispose());
             this.properties.removeAll();
+
+            this.activeRequests.forEach(dep => dep.dispose());
+            this.activeRequests = null;
 
             this._parent = null;
             this._bundles = null;
