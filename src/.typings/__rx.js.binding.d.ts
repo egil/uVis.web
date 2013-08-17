@@ -22,7 +22,7 @@ declare module Rx {
     }
 
     var ReplaySubject: {
-        new <T>(bufferSize?: number, window?: number, scheduler?: IScheduler): ReplaySubject<T>;
+        new <T>(bufferSize?: number, window?: number, scheduler?: IScheduler): ReplaySubject<T>;        
     }
 
 	interface BehaviorSubject<T> extends ISubject<T> {
@@ -33,7 +33,7 @@ declare module Rx {
         new <T>(initialValue: T): BehaviorSubject<T>;
     }
 
-	interface ConnectableObservable<T> extends IObservable<T> {
+	interface ConnectableObservable<T> extends IObservable<T>{
         connect(): _IDisposable;
         refCount(): IObservable<T>;
     }
@@ -51,7 +51,6 @@ declare module Rx {
     }
 
 
-
-	interface Observable {
-	}
+    interface Observable {
+    }
 }

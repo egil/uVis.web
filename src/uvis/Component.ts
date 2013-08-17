@@ -1,7 +1,7 @@
 /// <reference path="../.typings/rx.js.aggregates.d.ts" />
 /// <reference path="../.typings/rx.js.uvis.d.ts" />
 /// <reference path="../.typings/rx.js.d.ts" />
-import ud = require('util/Dictionary');
+import ud = require('../util/Dictionary');
 import ut = require('uvis/Template');
 import pt = require('uvis/TemplateProperty');
 import ub = require('uvis/Bundle');
@@ -41,7 +41,7 @@ export module uvis {
             // If there is no explicit canvas defined via a property,
             // we use the form component as the canvas.
             var canvasObservable = this.template.properties.contains('canvas') ?
-                this.property<ICanvas>('canvas') :
+                this.property('canvas') :
                 this.form.canvas;
 
             this.subscriptions.add(canvasObservable.subscribe(this.onNextCanvas.bind(this), error => {
@@ -127,7 +127,7 @@ export module uvis {
                 bundle = this.createBundle(template);
                 // Make sure the template is initialized so we will not wait indefinitely for the component.
                 template.initialize();
-            }
+            }            
 
             // Check for cyclic dependency between templates
             var foundCyclicDependency = bundle.template.activeRequests.some(tplRequest => {

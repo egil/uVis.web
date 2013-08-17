@@ -1,13 +1,13 @@
 /// <reference path="../.typings/rx.js.binding.d.ts" />
 /// <reference path="../.typings/rx.js.d.ts" />
 
-import ud = require('util/Dictionary');
+import ud = require('../util/Dictionary');
 import pt = require('uvis/TemplateProperty');
 
 export module uvis {
 
     export class PropertySet {
-        private _properties = new ud.Dictionary<Rx.IObservable<any>>();
+        private _properties = new ud.Dictionary<any>();
         private _subscriptions: Rx.CompositeDisposable;
         private _template;
 
@@ -16,15 +16,15 @@ export module uvis {
             this._subscriptions = new Rx.CompositeDisposable();
         }
 
-        get template() {
+        public get template() {
             return this._template;
         }
 
-        get subscriptions(): Rx.CompositeDisposable {
+        public get subscriptions(): Rx.CompositeDisposable {
             return this._subscriptions;
         }
 
-        property<T>(name: string): Rx.IObservable<T> {
+        public property<T>(name: string): Rx.IObservable<T> {
             var cp = this._properties.get(name);
 
             // If the property already exists, return it.

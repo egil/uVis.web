@@ -2,7 +2,6 @@
 /// <reference path="../../.typings/rx.js.aggregates.d.ts" />
 /// <reference path="../../.typings/jasmine.d.ts" />
 
-import ud = require('util/Dictionary');
 import ut = require('uvis/Template');
 import uc = require('uvis/Component');
 import pt = require('uvis/TemplateProperty');

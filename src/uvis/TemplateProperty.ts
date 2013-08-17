@@ -1,17 +1,69 @@
 /// <reference path="../.typings/rx.js.binding.d.ts" />
 /// <reference path="../.typings/rx.js.d.ts" />
 
-import ud = require('util/Dictionary');
-import uc = require('uvis/Component');
+import ud = require('../util/Dictionary');
+//import uc = require('uvis/Component');
 
 export module uvis {
    
     export interface ITemplateProperty<T, O> {
         name: string;
-        create(component?: uc.uvis.Component): O;
+        //create(component?: uc.uvis.Component): O;
+        create(component?): O;
         initialValue?: T;
         internal: boolean;
         dispose();
+    }
+
+    export class ComputedTemplateProperty<T> implements ITemplateProperty<T, Rx.IObservable<T>> {
+        private _name: string;
+        private _initialValue: T;
+        //private _factory: (component: uc.uvis.Component) => Rx.IObservable<T>;
+        private _factory: (component) => Rx.IObservable<T>;
+        private _internal: boolean;
+
+        //constructor(name: string, factory: (component: uc.uvis.Component) => Rx.IObservable<T>, initialValue?: T, internal?: boolean) {
+        constructor(name: string, factory: (component) => Rx.IObservable < T>, initialValue?: T, internal?: boolean) {
+            this._name = name;
+            this._initialValue = initialValue;
+            this._factory = factory;
+            this._internal = internal || false;
+        }
+
+        get name() {
+            return this._name;
+        }
+
+        get initialValue(): T {
+            return this._initialValue;
+        }
+
+        get internal(): boolean {
+            return this._internal;
+        }
+
+        //create(component?: uc.uvis.Component): Rx.ConnectableObservable<T> {
+        create(component?): Rx.ConnectableObservable < T > {
+            var obs = this._factory(component);
+
+            // We add replay to create an observable that can be shared,
+            // by multiple observers. It will push the latest value to subscribers,
+            // even if they subscribe after the value has been produced. 
+            // 
+            // If there is a default value, we use startWith to add that value to
+            // the observable stream. Should the observable created by factory
+            // never produce data, default value is the only value produced by
+            // obs.
+            //
+            // RefCount is used to automatically subscribe and unsubscribe to
+            // the underlying observable, depending on the number of subscribers
+            // it has.
+            return this.initialValue === undefined ?
+                obs.replay(null, 1) :
+                obs.startWith(this.initialValue).replay(null, 1);
+        }
+
+        dispose() { }
     }
 
     export class TemplatePropertySet<T> implements ITemplateProperty<T, Rx.IObservable<T>> {
@@ -44,7 +96,8 @@ export module uvis {
             this._properties.push(property);
         }
 
-        create(component?: uc.uvis.Component): Rx.ConnectableObservable<T> {
+        //create(component?: uc.uvis.Component): Rx.ConnectableObservable<T> {
+        create(component?): Rx.ConnectableObservable < T > {
             var obs = this._combinator(this._properties);
 
             // We add replay to create an observable that can be shared,
@@ -67,6 +120,8 @@ export module uvis {
         dispose() { }
 
     }
+
+    
 
     export class TemplateProperty<T> implements ITemplateProperty<T, Rx.ISubject<T>> {
         private _name: string;
@@ -100,54 +155,6 @@ export module uvis {
             return this._initialValue === undefined ?
                 new Rx.ReplaySubject<T>(1) :
                 new Rx.BehaviorSubject<T>(this._initialValue);
-        }
-
-        dispose() { }
-    }
-
-    export class ComputedTemplateProperty<T> implements ITemplateProperty<T, Rx.IObservable<T>> {
-        private _name: string;
-        private _initialValue: T;
-        private _factory: (component: uc.uvis.Component) => Rx.IObservable<T>;
-        private _internal: boolean;
-
-        constructor(name: string, factory: (component: uc.uvis.Component) => Rx.IObservable<T>, initialValue?: T, internal?: boolean) {
-            this._name = name;
-            this._initialValue = initialValue;
-            this._factory = factory;
-            this._internal = internal || false;
-        }
-
-        get name() {
-            return this._name;
-        }
-
-        get initialValue(): T {
-            return this._initialValue;
-        }
-
-        get internal(): boolean {
-            return this._internal;
-        }
-
-        create(component?: uc.uvis.Component): Rx.ConnectableObservable<T> {
-            var obs = this._factory(component);
-
-            // We add replay to create an observable that can be shared,
-            // by multiple observers. It will push the latest value to subscribers,
-            // even if they subscribe after the value has been produced. 
-            // 
-            // If there is a default value, we use startWith to add that value to
-            // the observable stream. Should the observable created by factory
-            // never produce data, default value is the only value produced by
-            // obs.
-            //
-            // RefCount is used to automatically subscribe and unsubscribe to
-            // the underlying observable, depending on the number of subscribers
-            // it has.
-            return this.initialValue === undefined ?
-                obs.replay(null, 1) :
-                obs.startWith(this.initialValue).replay(null, 1);
         }
 
         dispose() { }

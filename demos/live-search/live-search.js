@@ -79,4 +79,4 @@ require(['nextTick', 'shims', 'uvis/Template', 'uvis/TemplateProperty'], functio
         resultItem.initialize();
     });
 });
-//@ sourceMappingURL=live-search.js.map
+//# sourceMappingURL=live-search.js.map

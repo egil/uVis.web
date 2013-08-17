@@ -1,7 +1,7 @@
 /// <reference path="../../.typings/rx.js.binding.d.ts" />
+/// <reference path="../../.typings/rx.js.d.ts" />
 /// <reference path="../../.typings/jasmine.d.ts" />
 
-import dict = require('util/Dictionary');
 import ut = require('uvis/Template');
 import uc = require('uvis/Component');
 import pt = require('uvis/TemplateProperty');

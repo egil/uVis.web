@@ -1,7 +1,7 @@
 /// <reference path="../.typings/rx.js.binding.d.ts" />
 /// <reference path="../.typings/rx.js.d.ts" />
 
-import ud = require('util/Dictionary');
+import ud = require('../util/Dictionary');
 import uc = require('uvis/Component');
 import uhc = require('uvis/components/HTMLComponent');
 import ub = require('uvis/Bundle');
@@ -27,7 +27,7 @@ export module uvis {
         private _subtype: string;
         private _parent: Template;
         private _form: Template;
-        private _rowsFactory: (t?: Template) => Rx.IObservable<Rx.IObservable<any>>;
+        private _rowsFactory: (t?: Template) => Rx.IObservable<any>;
         private _rows: Rx.IObservable<any>;
         private _rowCount: Rx.IObservable<number>;
         private _children: ud.Dictionary<Template>;
@@ -156,7 +156,7 @@ export module uvis {
             return this._rowCount;
         }
 
-        get properties(): ud.Dictionary<pt.uvis.ITemplateProperty<T, Rx.IObservable<T>>> {
+        get properties(): ud.Dictionary<pt.uvis.ITemplateProperty<any, Rx.IObservable<any>>> {
             return this._properties;
         }
 
@@ -200,7 +200,7 @@ export module uvis {
         initialize() {
             if (this._components !== undefined) return;
 
-            this._components = Rx.Observable.createWithDisposable(observer => {
+            this._components = Rx.Observable.createWithDisposable((observer: Rx.IObserver<uc.uvis.Component>) => {
                 var disposables = new Rx.CompositeDisposable();
                 var latestRowCount = 0;
                 var parentCompleted = false;

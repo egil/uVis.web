@@ -71,7 +71,7 @@ export class Dictionary<T> {
         this._d = {};
     }
     
-    forEach(func: (key: string, value: T, count: number) => void ) {
+    forEach<T>(func: (key: string, value: T, count: number) => void) {
         var count = 0;
         for (var prop in this._d) {
             if (this.contains(prop)) {
@@ -83,7 +83,7 @@ export class Dictionary<T> {
         }
     }
 
-    map(func: (key: string, value: T, count: number) => any): any[] {
+    map<T>(func: (key: string, value: T, count: number) => any): any[] {
         var count = 0;
         var res = [];
         this.forEach((key, value) => {

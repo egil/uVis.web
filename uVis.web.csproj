@@ -22,7 +22,13 @@
   </PropertyGroup>
   <ItemGroup>
     <TypeScriptCompile Include="example.ts" />
+    <Content Include="demos\dots\dots.js">
+      <DependentUpon>dots.ts</DependentUpon>
+    </Content>
     <Content Include="demos\live-search\live-search.html" />
+    <Content Include="demos\live-search\live-search.js">
+      <DependentUpon>live-search.ts</DependentUpon>
+    </Content>
     <Content Include="demos\live-search\live-search.ts" />
     <Content Include="demos\dots\dots.html" />
     <Content Include="demos\dots\dots.ts" />
@@ -56,6 +62,12 @@
     <Content Include="apps\perf-test\perf-test.json" />
     <Content Include="example.js.map">
       <DependentUpon>example.ts</DependentUpon>
+    </Content>
+    <Content Include="demos\dots\dots.js.map">
+      <DependentUpon>dots.ts</DependentUpon>
+    </Content>
+    <Content Include="demos\live-search\live-search.js.map">
+      <DependentUpon>live-search.ts</DependentUpon>
     </Content>
     <None Include="src\libs\rx\rx-vsdoc.js" />
     <None Include="src\libs\rx\rx.aggregates-vsdoc.js" />
@@ -161,6 +173,10 @@
     </Content>
     <TypeScriptCompile Include="src\uvis\data\IDataSource.ts" />
     <TypeScriptCompile Include="src\spec\uvis\TemplateProperty.spec.ts" />
+    <TypeScriptCompile Include="src\spec\uvis\Dependency.spec.ts" />
+    <Content Include="src\spec\uvis\Dependency.spec.js">
+      <DependentUpon>Dependency.spec.ts</DependentUpon>
+    </Content>
     <Content Include="src\spec\uvis\Template.spec.js">
       <DependentUpon>Template.spec.ts</DependentUpon>
     </Content>
@@ -217,6 +233,10 @@
     </Content>
     <TypeScriptCompile Include="src\uvis\TemplateProperty.ts" />
     <TypeScriptCompile Include="src\uvis\PropertySet.ts" />
+    <TypeScriptCompile Include="src\uvis\Dependency.ts" />
+    <Content Include="src\uvis\Dependency.js">
+      <DependentUpon>Dependency.ts</DependentUpon>
+    </Content>
     <Content Include="src\uvis\PropertySet.js">
       <DependentUpon>PropertySet.ts</DependentUpon>
     </Content>
@@ -271,6 +291,9 @@
     <Content Include="src\spec\uvis\TemplateProperty.spec.js.map">
       <DependentUpon>TemplateProperty.spec.ts</DependentUpon>
     </Content>
+    <Content Include="src\spec\uvis\Dependency.spec.js.map">
+      <DependentUpon>Dependency.spec.ts</DependentUpon>
+    </Content>
     <None Include="src\spec\uvis\testdefs\t1.json" />
     <Content Include="src\uvis\data\IDataSource.js.map">
       <DependentUpon>IDataSource.ts</DependentUpon>
@@ -292,6 +315,15 @@
     </Content>
     <Content Include="src\uvis\TemplateProperty.js.map">
       <DependentUpon>TemplateProperty.ts</DependentUpon>
+    </Content>
+    <Content Include="src\uvis\Dependency.js.map">
+      <DependentUpon>Dependency.ts</DependentUpon>
+    </Content>
+    <Content Include="src\uvis\ComponentRequest.js.map">
+      <DependentUpon>ComponentRequest.ts</DependentUpon>
+    </Content>
+    <Content Include="src\uvis\PropertySet.js.map">
+      <DependentUpon>PropertySet.ts</DependentUpon>
     </Content>
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>

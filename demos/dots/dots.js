@@ -54,9 +54,12 @@ function RGB2HSV(rgb) {
     var dif = max - min3(rgb.r, rgb.g, rgb.b);
     hsv.saturation = (max == 0.0) ? 0 : (100 * dif / max);
     if (hsv.saturation == 0)
-        hsv.hue = 0; else if (rgb.r == max)
-        hsv.hue = 60.0 * (rgb.g - rgb.b) / dif; else if (rgb.g == max)
-        hsv.hue = 120.0 + 60.0 * (rgb.b - rgb.r) / dif; else if (rgb.b == max)
+        hsv.hue = 0;
+else if (rgb.r == max)
+        hsv.hue = 60.0 * (rgb.g - rgb.b) / dif;
+else if (rgb.g == max)
+        hsv.hue = 120.0 + 60.0 * (rgb.b - rgb.r) / dif;
+else if (rgb.b == max)
         hsv.hue = 240.0 + 60.0 * (rgb.r - rgb.g) / dif;
     if (hsv.hue < 0.0)
         hsv.hue += 360.0;
@@ -200,4 +203,4 @@ require(['nextTick', 'shims', 'uvis/Template', 'uvis/TemplateProperty'], functio
         document.body.appendChild(fragment);
     });
 });
-//@ sourceMappingURL=dots.js.map
+//# sourceMappingURL=dots.js.map
