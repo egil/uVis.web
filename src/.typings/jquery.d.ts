@@ -265,7 +265,7 @@ interface JQueryStatic {
 
     noConflict(removeAll?: boolean): Object;
 
-    when(...deferreds: any[]): JQueryPromise;
+    when<T>(...deferreds: any[]): JQueryPromise<T>;
 
     // CSS
     css(e: any, propertyName: string, value?: any);
@@ -478,7 +478,7 @@ interface JQuery {
     removeData(nameOrList?: any): JQuery;
 
     // Deferred
-    promise(type?: any, target?: any): JQueryPromise;
+    promise<T>(type?: any, target?: any): JQueryPromise<T>;
 
     // Effects
     animate(properties: any, duration?: any, complete?: Function): JQuery;

@@ -3,7 +3,6 @@
 /// <reference path="../../src/.typings/jquery.d.ts" />
 /// <reference path="../../src/.typings/require.d.ts" />
 
-
 require.config({
     baseUrl: '/src',
     paths: {

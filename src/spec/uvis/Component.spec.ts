@@ -147,7 +147,7 @@ export module uvis.spec {
                     }
                 };
                 var form = new ut.uvis.Template('form', 'html#div');
-                var t1 = new ut.uvis.Template('t1', 'html#p', form, Rx.Observable.returnValue(4));
+                var t1 = new ut.uvis.Template('t1', 'html#p', form, () => Rx.Observable.returnValue(4));
                 var t2 = new ut.uvis.Template('t2', 'html#div', form);
                 var t3 = new ut.uvis.Template('t3', 'html#header', form);
 
