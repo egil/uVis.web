@@ -6,6 +6,7 @@ import uc = require('uvis/Component');
 import uhc = require('uvis/components/HTMLComponent');
 import ub = require('uvis/Bundle');
 import pt = require('uvis/TemplateProperty');
+import pe = require('uvis/TemplateEvent');
 import ucr = require('uvis/ComponentRequest');
 
 export module uvis {
@@ -33,10 +34,10 @@ export module uvis {
         private _children: ud.Dictionary<Template>;
         private _bundles = new Array<ub.uvis.Bundle>();
         private _properties: ud.Dictionary<pt.uvis.ITemplateProperty<any, Rx.IObservable<any>>> = new ud.Dictionary<pt.uvis.ITemplateProperty>();
+        private _events = new ud.Dictionary<pe.uvis.TemplateObservableEvent<any>>();
         private _components: Rx.ConnectableObservable<uc.uvis.Component>;
         private _componentsConnection: Rx._IDisposable;
         private _activeRequests = new Array<ucr.uvis.ComponentRequest>();
-        public dependencies = new Array<Template>();
 
         constructor(name: string, type: string, parent?: Template, rowsFactory?: (template?: Template) => Rx.IObservable<any>) {
             this._state = TemplateState.INACTIVE;
@@ -159,6 +160,10 @@ export module uvis {
 
         get properties(): ud.Dictionary<pt.uvis.ITemplateProperty<any, Rx.IObservable<any>>> {
             return this._properties;
+        }
+
+        get events(): ud.Dictionary<pe.uvis.TemplateObservableEvent<any>> {
+            return this._events;
         }
 
         get bundles(): ub.uvis.Bundle[] {

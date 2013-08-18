@@ -5,7 +5,7 @@ import ud = require('../util/Dictionary');
 //import uc = require('uvis/Component');
 
 export module uvis {
-   
+
     export interface ITemplateProperty<T, O> {
         name: string;
         //create(component?: uc.uvis.Component): O;
@@ -23,7 +23,7 @@ export module uvis {
         private _internal: boolean;
 
         //constructor(name: string, factory: (component: uc.uvis.Component) => Rx.IObservable<T>, initialValue?: T, internal?: boolean) {
-        constructor(name: string, factory: (component) => Rx.IObservable < T>, initialValue?: T, internal?: boolean) {
+        constructor(name: string, factory: (component) => Rx.IObservable<T>, initialValue?: T, internal?: boolean) {
             this._name = name;
             this._initialValue = initialValue;
             this._factory = factory;
@@ -43,7 +43,7 @@ export module uvis {
         }
 
         //create(component?: uc.uvis.Component): Rx.ConnectableObservable<T> {
-        create(component?): Rx.ConnectableObservable < T > {
+        create(component?): Rx.ConnectableObservable<T> {
             var obs = this._factory(component);
 
             // We add replay to create an observable that can be shared,
@@ -83,7 +83,7 @@ export module uvis {
         get name() {
             return this._name;
         }
-        
+
         get initialValue(): T {
             return this._initialValue;
         }
@@ -97,7 +97,7 @@ export module uvis {
         }
 
         //create(component?: uc.uvis.Component): Rx.ConnectableObservable<T> {
-        create(component?): Rx.ConnectableObservable < T > {
+        create(component?): Rx.ConnectableObservable<T> {
             var obs = this._combinator(this._properties);
 
             // We add replay to create an observable that can be shared,
@@ -120,8 +120,6 @@ export module uvis {
         dispose() { }
 
     }
-
-    
 
     export class TemplateProperty<T> implements ITemplateProperty<T, Rx.ISubject<T>> {
         private _name: string;

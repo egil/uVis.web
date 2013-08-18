@@ -13,7 +13,15 @@ Rx.Observable.prototype.property = function (name: string) {
     return this.select((request: uvis.ComponentRequest) => {
         var finalComponent = request.latest;
         request.dispose();
-        return finalComponent.property('text');
+        return finalComponent.property(name);
+    }).switchLatest();
+};
+
+Rx.Observable.prototype.event = function (name: string) {
+    return this.select((request: uvis.ComponentRequest) => {
+        var finalComponent = request.latest;
+        request.dispose();
+        return finalComponent.event(name);
     }).switchLatest();
 };
 

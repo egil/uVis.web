@@ -4,6 +4,7 @@
 import ud = require('../util/Dictionary');
 import ut = require('uvis/Template');
 import pt = require('uvis/TemplateProperty');
+import pe = require('uvis/TemplateEvent');
 import ub = require('uvis/Bundle');
 import ps = require('uvis/PropertySet');
 import ucr = require('uvis/ComponentRequest');
@@ -24,6 +25,7 @@ export module uvis {
         private _currentCanvas: ICanvas;
         private _bundle: ub.uvis.Bundle;
         private _bundles: ud.Dictionary<ub.uvis.Bundle>;
+        private _events = new ud.Dictionary<pe.uvis.TemplateEvent<any>>();
 
         constructor(template: ut.uvis.Template, bundle: ub.uvis.Bundle, index: number, parent?: Component) {            
             super(template);
@@ -149,8 +151,44 @@ export module uvis {
                 request.latest = component;
                 return request;
             });
+        }        
+
+        public event<T>(name: string): Rx.IObservable<T> {
+            try {
+                var evt = this.getEvent(name);
+                return evt.observable;
+            } catch (err) {
+                return Rx.Observable.throwException(err);
+            }                       
         }
-        
+
+        private getEvent<T>(name: string): pe.uvis.TemplateEvent<T> {
+            var evt = this._events.get(name);
+
+            // If the event already exists, return it.
+            if (evt !== undefined) {
+                return evt;
+            }
+
+            // Else we try to create the event
+            var eventTpl = this.template.events.get(name);
+
+            if (eventTpl !== undefined) {
+                // Create event
+                evt = eventTpl.create();
+
+                // Add it to dictionary for reuse later
+                this._events.add(eventTpl.name, evt);
+
+                // We know that we are handed an subject, so we store a reference to its dispose method 
+                // for later use when cleaning up.
+                this.subscriptions.add(<Rx.ISubject>evt.observable);
+                return evt;
+            } else {
+                throw new Error('Component event "' + name + '" was not found.');
+            }
+        }
+
         createBundle(template: ut.uvis.Template): ub.uvis.Bundle {
             if (this.bundles.contains(template.name)) {
                 throw new Error('A bundle already exists for this template.');
@@ -186,7 +224,7 @@ export module uvis {
             throw new Error('setVisualComponentProperty(): Abstract method. Implementors must override.');
         }
 
-        attachVisualComponentEvent(name: string, callbackFn: Function): Rx._IDisposable {
+        attachVisualComponentEvent(name: string, callback: (obs: Rx.IObservable<any>) => Rx._IDisposable): Rx._IDisposable {
             throw new Error('attachVisualComponentEvent(): Abstract method. Implementors must override.');
         }
 
@@ -210,13 +248,10 @@ export module uvis {
                         }));
                 });
 
-                //// Subscribe to properties for visual component
-                //this.template.events.forEach((name) => {
-                //    // Here we attach the component events to the visual component.
-                //    // The attachVisualComponentEvent returns a disposable that 
-                //    // when triggered will detach the event from the visual component again.
-                //    this._subscriptions.add(this.attachVisualComponentEvent(name, this.events(name)));
-                //});
+                // Subscribe to properties for visual component
+                this.template.events.forEach((name: string) => {
+                    this.subscriptions.add(this.attachVisualComponentEvent(name, this.getEvent(name).callback));
+                });
             }
 
             // If there is a current canvas, remove the visual component from it

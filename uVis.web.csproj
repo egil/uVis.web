@@ -246,6 +246,10 @@
     <Content Include="src\uvis\Template.min.js">
       <DependentUpon>Template.ts</DependentUpon>
     </Content>
+    <TypeScriptCompile Include="src\uvis\TemplateEvent.ts" />
+    <Content Include="src\uvis\TemplateEvent.js">
+      <DependentUpon>TemplateEvent.ts</DependentUpon>
+    </Content>
     <Content Include="src\uvis\TemplateProperty.js">
       <DependentUpon>TemplateProperty.ts</DependentUpon>
     </Content>
@@ -324,6 +328,9 @@
     </Content>
     <Content Include="src\uvis\PropertySet.js.map">
       <DependentUpon>PropertySet.ts</DependentUpon>
+    </Content>
+    <Content Include="src\uvis\TemplateEvent.js.map">
+      <DependentUpon>TemplateEvent.ts</DependentUpon>
     </Content>
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>

@@ -34,6 +34,24 @@ export module uvis.component {
             }
         }
 
+        attachVisualComponentEvent(name: string, callback: (obs: Rx.IObservable<any>) => Rx._IDisposable): Rx._IDisposable {
+            var elm = <HTMLElement>this.visualComponent;
+            var obs = Rx.Observable.fromEvent(elm, name);
+
+            // Add default filters to observable            
+            if (elm.hasAttribute('type')) {
+                switch (elm.getAttribute('type')) {
+                    case 'number':
+                        obs = obs.select(e => parseInt(e.target.value, 10));
+                        break;
+                    default:
+                        obs = obs.select(e => e.target.value.trim());
+                        break;
+                }
+            }
+            return callback(obs);
+        }
+
         //#endregion
     }
 }
