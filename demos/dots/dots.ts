@@ -33,6 +33,7 @@ require(['nextTick', 'shims', 'uvis/Template', 'uvis/TemplateProperty', 'uvis/Te
         
         // Top of template tree - form
         var form = new ut.uvis.Template('form', 'html#div');
+        form.properties.add('style', new up.uvis.TemplateProperty('style', 'padding-top: 105px;'));
         form.properties.add('canvas', new up.uvis.SharedComputedTemplateProperty('canvas', () => {
             return canvasSource;
         }, undefined, true));
@@ -45,26 +46,26 @@ require(['nextTick', 'shims', 'uvis/Template', 'uvis/TemplateProperty', 'uvis/Te
             'box-shadow: 0px 5px 10px rgba(50, 50, 50, 0.75);'));
         fieldset.properties.add('class', new up.uvis.TemplateProperty('class', 'form-inline'));
 
-        // Level 2 of template tree - controls
-        var h1 = new ut.uvis.Template('h1', 'html#h1', fieldset);
+        // Level 1 of template tree - h1
+        var h1 = new ut.uvis.Template('h1', 'html#h1', form);
         h1.properties.add('text', new up.uvis.TemplateProperty('text', 'Dots Demo'));
         h1.properties.add('canvas', new up.uvis.ComputedTemplateProperty('canvas', (c) => {
-            return c.parent.canvas;
+            return c.template.walk().get('fieldset').canvas();
         }, undefined, true));
         
-        // Level 2 of template tree - labelCount
-        var labelCount = new ut.uvis.Template('labelCount', 'html#label', fieldset);
+        // Level 1 of template tree - labelCount
+        var labelCount = new ut.uvis.Template('labelCount', 'html#label', form);
         labelCount.properties.add('style', new up.uvis.TemplateProperty('style', 'padding-right: 10px;'));
         labelCount.properties.add('text', new up.uvis.TemplateProperty('text', 'Point count:'));
         labelCount.properties.add('for', new up.uvis.ComputedTemplateProperty('for', (c) => {
-            return c.template.walk().get('fieldset').get('inputCount').property('id');
+            return c.template.walk().get('inputCount').property('id');
         }));
         labelCount.properties.add('canvas', new up.uvis.ComputedTemplateProperty('canvas', (c) => {
-            return c.parent.canvas;
+            return c.template.walk().get('fieldset').canvas();
         }, undefined, true));
 
-        // Level 2 of template tree - inputCount
-        var inputCount = new ut.uvis.Template('inputCount', 'html#input', fieldset);
+        // Level 1 of template tree - inputCount
+        var inputCount = new ut.uvis.Template('inputCount', 'html#input', form);
         inputCount.properties.add('type', new up.uvis.TemplateProperty('type', 'number'));
         inputCount.properties.add('style', new up.uvis.TemplateProperty('style', 'margin-right: 20px;'));
         inputCount.properties.add('value', new up.uvis.TemplateProperty('value', '200'));
@@ -73,24 +74,24 @@ require(['nextTick', 'shims', 'uvis/Template', 'uvis/TemplateProperty', 'uvis/Te
         inputCount.properties.add('step', new up.uvis.TemplateProperty('step', '1'));
         inputCount.properties.add('class', new up.uvis.TemplateProperty('class', 'input-mini'));
         inputCount.properties.add('canvas', new up.uvis.ComputedTemplateProperty('canvas', (c) => {
-            return c.parent.canvas;
+            return c.template.walk().get('fieldset').canvas();
         }, undefined, true));
 
         inputCount.events.add('change', new ue.uvis.TemplateObservableEvent('change', undefined, 200));
 
-        // Level 2 of template tree - labelSize
-        var labelSize = new ut.uvis.Template('labelSize', 'html#label', fieldset);
+        // Level 1 of template tree - labelSize
+        var labelSize = new ut.uvis.Template('labelSize', 'html#label', form);
         labelSize.properties.add('style', new up.uvis.TemplateProperty('style', 'padding-right: 10px;'));
         labelSize.properties.add('text', new up.uvis.TemplateProperty('text', 'Point size:'));
         labelSize.properties.add('for', new up.uvis.ComputedTemplateProperty('for', (c) => {
-            return c.template.walk().get('fieldset').get('inputSize').property('id');
+            return c.template.walk().get('inputSize').property('id');
         }));
         labelSize.properties.add('canvas', new up.uvis.ComputedTemplateProperty('canvas', (c) => {
-            return c.parent.canvas;
+            return c.template.walk().get('fieldset').canvas();
         }, undefined, true));
 
-        // Level 2 of template tree - inputSize
-        var inputSize = new ut.uvis.Template('inputSize', 'html#input', fieldset);
+        // Level 1 of template tree - inputSize
+        var inputSize = new ut.uvis.Template('inputSize', 'html#input', form);
         inputSize.properties.add('type', new up.uvis.TemplateProperty('type', 'number'));
         inputSize.properties.add('style', new up.uvis.TemplateProperty('style', 'margin-right: 20px;'));
         inputSize.properties.add('value', new up.uvis.TemplateProperty('value', '50'));
@@ -99,77 +100,64 @@ require(['nextTick', 'shims', 'uvis/Template', 'uvis/TemplateProperty', 'uvis/Te
         inputSize.properties.add('step', new up.uvis.TemplateProperty('step', '1'));
         inputSize.properties.add('class', new up.uvis.TemplateProperty('class', 'input-mini'));
         inputSize.properties.add('canvas', new up.uvis.ComputedTemplateProperty('canvas', (c) => {
-            return c.parent.canvas;
+            return c.template.walk().get('fieldset').canvas();
         }, undefined, true));
 
         inputSize.events.add('change', new ue.uvis.TemplateObservableEvent('change', undefined, 50));
 
-        // Level 2 of template tree - inputColor
-        var inputColor = new ut.uvis.Template('inputColor', 'html#input', fieldset, () => Rx.Observable.returnValue(4));
+        // Level 1 of template tree - inputColor
+        var inputColor = new ut.uvis.Template('inputColor', 'html#input', form, () => Rx.Observable.returnValue(4));
         inputColor.properties.add('type', new up.uvis.TemplateProperty('type', 'color'));
         inputColor.properties.add('value', new up.uvis.TemplateProperty('value', '#000000'));
         inputColor.properties.add('style', new up.uvis.TemplateProperty('style', 'margin-right: 20px;'));
         inputColor.properties.add('class', new up.uvis.TemplateProperty('class', 'input-mini'));
         inputColor.properties.add('canvas', new up.uvis.ComputedTemplateProperty('canvas', (c) => {
-            return c.parent.canvas;
+            return c.template.walk().get('fieldset').canvas();
         }, undefined, true));
 
         inputColor.events.add('input', new ue.uvis.TemplateObservableEvent('input', undefined, '#000000'));
                 
-        // Level 1 of template tree - output canvas
-        var output = new ut.uvis.Template('output', 'html#div', form);
-        output.properties.add('style', new up.uvis.TemplateProperty('style', 'margin-top: 140px;'));
-
-        // Level 2 of template tree - result circles
-        var span = new ut.uvis.Template('span', 'html#span', output, (t) => {
-            return t.walk().get('fieldset').get('inputCount').event('change');
+        // Level 1 of template tree - result circles
+        var dot = new ut.uvis.Template('dot', 'html#span', form, (t) => {
+            return t.walk().get('inputCount').event('change');
         });
 
-        span.properties.add('canvas', new up.uvis.ComputedTemplateProperty('canvas', (c) => {
-            return c.parent.canvas;
-        }, undefined, true));
-
-        span.properties.add('title', new up.uvis.ComputedTemplateProperty('title', (c) => {
+        dot.properties.add('title', new up.uvis.ComputedTemplateProperty('title', (c) => {
             return Rx.Observable.returnValue(c.index);
         }));
 
-        span.properties.add('text', new up.uvis.ComputedTemplateProperty('text', (c) => {
+        dot.properties.add('text', new up.uvis.ComputedTemplateProperty('text', (c) => {
             return Rx.Observable.returnValue(c.index);
         }));
 
-        span.properties.add('style', new up.uvis.ComputedTemplateProperty('style', (c) => {
-            var sizeObs = c.template.walk().get('fieldset').get('inputSize').event('change');
+        dot.properties.add('style', new up.uvis.ComputedTemplateProperty('style', (c) => {
+            var sizeObs = c.template.walk().get('inputSize').event('change');
 
-            return Rx.Observable.returnValue(c.index).select(i => {           
-                if (i % 4 === 0)
-                    return c.template.walk().get('fieldset').get('inputColor', 3).event('input');
-                if (i % 3 === 0)
-                    return c.template.walk().get('fieldset').get('inputColor', 2).event('input');
-                if (i % 2 === 0)
-                    return c.template.walk().get('fieldset').get('inputColor', 1).event('input');
-                return c.template.walk().get('fieldset').get('inputColor', 0).event('input');
-
-            }).switchLatest().combineLatest(sizeObs, (color, size) => {
-                return 'height:' + size + 'px;' +
-                    'width:' + size + 'px;' +
-                    'border-radius:' + size + 'px;' +
-                    'background-color:' + color + ';' +
-                    'line-height:' + size + 'px;' +
-                    'font-size:' + size / 3 + 'px;' +
-                    'color:white;' + 'text-shadow: black 0px 0px 2px;' +
-                    'display: inline-block; margin: ' + size / 8 + 'px; text-align: center;';
-            });
+            return Rx.Observable.returnValue(c.index)
+                .select(i => c.template.walk().get('inputColor', i % 4).event('input'))
+                .switchLatest()
+                .combineLatest(sizeObs, (color, size) => {
+                    return 'height:' + size + 'px;' +
+                        'width:' + size + 'px;' +
+                        'border-radius:' + size + 'px;' +
+                        'background-color:' + color + ';' +
+                        'line-height:' + size + 'px;' +
+                        'font-size:' + size / 3 + 'px;' +
+                        'color:white;' + 'text-shadow: black 0px 0px 2px;' +
+                        'display: inline-block; margin: ' + size / 8 + 'px; text-align: center;';
+                });
         }));
 
         // Initialize each template
         form.initialize();
+        fieldset.initialize();
         h1.initialize();
         labelCount.initialize();
         inputCount.initialize();
         labelSize.initialize();
         inputSize.initialize();
         inputColor.initialize();
-        span.initialize();
+        dot.initialize();
 
         // Provide the canvas to root of the tree
         canvasSource.onNext(canvas);

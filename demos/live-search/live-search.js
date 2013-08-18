@@ -25,15 +25,6 @@ function searchWikipedia(term) {
 
 require(['nextTick', 'shims', 'uvis/Template', 'uvis/TemplateProperty', 'uvis/TemplateEvent'], function (nt, s, ut, up, ue) {
     $(function () {
-        // Data source
-        var search = Rx.Observable.fromEvent(document.getElementById('search'), 'input').select(function (event) {
-            return event.target.value.trim();
-        }).throttle(250).distinctUntilChanged().select(function (term) {
-            return searchWikipedia(term);
-        }).switchLatest().select(function (x) {
-            return { term: x[0], results: x[1] };
-        });
-
         // ICanvas
         var canvasSource = new Rx.Subject();
         var canvas = {
@@ -51,31 +42,19 @@ require(['nextTick', 'shims', 'uvis/Template', 'uvis/TemplateProperty', 'uvis/Te
             return canvasSource;
         }, undefined, true));
 
-        // Level 1 of template tree - container for controls
-        var fieldset = new ut.uvis.Template('fieldset', 'html#fieldset', form);
-        fieldset.properties.add('class', new up.uvis.TemplateProperty('class', 'form-inline'));
-
-        // Level 2 of template tree - controls
-        var h1 = new ut.uvis.Template('h1', 'html#h1', fieldset);
+        var h1 = new ut.uvis.Template('h1', 'html#h1', form);
         h1.properties.add('text', new up.uvis.TemplateProperty('text', 'Live Search Demo'));
-        h1.properties.add('canvas', new up.uvis.ComputedTemplateProperty('canvas', function (c) {
-            return c.parent.canvas;
-        }, undefined, true));
 
-        // Level 2 of template tree - inputCount
-        var txtSearch = new ut.uvis.Template('txtSearch', 'html#input', fieldset);
+        var txtSearch = new ut.uvis.Template('txtSearch', 'html#input', form);
         txtSearch.properties.add('type', new up.uvis.TemplateProperty('type', 'text'));
         txtSearch.properties.add('placeholder', new up.uvis.TemplateProperty('placeholder', 'Enter search term here . . .'));
         txtSearch.properties.add('class', new up.uvis.TemplateProperty('class', 'input-xxlarge'));
-        txtSearch.properties.add('canvas', new up.uvis.ComputedTemplateProperty('canvas', function (c) {
-            return c.parent.canvas;
-        }, undefined, true));
 
         txtSearch.events.add('input', new ue.uvis.TemplateObservableEvent('input', function (o) {
             return o.throttle(250).distinctUntilChanged();
         }, ''));
 
-        var searchTerm = new ut.uvis.Template('resultTerm', 'html#h4', fieldset);
+        var searchTerm = new ut.uvis.Template('resultTerm', 'html#h4', form);
         searchTerm.properties.add('text', new up.uvis.ComputedTemplateProperty('text', function (c) {
             return c.template.walk().get('resultList').property('row').select(function (x) {
                 return x.term;
@@ -83,15 +62,13 @@ require(['nextTick', 'shims', 'uvis/Template', 'uvis/TemplateProperty', 'uvis/Te
                 return 'Last search term: ' + x;
             });
         }));
-        searchTerm.properties.add('canvas', new up.uvis.ComputedTemplateProperty('canvas', function (c) {
-            return c.parent.canvas;
-        }, undefined, true));
 
         var resultList = new ut.uvis.Template('resultList', 'html#ul', form, function (t) {
-            return t.walk().get('fieldset').get('txtSearch').event('input').select(searchWikipedia).switchLatest().select(function (x) {
+            return t.walk().get('txtSearch').event('input').select(searchWikipedia).switchLatest().select(function (x) {
                 return { term: x[0], results: x[1] };
             });
         });
+
         var resultItem = new ut.uvis.Template('resultItem', 'html#li', resultList, function (t) {
             return t.parent.rows.select(function (x) {
                 return x.results;
@@ -105,7 +82,6 @@ require(['nextTick', 'shims', 'uvis/Template', 'uvis/TemplateProperty', 'uvis/Te
         }));
 
         form.initialize();
-        fieldset.initialize();
         h1.initialize();
         txtSearch.initialize();
         searchTerm.initialize();
@@ -115,3 +91,4 @@ require(['nextTick', 'shims', 'uvis/Template', 'uvis/TemplateProperty', 'uvis/Te
         canvasSource.onNext(canvas);
     });
 });
+//# sourceMappingURL=live-search.js.map

@@ -25,6 +25,14 @@ Rx.Observable.prototype.event = function (name: string) {
     }).switchLatest();
 };
 
+Rx.Observable.prototype.canvas = function () {
+    return this.select((request: uvis.ComponentRequest) => {
+        var finalComponent = request.latest;
+        request.dispose();
+        return finalComponent.canvas;
+    }).switchLatest();
+};
+
 export module uvis {
 
     export class ComponentRequest {
