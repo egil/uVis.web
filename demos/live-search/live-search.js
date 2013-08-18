@@ -28,7 +28,7 @@ require(['nextTick', 'shims', 'uvis/Template', 'uvis/TemplateProperty'], functio
         // Data source
         var search = Rx.Observable.fromEvent(document.getElementById('search'), "input").select(function (event) {
             return event.target.value.trim();
-        }).throttle(100).distinctUntilChanged().select(function (term) {
+        }).throttle(250).distinctUntilChanged().select(function (term) {
             return searchWikipedia(term);
         }).switchLatest().select(function (x) {
             return { term: x[0], results: x[1] };
@@ -79,4 +79,3 @@ require(['nextTick', 'shims', 'uvis/Template', 'uvis/TemplateProperty'], functio
         resultItem.initialize();
     });
 });
-//# sourceMappingURL=live-search.js.map

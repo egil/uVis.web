@@ -31,7 +31,7 @@ require(['nextTick', 'shims', 'uvis/Template', 'uvis/TemplateProperty'], (nt, s,
 
         // Data source
         var search = Rx.Observable.fromEvent(document.getElementById('search'), "input")
-            .select(event => event.target.value.trim()).throttle(100).distinctUntilChanged()
+            .select(event => event.target.value.trim()).throttle(250).distinctUntilChanged()
             .select(term => searchWikipedia(term))
             .switchLatest()
             .select(x => { return { term: x[0], results: x[1] }; })

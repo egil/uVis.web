@@ -402,6 +402,80 @@ export module uvis.spec {
                     expect(hasErrd).toBe('Cyclic dependency between template "b" and "d"');
                 });
             });
+
+            it('Should detect cyclic dependency between templates (tracked)', () => {
+                var donea, hasErra, actuala = [], doneb, hasErrb, actualb = [], donec, hasErrc, actualc = [], doned, hasErrd, actuald = [];
+                var a = new ut.uvis.Template('a', 'html#div');
+                var b = new ut.uvis.Template('b', 'html#div', a, (t?) => t.walk().get('c').get('d').property('text'));
+                var c = new ut.uvis.Template('c', 'html#div', a);
+                var d = new ut.uvis.Template('d', 'html#div', c, (t?) => t.walk().get('b').property('text'));
+
+                // Add property to b
+                b.properties.add('text', new pt.uvis.ComputedTemplateProperty('text', (c) => {
+                    return Rx.Observable.returnValue(1337);
+                }));
+
+                // Add property to d
+                d.properties.add('text', new pt.uvis.ComputedTemplateProperty('text', (c) => {
+                    return Rx.Observable.returnValue(1337);
+                }));
+
+                runs(() => {
+                    a.components.subscribe(c => actuala.push(c), err => hasErra = err, () => donea = true);
+                    b.components.subscribe(c => actualb.push(c), err => hasErrb = err, () => doneb = true);
+                    c.components.subscribe(c => actualc.push(c), err => hasErrc = err, () => donec = true);
+                    d.components.subscribe(c => actuald.push(c), err => hasErrd = err, () => doned = true);
+                });
+
+                waitsFor(() => a.state === ut.uvis.TemplateState.COMPLETED || hasErra, 'a did not complete.', 20);
+                waitsFor(() => hasErrb || hasErrd, 'b/d did not complete.', 20);
+                waitsFor(() => c.state === ut.uvis.TemplateState.COMPLETED || hasErrc, 'c did not complete.', 20);
+                //waitsFor(() => hasErrd, 'd did not complete.', 20);
+
+                runs(() => {
+                    expect(hasErra || hasErrc).toBeUndefined();
+                    expect(hasErrb).toBe('Cyclic dependency between template "d" and "b"');
+                    expect(hasErrd).toBe('Cyclic dependency between template "b" and "d"');
+                });
+            });
+
+            it('Should detect cyclic dependency between templates of n\'th degree', () => {
+                var donea, hasErra, actuala = [], doneb, hasErrb, actualb = [], donec, hasErrc, actualc = [], doned, hasErrd, actuald = [], donee, hasErre, actuale = [];
+                var a = new ut.uvis.Template('a', 'html#div');
+                var b = new ut.uvis.Template('b', 'html#div', a, (t?) => t.walk().get('c').get('d').property('text'));
+                var c = new ut.uvis.Template('c', 'html#div', a);
+                var d = new ut.uvis.Template('d', 'html#div', c, (t?) => t.walk().get('e').property('text'));
+                var e = new ut.uvis.Template('e', 'html#div', a, (t?) => t.walk().get('b').property('text'));
+
+                // Add property to b
+                b.properties.add('text', new pt.uvis.ComputedTemplateProperty('text', (c) => {
+                    return Rx.Observable.returnValue(1337);
+                }));
+
+                // Add property to d
+                d.properties.add('text', new pt.uvis.ComputedTemplateProperty('text', (c) => {
+                    return Rx.Observable.returnValue(1337);
+                }));
+
+                runs(() => {
+                    a.components.subscribe(c => actuala.push(c), err => hasErra = err, () => donea = true);
+                    b.components.subscribe(c => actualb.push(c), err => hasErrb = err, () => doneb = true);
+                    c.components.subscribe(c => actualc.push(c), err => hasErrc = err, () => donec = true);
+                    d.components.subscribe(c => actuald.push(c), err => hasErrd = err, () => doned = true);
+                    e.components.subscribe(c => actuale.push(c), err => hasErre = err, () => donee = true);
+                });
+
+                waitsFor(() => a.state === ut.uvis.TemplateState.COMPLETED || hasErra, 'a did not complete.', 20);
+                waitsFor(() => c.state === ut.uvis.TemplateState.COMPLETED || hasErrc, 'c did not complete.', 20);
+                waitsFor(() => hasErrb || hasErrd || hasErre, 'b/d/e did not have error.', 20);
+
+                runs(() => {
+                    expect(hasErra || hasErrc || hasErre).toBeUndefined();
+                    expect(hasErrb).toBe('Cyclic dependency between template "e" and "b"');
+                    expect(hasErrd).toBe('Cyclic dependency between template "b" and "d"');
+                    expect(hasErre).toBe('Cyclic dependency between template "b" and "e"');
+                });
+            });
         });
 
         //#endregion Cross dependency

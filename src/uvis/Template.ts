@@ -36,6 +36,7 @@ export module uvis {
         private _components: Rx.ConnectableObservable<uc.uvis.Component>;
         private _componentsConnection: Rx._IDisposable;
         private _activeRequests = new Array<ucr.uvis.ComponentRequest>();
+        public dependencies = new Array<Template>();
 
         constructor(name: string, type: string, parent?: Template, rowsFactory?: (template?: Template) => Rx.IObservable<any>) {
             this._state = TemplateState.INACTIVE;
